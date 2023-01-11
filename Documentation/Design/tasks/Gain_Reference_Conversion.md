@@ -4,7 +4,7 @@ A gain image is one taken on the camera in absence of the sample.  It can be use
 
 The Gatan K3 camera will acquire images with a proprietary format (DM4).  This can be converted to the common MRC format with `dm2mrc` (provided by IMOD software suite).  The Gatan K3 camera will acquire its image in a higher resolution than the physical pixel dimensions of the camera, aka super-resolution mode.
 
-### Steps
+### Task description
 
 We typically convert and then rescale from 11520 x 8184 to 5760 x 4092.  
 
