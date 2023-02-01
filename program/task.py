@@ -3,6 +3,8 @@ This module is used for the interface of All kinds of Task class
 """
 from abc import ABC, abstractmethod, abstractproperty
 
+from typing import List
+
 
 class Param:
     """
@@ -77,7 +79,7 @@ class Task(ABC):
         """
 
     @abstractmethod
-    def get_param(self, key: str) -> [int, str]:
+    def get_param(self, key: str) -> List[str, int]:
         """
 
         :param key: the parameter you want to get
