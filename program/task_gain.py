@@ -38,6 +38,8 @@ class TaskGain(Task):
         TODO - this should get parameters from Param
         """
 
+        # Input file is DM4 format, initial image size is super-resolution is 11520x8184
+
         # Skeleton 
         infile = ''
         outfile = ''
@@ -63,6 +65,8 @@ class TaskGain(Task):
             '-output', 
             stack_outfile]
         subprocess.call(args)
+
+        # Output is an MRC format, final image size should be 5760x4092 pixels.
 
     def get_result(self):
         """ comment """
