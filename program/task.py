@@ -79,7 +79,7 @@ class Task(ABC):
         """
 
     @abstractmethod
-    def get_param(self, key: str) -> List[str, int]:
+    def get_param(self, key: str) -> str:
         """
 
         :param key: the parameter you want to get

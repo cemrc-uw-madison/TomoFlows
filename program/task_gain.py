@@ -1,6 +1,19 @@
 import typing
-from task import Task
 import subprocess
+import os
+from program.task import Task
+
+
+def check_image_format(file_name, required_format):
+    """
+
+    :param file_name: provided file name
+    :param required_format: required file format
+    :return: if file has required format(Boolean value)
+    """
+    image_format = file_name.split(".")[-1]
+    return image_format == required_format
+
 
 class TaskGain(Task):
     """
@@ -9,6 +22,16 @@ class TaskGain(Task):
     1. A parameter is the input image file to convert.  (Expect something like 'path-to/gain.dm4')
     2. A parameter to describe how it is scaled
     """
+    required_input_format = "dm4"
+    required_output_format = "mrc"
+
+    def __init__(self, input_file):
+        """
+        :param input_file: file name in format conversion, required to be dm4 format
+        """
+        self.input_file = input_file
+        if not check_image_format(input_file, self.required_input_format):
+            raise ValueError("Input image format must be dm4!")
 
     @property
     def param(self):
