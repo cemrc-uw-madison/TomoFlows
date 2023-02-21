@@ -13,7 +13,7 @@ const App = (props) => {
 	return (
 		<div className="App">
 			<h1>TomoFlows</h1>
-			<p><b>API Status: </b> {res ?? "Loading..."}</p>
+			<p><b>API Ping: </b> {res ?? "Loading..."}</p>
 		</div>
 	);
 };
