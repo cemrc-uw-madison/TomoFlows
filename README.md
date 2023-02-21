@@ -1,5 +1,9 @@
 # TomoFlows
 
+Project for a pipeline process with visual web feedback on tasks completed in a pipeline.
+
+See [Design Documentation](scripts/Documentation/Design/index.md)
+
 ## Virtualenv Setup
 
 1. Create virtual env: `python3 -m virtualenv ~/path/to/env`
