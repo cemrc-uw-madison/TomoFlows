@@ -1,0 +1,12 @@
+version: '3.3'
+services:
+    tomoflows:
+        image: tomoflows-img
+        # build:
+        #     context: .
+        #     dockerfile: Dockerfile
+        container_name: tomoflows
+        ports:
+            - '8000:8000'
+        # volumes:
+        #     - '<host>:/home/tomoflows/data'
