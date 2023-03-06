@@ -28,10 +28,14 @@ class TaskGain(Task):
     def __init__(self, input_file):
         """
         :param input_file: file name in format conversion, required to be dm4 format
+        output_file will always be input_file name with mrc extension
         """
         self.input_file = input_file
+
         if not check_image_format(input_file, self.required_input_format):
             raise ValueError("Input image format must be dm4!")
+
+        self.output_file = input_file.split(".")[0] + ".mrc"
 
     @property
     def param(self):
@@ -64,8 +68,8 @@ class TaskGain(Task):
         # Input file is DM4 format, initial image size is super-resolution is 11520x8184
 
         # Skeleton 
-        infile = ''
-        outfile = ''
+        infile = self.input_file
+        outfile = self.output_file
 
         # 1. Convert a format (DM4) to (MRC)
         command1 = 'dm2mrc'
