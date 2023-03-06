@@ -10,6 +10,9 @@ RUN mkdir -p $DjangoDir
 WORKDIR $DjangoDir
 
 # install dependencies
+# RUN wget https://bio3d.colorado.edu/imod/AMD64-RHEL5/imod_4.11.24_RHEL7-64_CUDA10.1.sh
+# RUN ./imod_4.11.24_RHEL7-64_CUDA10.1.sh
+# 
 RUN pip install --upgrade pip
 COPY . $DjangoDir
 RUN pip install -r requirements.txt
