@@ -1,3 +1,0 @@
-pylint
-pytest==7.2.1
-pre-commit
