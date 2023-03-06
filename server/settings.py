@@ -25,7 +25,7 @@ SECRET_KEY = 'fe$f8us8q&fou12on0scsfv*v5kohv%b69)^lc-&b365d@qvq('
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -122,7 +122,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         # 'rest_framework.permissions.AllowAny',
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
+    ],
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json'
 }
 
 # Static files (CSS, JavaScript, Images)
