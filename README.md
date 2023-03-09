@@ -7,9 +7,9 @@ See [Design Documentation](scripts/Documentation/Design/index.md)
 ## Running on Docker
 1. Install Docker: See [Docker Documentation](https://docs.docker.com/get-docker/)
 2. Build Docker Image: `docker build . -t tomoflows-img`
-3. Run Docker Container: `docker compose up --detach` (remove --detach to attach container to terminal and not run in background)
+3. Run Docker Container: `docker compose up -d` (remove -d to attach container to terminal and not run in background)
 4. Open Browser and visit `http://localhost:8000`
-5. Connect to container shell: `docker compose exec tomoflows sh` (OPTIONAL)
+5. Connect to container shell: `docker compose exec tomoflows bash` (OPTIONAL)
 7. Stop and Remove Container: `docker compose down` (OPTIONAL)
 6. Kill Container: `docker compose kill` (OPTIONAL)
 
