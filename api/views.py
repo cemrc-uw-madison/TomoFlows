@@ -7,3 +7,8 @@ from rest_framework import permissions
 @permission_classes((permissions.AllowAny,))
 def Ping(request):
     return Response({'message':'API is up and running!'})
+
+@api_view(['GET'])
+@permission_classes((permissions.IsAuthenticated,))
+def Protected(request):
+    return Response({'message':'This is a protected endpoint'})
