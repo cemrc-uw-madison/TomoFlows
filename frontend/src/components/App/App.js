@@ -35,7 +35,11 @@ const App = (props) => {
 			<p><b>API Response {loggedIn ? "(Logged In)": null}: </b> {res ?? "Loading..."}</p>
 			{loggedIn  
 				? <Button onClick={() => navigate("/logout")} variant="primary">Logout</Button>
-				: <Button onClick={() => navigate("/login")} variant="primary">Login</Button>
+				: 
+				<div>
+					<Button onClick={() => navigate("/login")} variant="primary">Login</Button>
+					<Button onClick={() => navigate("/signup")} variant="primary">Signup</Button>
+				</div>
 			}
 		</div>
 	);

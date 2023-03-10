@@ -1,4 +1,4 @@
-import React, {useState, } from "react";
+import React, {useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import Cookies from "js-cookie";
@@ -11,12 +11,20 @@ const Login = (props) => {
 	const [password, setPassword] = useState("")
 	const navigate = useNavigate();
 	
+	useEffect(() => {
+		let token = Cookies.get('auth-token')
+		if (token) {
+			navigate("/");
+		}
+	}, [])
+	
 	const login = () => {
 		axios.post('/api/auth/login/', {
 			email: email,
 			password: password
 		})
 		.then(res => {
+			console.log(res)
 			Cookies.set('auth-token', res.data.access_token)
 			Cookies.set('refresh-token', res.data.refresh_token)
 			setEmail("");

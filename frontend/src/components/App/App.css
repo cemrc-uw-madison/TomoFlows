@@ -7,3 +7,7 @@ html, body {
 .App {
 	margin: 50px;
 }
+
+.App div button {
+	margin-right: 10px
+}
