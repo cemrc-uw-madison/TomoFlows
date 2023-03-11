@@ -30,11 +30,10 @@ class TaskGain(Task):
         :param input_file: file name in format conversion, required to be dm4 format
         output_file will always be input_file name with mrc extension
         """
-        self.input_file = input_file
 
         if not check_image_format(input_file, self.required_input_format):
             raise ValueError("Input image format must be dm4!")
-
+        self.input_file = input_file
         self.output_file = input_file.split(".")[0] + ".mrc"
 
     @property
@@ -58,7 +57,7 @@ class TaskGain(Task):
         Should provide the Param with name-value pairs 
         """
 
-    def run(self):
+    def run(self, stack_outfile):
         """ Execute two steps to convert and scale the image """
 
         """
@@ -67,33 +66,40 @@ class TaskGain(Task):
 
         # Input file is DM4 format, initial image size is super-resolution is 11520x8184
 
-        # Skeleton 
+        # Skeleton
         infile = self.input_file
         outfile = self.output_file
 
         # 1. Convert a format (DM4) to (MRC)
         command1 = 'dm2mrc'
-        args = [command1,
-            infile,   # Input file could be passed as a parameter 
-            outfile]  # Output file should be saved within the job directory <gain.mrc or other>
+        args_dm2mrc = [command1,
+                infile,   # Input file could be passed as a parameter
+                outfile]  # Output file should be saved within the job directory <gain.mrc or other>
 
-        stack_infile = ''
-        stack_outfile = ''
-
+        subprocess.call(args_dm2mrc)
         # 2. Shrink a gain reference to a different format
+        stack_infile = outfile
         command2 = 'newstack'
-        args = [command2,
-            '-format', 
-            'mrc',
-            '-shrink',
-            '2',
-            '-input',
-            stack_infile,
-            '-output', 
-            stack_outfile]
-        subprocess.call(args)
+
+        args_newstack = [command2,
+                '-format',
+                'mrc',
+                '-shrink',
+                '2',
+                '-input',
+                stack_infile,
+                '-output',
+                stack_outfile]
+        
+        subprocess.call(args_newstack)
 
         # Output is an MRC format, final image size should be 5760x4092 pixels.
+
+        # 3. Remove temp mrc file
+        args_remove = ["rm",
+                "-f",
+                outfile]
+        subprocess.call(args_remove)
 
     def get_result(self):
         """ comment """

@@ -32,10 +32,17 @@ def test_output_file_name():
     assert task_gain.output_file == "sample.mrc"
 
 
-def test_check_output_image_type():
+def test_output_image_type():
     """
     Test if program generate correct output image
     """
     task_gain = TaskGain("K3-GAT21320024GainRef.dm4")
-    task_gain.run()
-    assert os.path.exists("K3-GAT21320024GainRef.mrc")
+    if os.path.exists("K3-GAT21320024GainRef.mrc"):
+        os.remove("K3-GAT21320024GainRef.mrc")
+    if os.path.exists("shrink.mrc"):
+        os.remove("shrink.mrc")
+    task_gain.run("shrink.mrc")
+    assert os.path.exists("shrink.mrc")
+    assert not os.path.exists("K3-GAT21320024GainRef.mrc")
+    with open("shrink.mrc", "rb") as f_shrink, open("K3-GAT21320024GainRef.dm4", "rb") as f_origin:
+        assert len(f_origin.read()) - 4*len(f_shrink.read()) < 1024*1024
