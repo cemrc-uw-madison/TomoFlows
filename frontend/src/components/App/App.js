@@ -20,7 +20,12 @@ const App = (props) => {
 				}
 			})
 			.then(response => setRes(response.data.message))
-			.catch(error => console.error(error))
+			.catch(error => {
+				if (error.response.status === 401) {
+					navigate("/logout?click=1");
+				}
+				console.error(error);
+			})
 		} else {
 			fetch("/api/ping")
 			.then(response => response.json())

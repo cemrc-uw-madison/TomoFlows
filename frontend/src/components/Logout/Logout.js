@@ -1,12 +1,24 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useMemo } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from 'axios';
 import Button from 'react-bootstrap/Button';
 import Cookies from 'js-cookie';
 import "./Logout.css"
 
-const Logout = (props) => {	
+const useQuery = () => {
+	const { search } = useLocation();
+	return useMemo(() => new URLSearchParams(search), [search]);
+}
+
+const Logout = (props) => {
+	let query = useQuery();
 	const navigate = useNavigate();
+	
+	useEffect(() => {
+		if (query.get("click") === "1") {
+			logout()
+		}
+	}, [])
 	
 	const logout = () => {
 		axios.post('/api/auth/logout/')
@@ -20,6 +32,7 @@ const Logout = (props) => {
 			setPassword("");
 		});
 	}
+	
 	return (
 		<div className="Logout">
 			<h1>TomoFlows</h1>
