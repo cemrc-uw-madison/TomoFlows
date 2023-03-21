@@ -23,16 +23,15 @@ const Login = (props) => {
 			email: email,
 			password: password
 		})
-		.then(res => {
-			console.log(res)
-			Cookies.set('auth-token', res.data.access_token)
-			Cookies.set('refresh-token', res.data.refresh_token)
+		.then(response => {
+			Cookies.set('auth-token', response.data.access_token)
+			Cookies.set('refresh-token', response.data.refresh_token)
 			setEmail("");
 			setPassword("");
 			navigate("/")
 		})
-		.catch(err => {
-			console.log(err);
+		.catch(error => {
+			console.log(error);
 			setPassword("");
 		});
 	}

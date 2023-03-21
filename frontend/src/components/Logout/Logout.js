@@ -22,13 +22,13 @@ const Logout = (props) => {
 	
 	const logout = () => {
 		axios.post('/api/auth/logout/')
-		.then(res => {
+		.then(response => {
 			Cookies.remove('auth-token');
 			Cookies.remove('refresh-token');
 			navigate("/");
 		})
-		.catch(err => {
-			console.log(err);
+		.catch(error => {
+			console.log(error);
 			setPassword("");
 		});
 	}

@@ -18,16 +18,16 @@ const Signup = (props) => {
 			password1: password1,
 			password2: password2
 		})
-		.then(res => {
-			Cookies.set('auth-token', res.data.access_token)
-			Cookies.set('refresh-token', res.data.refresh_token)
+		.then(response => {
+			Cookies.set('auth-token', response.data.access_token)
+			Cookies.set('refresh-token', response.data.refresh_token)
 			setEmail("");
 			setPassword1("");
 			setPassword2("");
 			navigate("/")
 		})
-		.catch(err => {
-			console.log(err);
+		.catch(error => {
+			console.log(error);
 			setPassword1("");
 			setPassword2("");
 		});
