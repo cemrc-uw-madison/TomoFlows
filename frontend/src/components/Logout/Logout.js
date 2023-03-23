@@ -1,43 +1,56 @@
-import React, { useEffect, useMemo } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import axios from 'axios';
-import Button from 'react-bootstrap/Button';
+import Spinner from 'react-bootstrap/Spinner';
 import Cookies from 'js-cookie';
 import "./Logout.css"
 
-const useQuery = () => {
-	const { search } = useLocation();
-	return useMemo(() => new URLSearchParams(search), [search]);
-}
-
+/**
+ * Logout component immediately logs out the current logged in user
+ * @param {*} props - properties passed in from parent component
+ * @returns JSX
+ */
 const Logout = (props) => {
-	let query = useQuery();
 	const navigate = useNavigate();
 	
 	useEffect(() => {
-		if (query.get("click") === "1") {
-			logout()
-		}
+		setTimeout(logout, 1500)
 	}, [])
 	
+	/**
+	 * Calls the API with the given JSON Web Token (JWT)
+	 * to log out the user and disable to token for use until next login
+	 * @returns null
+	 */
 	const logout = () => {
 		axios.post('/api/auth/logout/')
 		.then(response => {
 			Cookies.remove('auth-token');
-			Cookies.remove('refresh-token');
 			navigate("/");
 		})
 		.catch(error => {
 			console.log(error);
-			setPassword("");
+			Cookies.remove('auth-token');
+			navigate("/");
 		});
 	}
 	
 	return (
 		<div className="Logout">
+			<Helmet>
+				<html data-bs-theme="dark" lang="en" amp />
+				<style type="text/css">{`
+					body {
+						background-color: #38023B;
+					}
+				`}</style>
+			</Helmet>
 			<h1>TomoFlows</h1>
-			<h5>Logout</h5>
-			<Button onClick={logout} variant="primary">Logout</Button>
+			<p className="lead">
+				Logging you out...
+			</p>
+			<Spinner animation="border" variant="light" />
 		</div>
 	);
 };

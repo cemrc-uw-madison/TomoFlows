@@ -13,7 +13,7 @@ module.exports = (env, argv) => {
 		module: {
 			rules: [
 				{
-					test: /\.js$/,
+					test: /\.jsx?$/,
 					exclude: /node_modules/,
 					use: {
 						loader: "babel-loader"
@@ -21,11 +21,20 @@ module.exports = (env, argv) => {
 				},
 				{
 					test: /\.css$/,
-					exclude: /node_modules/,
 					use: [
 						"style-loader",
 					  	"css-loader"
 					]
+				},
+				{
+					test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
+					use: {
+						loader: 'url-loader',
+						options: {
+							limit: 10000
+						}
+					},
+					
 				}
 			]
 		},

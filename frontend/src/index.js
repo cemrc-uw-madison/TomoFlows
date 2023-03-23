@@ -4,16 +4,18 @@ import {
 	createBrowserRouter,
 	RouterProvider,
 } from "react-router-dom";
-import App from "./components/App/App";
+import "./index.css";
+import Home from "./components/Home/Home";
 import Error from "./components/Error/Error";
 import Login from "./components/Login/Login";
 import Logout from "./components/Logout/Logout";
-import Signup from "./components/Signup/Signup";
+import Register from "./components/Register/Register";
 
+/* React-Router-Dom Routing Configuration */
 const router = createBrowserRouter([
 	{
 		path: "/",
-		element: <App />,
+		element: <Home />,
 		errorElement: <Error />
 	},
 	{
@@ -27,12 +29,13 @@ const router = createBrowserRouter([
 		errorElement: <Error />
 	},
 	{
-		path: "/signup",
-		element: <Signup />,
+		path: "/register",
+		element: <Register />,
 		errorElement: <Error />
 	},
 ]);
 
+/* Inject RouterProvider component to the HTML */
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
 	<React.StrictMode>
