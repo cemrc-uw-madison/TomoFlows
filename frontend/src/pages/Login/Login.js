@@ -85,7 +85,7 @@ const Login = (props) => {
 					}
 				`}</style>
             </Helmet>
-			<h1>TomoFlows</h1>
+			<h1><b>TomoFlows</b></h1>
 			<p className="lead">
 				Log in to your account
 			</p>
