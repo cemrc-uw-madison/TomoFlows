@@ -1,0 +1,15 @@
+.Logout {
+	margin: 50px;
+	margin-top: 150px;
+	text-align: center;
+}
+
+.Logout .lead {
+	font-size: 16px;;
+}
+
+.Logout .spinner-border {
+	width: 100px;
+	height: 100px;
+	margin: 50px;
+}

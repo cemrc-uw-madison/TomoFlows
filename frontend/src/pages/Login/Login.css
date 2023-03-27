@@ -1,0 +1,47 @@
+.Login {
+	margin: 50px;
+	margin-top: 150px;
+	text-align: center;
+}
+
+.Login .lead {
+	font-size: 16px;
+}
+
+.Login .alert {
+	margin: 50px auto;
+	width: 350px;
+}
+
+.login-form {
+	width: 350px;
+	margin: 20px auto;
+	margin-top: 40px;
+}
+
+.login-form input {
+	margin-bottom: 20px;
+	background-color: #38023B;
+	border-color: white;
+  	color: white;
+}
+
+.login-form input:active,
+.login-form input:focus,
+.login-form input:focus:active {
+	margin-bottom: 20px;
+	background-color: #38023B;
+	border-color: white;
+  	color: white;
+}
+
+.login-form button {
+	width: 100%;
+}
+
+.login-form button .spinner-border {
+	height: 1.1rem;
+	width: 1.1rem;
+	font-size: 9px;
+}
+
