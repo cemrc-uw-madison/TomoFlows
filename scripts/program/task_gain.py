@@ -2,7 +2,7 @@ import typing
 import subprocess
 import os
 from program.task import Task
-
+import uuid
 
 def check_image_format(file_name, required_format):
     """
@@ -24,6 +24,7 @@ class TaskGain(Task):
     """
     required_input_format = "dm4"
     required_output_format = "mrc"
+    task_id = uuid.uuid4()
 
     def __init__(self, input_file):
         """
@@ -57,7 +58,7 @@ class TaskGain(Task):
         Should provide the Param with name-value pairs 
         """
 
-    def run(self, stack_outfile):
+    def run(self):
         """ Execute two steps to convert and scale the image """
 
         """
@@ -79,6 +80,7 @@ class TaskGain(Task):
         subprocess.call(args_dm2mrc)
         # 2. Shrink a gain reference to a different format
         stack_infile = outfile
+        stack_outfile = f"{infile.split(".")[0]}-Shrink.mrc"
         command2 = 'newstack'
 
         args_newstack = [command2,

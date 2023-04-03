@@ -44,5 +44,5 @@ def test_output_image_type():
     task_gain.run("shrink.mrc")
     assert os.path.exists("shrink.mrc")
     assert not os.path.exists("K3-GAT21320024GainRef.mrc")
-    with open("shrink.mrc", "rb") as f_shrink, open("K3-GAT21320024GainRef.dm4", "rb") as f_origin:
+    with open("K3-GAT21320024GainRef-Shrink.mrc", "rb") as f_shrink, open("K3-GAT21320024GainRef.dm4", "rb") as f_origin:
         assert len(f_origin.read()) - 4*len(f_shrink.read()) < 1024*1024
