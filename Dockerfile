@@ -8,7 +8,9 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 ENV DjangoDir=/home/tomoflows
 ENV ReactDir=/home/tomoflows/frontend
+ENV DataDir=/home/tomoflows/data
 RUN mkdir -p $DjangoDir
+RUN mkdir -p $DataDir
 WORKDIR $DjangoDir
 
 # install dependencies

@@ -8,5 +8,5 @@ services:
         container_name: tomoflows
         ports:
             - '8000:8000'
-        # volumes:
-        #     - '<host>:/home/tomoflows/data'
+        volumes:
+            - '/tmp/tomoflows:/home/tomoflows/data'
