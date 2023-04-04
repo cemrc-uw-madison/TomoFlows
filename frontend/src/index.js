@@ -11,7 +11,7 @@ import Login from "./pages/Login/Login";
 import Logout from "./pages/Logout/Logout";
 import Register from "./pages/Register/Register";
 import Projects from "./pages/Projects/Projects";
-import Pipelines from "./pages/Pipelines/Pipelines";
+import Tasks from "./pages/Tasks/Tasks";
 
 /* React-Router-Dom Routing Configuration */
 const router = createBrowserRouter([
@@ -25,8 +25,8 @@ const router = createBrowserRouter([
 			  element: <Projects />,
 			},
 			{
-				path: "pipelines",
-				element: <Pipelines />,
+				path: "tasks",
+				element: <Tasks />,
 			},
 		]
 	},
