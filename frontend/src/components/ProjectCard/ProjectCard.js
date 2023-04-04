@@ -1,8 +1,11 @@
 import React from "react";
+import { useNavigate } from "react-router-dom"
 import { PlusCircle } from "react-bootstrap-icons";
 import "./ProjectCard.css";
 
 const ProjectCard = (props) => {
+	const navigate = useNavigate();
+	
 	const timeSince = (timestamp) => {
 		const seconds = Math.floor((new Date() - new Date(timestamp)) / 1000);
 		let interval = Math.floor(seconds / 31536000);
@@ -35,7 +38,7 @@ const ProjectCard = (props) => {
 	  
 	return (
 		<div className="ProjectCard" onClick={
-			() => props.createProject ? props.toggle() : navigate(`/projects/${props.id}`)
+			() => props.createProject ? props.toggle() : navigate(`/project/${props.id}`)
 		}>
 			{props.createProject ? 
 			<div className="create">

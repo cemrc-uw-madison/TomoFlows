@@ -1,0 +1,35 @@
+.Project {
+	margin: 50px;
+}
+
+.Project .div {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+
+.Project .spinner-border {
+	width: 100px;
+	height: 100px;
+	margin: 230px auto;
+	color: #38023B !important; 
+}
+
+.Project .heading {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: start;
+}
+
+.Project .button-div {
+	display: flex;
+	flex-direction: row;
+	gap: 15px;
+	margin-top: 5px
+}
+
+.Project .button-div svg {
+	margin-top: -4px;
+	margin-right: 6px;
+}

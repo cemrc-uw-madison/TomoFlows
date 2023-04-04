@@ -11,6 +11,7 @@ import Login from "./pages/Login/Login";
 import Logout from "./pages/Logout/Logout";
 import Register from "./pages/Register/Register";
 import Projects from "./pages/Projects/Projects";
+import Project from "./pages/Project/Project";
 import Tasks from "./pages/Tasks/Tasks";
 
 /* React-Router-Dom Routing Configuration */
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
 			{
 			  path: "",
 			  element: <Projects />,
+			},
+			{
+				path: "project/:id",
+				element: <Project />,
 			},
 			{
 				path: "tasks",
