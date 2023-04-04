@@ -22,14 +22,52 @@
 	align-items: start;
 }
 
+.Project .heading h2 {
+	margin-bottom: 0px;
+}
+
 .Project .button-div {
 	display: flex;
 	flex-direction: row;
 	gap: 15px;
-	margin-top: 5px
+	margin-top: 5px;
+}
+
+.Project .button-div button {
+	background-color: #38023B !important;
+	border-color: #38023B !important;
+}
+
+.Project .button-div button:disabled {
+	background-color: #3a193c !important;
+	border-color: #3a193c !important;
 }
 
 .Project .button-div svg {
-	margin-top: -4px;
-	margin-right: 6px;
+	margin-top: -3px;
+	margin-right: 7px;
+}
+
+.edit-project {
+	padding: 0px 16px;
+	padding-top: 20px;
+}
+
+.edit-project input {
+	margin-bottom: 20px;
+}
+
+.edit-project-button {
+	background-color: #38023B !important;
+	border-color: #38023B !important;
+}
+
+.edit-project-button:disabled {
+	background-color: #3a193c !important;
+	border-color: #3a193c !important;
+}
+
+.edit-project-button .spinner-border {
+	margin-bottom: -1px;
+	font-size: 9px;
 }

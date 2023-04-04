@@ -65,6 +65,7 @@ def ProjectDetail(request, id):
     elif request.method == 'PUT':
         serializer = ProjectSerializer(project, data=request.data)
         if serializer.is_valid():
+            serializer.validated_data['last_updated'] = datetime.now()
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
