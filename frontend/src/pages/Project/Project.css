@@ -33,14 +33,14 @@
 	margin-top: 5px;
 }
 
-.Project .button-div button {
+.Project .button-div .primary-button {
 	background-color: #38023B !important;
 	border-color: #38023B !important;
 }
 
-.Project .button-div button:disabled {
-	background-color: #3a193c !important;
-	border-color: #3a193c !important;
+.Project .button-div .primary-button:hover {
+	background-color: #49034d !important;
+	border-color: #49034d !important;
 }
 
 .Project .button-div svg {
@@ -68,6 +68,11 @@
 }
 
 .edit-project-button .spinner-border {
+	margin-bottom: -1px;
+	font-size: 9px;
+}
+
+.delete-project-button .spinner-border {
 	margin-bottom: -1px;
 	font-size: 9px;
 }

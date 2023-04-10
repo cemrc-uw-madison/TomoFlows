@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { PencilSquare } from "react-bootstrap-icons"
+import { PencilSquare, Trash } from "react-bootstrap-icons"
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import Container from "react-bootstrap/Container";
@@ -16,7 +16,9 @@ const Project = (props) => {
 	const [project, setProject] = useState({});
 	const [loading, setLoading] = useState(true);
 	const [editLoad, setEditLoad] = useState(false);
+	const [deleteLoad, setDeleteLoad] = useState(false);
 	const [show, setShow] = useState(false);
+	const [showDelete, setShowDelete] = useState(false);
 	const [name, setName] = useState("");
 	const [description, setDescription] = useState("");
 	const [error, setError] = useState("");
@@ -88,12 +90,45 @@ const Project = (props) => {
 		});
 	}
 	
+	const deleteProject = () => {
+		let token = Cookies.get('auth-token')
+		setDeleteLoad(true);
+		setError("");
+		axios.delete(`/api/projects/${id}`,
+		{
+			headers: {
+				'Authorization': `Bearer ${token}`
+			}
+		})
+		.then(response => {
+			console.log(response)
+			setShowDelete(false);
+			setDeleteLoad(false);
+			navigate("/");
+		})
+		.catch(error => {
+			console.log(error);
+			setDeleteLoad(false);
+			if (error.response.status in [401, 403, 404]) {
+				setError(error.response.data.detail);
+			} else {
+				setError("Something went wrong! Please try again later.")
+			}
+		});
+	}
+	
 	const handleClose = () => {
 		setShow(false);
 		setEditLoad(false);
 		setError("");
 		setSuccess("");
 		fetchProject();
+	}
+	
+	const handleDeleteClose = () => {
+		setShowDelete(false);
+		setError("");
+		setSuccess("");
 	}
 	
 	return (
@@ -111,11 +146,19 @@ const Project = (props) => {
 						</div>
 						<div className="button-div">
 							<Button
+								className="primary-button"
 								variant="primary"
 								onClick={() => setShow(true)}
 							>	
 								<PencilSquare />
 								Edit Project
+							</Button>
+							<Button
+								className="primary-button"
+								onClick={() => setShowDelete(true)}
+							>	
+								<Trash />
+								Delete Project
 							</Button>
 						</div>
 					</div>
@@ -170,6 +213,48 @@ const Project = (props) => {
 								aria-hidden="true"
 							/> :
 							"Save"
+						}
+					</Button>
+				</Modal.Footer>
+			</Modal>
+			<Modal centered show={showDelete} onHide={handleDeleteClose}>
+				<Modal.Header>
+					<Modal.Title>Delete Project</Modal.Title>
+				</Modal.Header>
+				<Modal.Body className="edit-project">
+					<p>
+						Are you sure you want to delete this project? 
+					</p>
+					{error.length != 0 && 
+						<Alert variant="danger" onClose={() => setError("")} dismissible>
+							{error}
+						</Alert>
+					}
+					{success.length != 0 &&
+						<Alert variant="success" onClose={() => setSuccess("")} dismissible>
+							{success}
+						</Alert>
+					}
+				</Modal.Body>
+				<Modal.Footer>
+					<Button variant="secondary" onClick={handleDeleteClose}>
+						Cancel
+					</Button>
+					<Button
+						className="delete-project-button"
+						variant="danger"
+						onClick={deleteProject}
+					>
+						{
+							deleteLoad ?
+							<Spinner
+								as="span"
+								animation="border"
+								size="sm"
+								role="status"
+								aria-hidden="true"
+							/> :
+							"Delete"
 						}
 					</Button>
 				</Modal.Footer>
