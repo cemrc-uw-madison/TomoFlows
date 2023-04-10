@@ -34,7 +34,7 @@ def ProjectList(request):
     if request.method == 'GET':
         projects = Project.objects.all()
         serializer = ProjectSerializer(projects, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data[::-1])
 
     elif request.method == 'POST':
         serializer = ProjectSerializer(data=request.data)

@@ -18,3 +18,21 @@ class Project(models.Model):
     folder_path = models.CharField("Folder Path", max_length=200, unique=True, blank=True)
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     last_updated = models.DateTimeField("Last Updated", blank=True)
+    
+"""
+class Tasks(models.Model):
+    pass
+
+class ProjectTasks(models.Model):
+    tasid = Y
+    projectid = X
+    parameters = {output:""}
+    run = Run (or None)
+
+class Run(models.Model):
+    status = X ("SUCCESS" | "FAILED")
+    last_run_time = X
+    duration = DateTime
+    logs = ""
+    error = ""
+"""
