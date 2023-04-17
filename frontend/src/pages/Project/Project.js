@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { PencilSquare, Trash } from "react-bootstrap-icons"
+import { ArrowLeft, ArrowRight, CheckCircle, Hourglass, PencilSquare, PlusCircle, Trash, XCircle } from "react-bootstrap-icons"
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import Container from "react-bootstrap/Container";
@@ -14,6 +14,8 @@ import "./Project.css";
 const Project = (props) => {
 	const { id } = useParams();
 	const [project, setProject] = useState({});
+	const [tasks, setTasks] = useState([]);
+	const [selected, setSelected] = useState(0);
 	const [loading, setLoading] = useState(true);
 	const [editLoad, setEditLoad] = useState(false);
 	const [deleteLoad, setDeleteLoad] = useState(false);
@@ -42,7 +44,28 @@ const Project = (props) => {
 				setProject(response.data);
 				setName(response.data.name);
 				setDescription(response.data.description)
-				setLoading(false);
+				axios.get(`/api/project-tasks?project_id=${id}`, {
+					headers: {
+						'Authorization': `Bearer ${token}`
+					}
+				})
+				.then(response => {
+					console.log(response.data)
+					setTasks(response.data)
+					setLoading(false);
+				})
+				.catch(error => {
+					setLoading(false);
+					if (error.repsonse.status === 404) {
+						navigate("/");
+					}
+					else if (error.response.status === 401 || error.response.status === 403) {
+						Cookies.remove('auth-token');
+						Cookies.remove('auth-user');
+						navigate("/login");
+					}
+					console.error(error);
+				})
 			})
 			.catch(error => {
 				setLoading(false);
@@ -160,6 +183,89 @@ const Project = (props) => {
 								<Trash />
 								Delete Project
 							</Button>
+						</div>
+					</div>
+					<div>
+						<div className="heading">
+							<div>
+								<h5>Tasks</h5>
+							</div>
+							<div className="button-div">
+								{selected !== 0 && 
+									<Button
+										variant="link"
+										size="sm"
+										onClick={() => {
+											if (selected > 0)
+												setSelected(selected => selected - 1)
+											let selectedDiv = document.querySelector(".task-card.selected")
+											if (selectedDiv)
+												selectedDiv.scrollIntoView({
+													behavior: "smooth",
+													block: "center",
+													inline: "end"
+												})
+										}}
+									>	
+										<ArrowLeft className="next-button" />
+									</Button>
+								}
+								{selected !== tasks.length - 1 && 
+									<Button
+										variant="link"
+										size="sm"
+										onClick={() => {
+											if (selected < tasks.length - 1)
+												setSelected(selected => selected + 1)
+											let selectedDiv = document.querySelector(".task-card.selected")
+											if (selectedDiv)
+												selectedDiv.scrollIntoView({
+													behavior: "smooth",
+													block: "center",
+													inline: "start"
+												})
+										}}
+									>	
+										<ArrowRight className="next-button" />
+									</Button>
+								}
+							</div>
+						</div>
+						<div className="task-cards">
+							{
+								tasks.map((task, idx) => 
+									<div 
+										onClick={() => setSelected(idx)}
+										className={"task-card " + (idx === selected ? "selected" : "")}
+										key={task.id}
+									>
+										<h5>{task.task.name}</h5>
+										
+										{task.run.status === "FAILED" ?
+											<XCircle size={30} color="red"/> :
+										task.run.status === "SUCCESS" ?
+											<CheckCircle size={30} color="green"/> :
+										task.run.status === "CREATED" ?
+											<Hourglass size={25} color="black"/> :
+											<Spinner
+												className="running"
+												as="span"
+												animation="border"
+												size="sm"
+												role="status"
+												aria-hidden="true"
+											/>
+										}
+									</div>
+								)
+							}
+							<div 
+								onClick={() => {}}
+								className="task-card add-task"
+							>
+								<small>Add Task to Project</small>
+								<PlusCircle size={30} />
+							</div>
 						</div>
 					</div>
 				</>

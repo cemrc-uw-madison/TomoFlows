@@ -41,7 +41,9 @@ const Projects = (props) => {
 				}
 			})
 			.then(response => {
-				setProjects(response.data);
+				let data = [...response.data]
+				data.sort((a, b) => new Date(b["last_updated"]) - new Date(a["last_updated"]))
+				setProjects(data);
 				setLoading(false);
 			})
 			.catch(error => {

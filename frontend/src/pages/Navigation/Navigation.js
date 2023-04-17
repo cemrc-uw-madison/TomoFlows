@@ -68,7 +68,7 @@ const Navigation = (props) => {
 							variant="outline-light"
 							size="sm"
 						>
-							<Dropdown.Item href="">Profile</Dropdown.Item>
+							<Dropdown.Item href="/profile">Profile</Dropdown.Item>
 							<Dropdown.Item href="/logout">Logout</Dropdown.Item>
 						</DropdownButton>
 					</Navbar.Collapse>

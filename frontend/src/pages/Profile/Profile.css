@@ -1,0 +1,74 @@
+.Profile {
+	margin: 50px;
+}
+
+.Profile h3 {
+	margin-top: 6px;
+}
+
+.Profile .div {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+
+.Profile .spinner-border {
+	width: 100px;
+	height: 100px;
+	margin: 180px auto;
+	color: #38023B !important; 
+}
+
+.Profile .heading {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: baseline;
+	align-items: start;
+	margin-bottom: 10px;
+}
+
+.Profile .button-div .manage {
+	margin-top: -3px;
+	margin-right: 7px;
+}
+
+.Profile .button-div {
+	display: flex;
+	flex-direction: row;
+	gap: 8px;
+}
+
+.Profile .button-div .button-icon {
+	margin-top: -2px;
+	margin-right: 4px;
+}
+
+.Profile .primary-button {
+	background-color: #38023B !important;
+	border-color: #38023B !important;
+}
+
+.Profile .primary-button:hover {
+	background-color: #49034d !important;
+	border-color: #49034d !important;
+}
+
+.edit-profile input {
+	margin-bottom: 20px;
+}
+
+.edit-profile-button {
+	background-color: #38023B !important;
+	border-color: #38023B !important;
+}
+
+.edit-profile-button:disabled {
+	background-color: #3a193c !important;
+	border-color: #3a193c !important;
+}
+
+.edit-profile-button .spinner-border {
+	margin-bottom: -1px;
+	font-size: 9px;
+}

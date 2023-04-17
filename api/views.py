@@ -6,8 +6,8 @@ from django.conf import settings
 from datetime import datetime
 import os
 import json
-from api.models import Project, Task, ProjectTask, Run
-from api.serializers import ProjectSerializer, TaskSerializer, ProjectTaskSerializer, RunSerializer
+from api.models import User, Project, Task, ProjectTask, Run
+from api.serializers import UserSerializer, ProjectSerializer, TaskSerializer, ProjectTaskSerializer, RunSerializer
 
 
 @api_view(['GET'])
@@ -136,7 +136,6 @@ def ProjectTaskList(request):
         project_tasks = ProjectTask.objects.filter(project=project)
         serializer = ProjectTaskSerializer(project_tasks, many=True)
         data = serializer.data
-        print(data[0]["parameters"])
         for i in range(len(data)):
             if data[i]["parameters"] is not None:
                 data[i]["parameters"] = json.loads(data[i]["parameters"])
@@ -212,3 +211,28 @@ def ProjectTaskDetail(request, id):
     elif request.method == 'DELETE':
         project_task.delete()
         return Response({"detail": "ProjectTask deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET', 'PUT'])
+@permission_classes((permissions.IsAuthenticated,))
+def UserDetail(request):
+    """
+    GET, PUT /api/user
+    """
+    try:
+        user = User.objects.get(pk=request.user.id)
+    except User.DoesNotExist:
+        return Response({"detail": "User not found with given id"}, status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        data = dict(request.data)
+        if 'email' in data:
+            del data['email']
+        data['email'] = request.user.email
+        serializer = UserSerializer(user, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
