@@ -10,32 +10,32 @@ const ProjectCard = (props) => {
 		const seconds = Math.floor((new Date() - new Date(timestamp)) / 1000);
 		let interval = Math.floor(seconds / 31536000);
 		if (interval >= 1) {
-		  return interval + " years";
+		  return interval == 1 ? "1 year" : interval + " years";
 		}
 		interval = Math.floor(seconds / 2592000);
 		if (interval >= 1) {
-		  return interval + " months";
+		  return interval == 1 ? "1 month" : interval + " months";
 		}
 		interval = Math.floor(seconds / 604800);
 		if (interval >= 1) {
-		  return interval + " weeks";
+		  return interval == 1 ? "1 week" : interval + " weeks";
 		}
 		interval = Math.floor(seconds / 86400);
 		if (interval >= 1) {
-		  return interval + " days";
+		  return interval == 1 ? "1 day" : interval + " days";
 		}
 		interval = Math.floor(seconds / 3600);
 		if (interval >= 1) {
-		  return interval + " hours";
+		  return interval == 1 ? "1 hour" : interval + " hours";
 		}
 		interval = Math.floor(seconds / 60);
 		if (interval >= 1) {
-		  return interval + " minutes";
+		  return interval == 1 ? "1 minute" : interval + " minutes";
 		}
-		return Math.floor(seconds) + " seconds";
+		interval = Math.floor(seconds)
+		return interval == 1 ? "1 second" : interval + " seconds";
 	}
-	  
-	  
+	
 	return (
 		<div className="ProjectCard" onClick={
 			() => props.createProject ? props.toggle() : navigate(`/project/${props.id}`)

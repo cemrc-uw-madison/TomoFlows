@@ -19,20 +19,19 @@ class Project(models.Model):
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     last_updated = models.DateTimeField("Last Updated", blank=True)
     
-"""
-class Tasks(models.Model):
-    pass
-
-class ProjectTasks(models.Model):
-    tasid = Y
-    projectid = X
-    parameters = {output:""}
-    run = Run (or None)
-
+class Task(models.Model):
+    name = models.CharField("Name",  max_length=25, unique=True)
+    description = models.CharField("Description", max_length=100)
+    
+class ProjectTask(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    parameters = models.TextField("Parameters", null=True, blank=True)
+    
 class Run(models.Model):
-    status = X ("SUCCESS" | "FAILED")
-    last_run_time = X
-    duration = DateTime
-    logs = ""
-    error = ""
-"""
+    project_task = models.ForeignKey(ProjectTask, on_delete=models.CASCADE)
+    status = models.CharField("Status", max_length=7, null=True, blank=True) # CREATED, RUNNING, SUCCESS, FAILED
+    start_time = models.DateTimeField("Start Time", null=True, blank=True)
+    end_time = models.DateTimeField("End Time", null=True, blank=True)
+    logs = models.TextField("Logs", null=True, blank=True)
+    errors = models.TextField("Errors", null=True, blank=True)
