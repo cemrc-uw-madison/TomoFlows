@@ -22,6 +22,16 @@
 	color: #38023B !important; 
 }
 
+.Project .task-details .heading .button-div .spinner-border {
+	width: 15px !important;
+	height: 15px !important;
+	margin: 0px !important;
+	margin-right: 8px !important;
+	margin-bottom: -1px !important;
+	color: white !important;
+	font-size: 9px;
+}
+
 .Project .heading {
 	display: flex;
 	flex-direction: row;
@@ -95,7 +105,7 @@
 	display: flex;
 	gap: 10px;
 	overflow-x: auto;
-	padding: 3px 3px;
+	padding: 3px;
 }
 
 .Project .task-cards::-webkit-scrollbar {
@@ -110,7 +120,6 @@
 	height: 55px;
 	padding: 14px 15px;
 	min-width: 300px !important;
-	border: 1px solid red;
 	border: 1px solid #DEE2E6;
 	border-radius: 14px;
 	box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.1);
@@ -137,4 +146,77 @@
 
 .Project .task-card.add-task svg {
 	color: #38023B;
+}
+
+.Project .task-details {
+	padding: 20px;
+	margin: 20px 4px;
+	border: 1px solid #DEE2E6;
+	border-radius: 14px;
+	box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.1);
+	min-height: 500px;
+}
+
+.Project .task-details .heading h5 {
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+.Project .task-details h5 {
+	margin-top: 15px;
+}
+
+.Project .task-details .last-run h5 {
+	margin-top: 20px;
+	margin-bottom: 3px;
+}
+
+.Project .task-details .button-div {
+	margin-right: 5px;
+	gap: 10px;
+}
+
+.Project .task-details .button-div .know-more {
+	color: #38023B;
+	border-color: #38023B;
+}
+
+.Project .task-details .button-div .know-more:hover {
+	color: white;
+	background-color: #38023B;
+	border-color: #38023B;
+}
+
+.Project .task-details .parameters .input-fields {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 20px;
+}
+
+.Project .task-details .parameters .input-fields input {
+	width: 350px;
+}
+
+.Project .task-details .last-run .error-badge {
+	display: flex;
+	flex-direction: column;
+	margin-top: 5px;
+	border: 1px solid #dc3545;
+	border-radius: 8px;
+	padding: 3px 8px 6px 7px;
+	max-width: 400px;
+	color: #dc3545;
+	transition: background-color 0.2s ease, color 0.2s ease;
+	font-size: 14px;
+}
+
+.Project .task-details .last-run .error-badge:hover {
+	background-color: #dc3545;
+	color: white;
+}
+
+.Project .task-details .last-run .error-badge small {
+	margin-top: -2px;
+	line-height: 17px;
 }

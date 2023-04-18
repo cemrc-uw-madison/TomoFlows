@@ -6,6 +6,9 @@ from django.conf import settings
 from datetime import datetime
 import os
 import json
+import threading
+import time
+import random
 from api.models import User, Project, Task, ProjectTask, Run
 from api.serializers import UserSerializer, ProjectSerializer, TaskSerializer, ProjectTaskSerializer, RunSerializer
 
@@ -144,6 +147,8 @@ def ProjectTaskList(request):
                 run_serialized = RunSerializer(run)
                 data[i]["run"] = run_serialized.data
                 del data[i]["run"]["project_task"]
+                data[i]["run"]["logs"] = json.loads(data[i]["run"]["logs"])
+                data[i]["run"]["errors"] = json.loads(data[i]["run"]["errors"])
             except Run.DoesNotExist:
                 data[i]["run"] = None
             
@@ -163,7 +168,7 @@ def ProjectTaskList(request):
             serializer.save()
             data = serializer.data
             data["parameters"] = json.loads(data["parameters"])
-            run = Run.objects.create(project_task_id=data["id"], status="CREATED")
+            run = Run.objects.create(project_task_id=data["id"], status="CREATED", logs="[]", errors="[]")
             run_serialized = RunSerializer(run)
             data["run"] = run_serialized.data
             del data["run"]["project_task"]
@@ -190,6 +195,8 @@ def ProjectTaskDetail(request, id):
             run_serialized = RunSerializer(run)
             data["run"] = run_serialized.data
             del data["run"]["project_task"]
+            data["run"]["logs"] = json.loads(data["run"]["logs"])
+            data["run"]["errors"] = json.loads(data["run"]["errors"])
         except Run.DoesNotExist:
             data["run"] = None
         return Response(data)
@@ -204,6 +211,8 @@ def ProjectTaskDetail(request, id):
                 run_serialized = RunSerializer(run)
                 data["run"] = run_serialized.data
                 del data["run"]["project_task"]
+                data["run"]["logs"] = json.loads(data["run"]["logs"])
+                data["run"]["errors"] = json.loads(data["run"]["errors"])
             except Run.DoesNotExist:
                 data["run"] = None
             return Response(data)
@@ -212,6 +221,84 @@ def ProjectTaskDetail(request, id):
         project_task.delete()
         return Response({"detail": "ProjectTask deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
+@api_view(['GET'])
+@permission_classes((permissions.IsAuthenticated,))
+def RunProjectTask(request, id):
+    """
+    GET /api/run-project-task/<int:id>
+    """
+    try:
+        project_task = ProjectTask.objects.get(pk=id)
+        run = Run.objects.get(project_task=project_task)
+    except ProjectTask.DoesNotExist:
+        return Response({"detail": "ProjectTask not found with given id"}, status=status.HTTP_404_NOT_FOUND)
+    
+    if run.status == "RUNNING":
+        return Response({"detail": "Task already running"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    if request.method == 'GET':
+        # TODO: run task script
+        starter = threading.Thread(target=startTask, name="StartTask", args=[id])
+        starter.start()
+        ## SAMPLE END
+        run.status = "RUNNING"
+        run.start_time = datetime.now()
+        run.save()
+        serializer = ProjectTaskSerializer(project_task)
+        data = serializer.data
+        data["parameters"] = json.loads(data["parameters"])
+        data["run"] = RunSerializer(run).data
+        data["run"]["logs"] = json.loads(data["run"]["logs"])
+        data["run"]["errors"] = json.loads(data["run"]["errors"])
+        del data["run"]["project_task"]
+        return Response(data)
+
+def startTask(projectTaskId):
+    time.sleep(10)
+    project_task = ProjectTask.objects.get(pk=projectTaskId)
+    run = Run.objects.get(project_task=project_task)
+    choice = random.choice(["SUCCESS", "FAILED"])
+    run.status = choice
+    run.end_time = datetime.now()
+    if choice == "SUCCESS":
+        run.logs = json.dumps([
+            {
+                "timestamp": str(datetime.now()),
+                "detail": "Running task...",
+            },
+            {
+                "timestamp": str(datetime.now()),
+                "detail": "Waiting for 10s"
+            },
+            {
+                "timestamp": str(datetime.now()),
+                "detail": "Task run completed successfully"
+            },
+        ])
+        run.errors = json.dumps([])
+    else:
+        run.logs = json.dumps([
+            {
+                "timestamp": str(datetime.now()),
+                "detail": "Running sample task..."
+            },
+            {
+                "timestamp": str(datetime.now()),
+                "detail": "Waiting for 10s"
+            },
+            {
+                "timestamp": str(datetime.now()),
+                "detail": "Task run failed. Check errors for more information"
+            }
+        ])
+        run.errors = json.dumps([
+            {
+                "type": "Server Error",
+                "detail": "Task run programmed to fail or succeed randomly"
+            }
+        ])
+    run.save()
+    
 @api_view(['GET', 'PUT'])
 @permission_classes((permissions.IsAuthenticated,))
 def UserDetail(request):
