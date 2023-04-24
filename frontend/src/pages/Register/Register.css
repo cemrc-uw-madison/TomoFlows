@@ -1,0 +1,46 @@
+.Register {
+	margin: 50px;
+	margin-top: 150px;
+	text-align: center;
+}
+
+.Register .lead {
+	font-size: 16px;
+}
+
+.Register .alert {
+	margin: 50px auto;
+	width: 350px;
+}
+
+.register-form {
+	width: 350px;
+	margin: 20px auto;
+	margin-top: 40px;
+}
+
+.register-form input {
+	margin-bottom: 20px;
+	background-color: #38023B;
+	border-color: white;
+  	color: white;
+}
+
+.register-form input:active,
+.register-form input:focus,
+.register-form input:focus:active {
+	margin-bottom: 20px;
+	background-color: #38023B;
+	border-color: white;
+  	color: white;
+}
+
+.register-form button {
+	width: 100%;
+}
+
+.register-form button .spinner-border {
+	height: 1.1rem;
+	width: 1.1rem;
+	font-size: 9px;
+}

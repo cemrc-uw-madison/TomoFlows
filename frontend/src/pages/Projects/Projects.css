@@ -1,0 +1,18 @@
+.Projects {
+	margin: 50px;
+}
+
+.Projects div button {
+	margin-right: 10px
+}
+
+.Projects .heading {
+	margin-bottom: 30px;
+}
+
+.Projects .cards {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 30px;
+}
