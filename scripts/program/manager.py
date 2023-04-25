@@ -5,6 +5,7 @@
 2. Manager module should be able to create folder to hold tasks' metadata and all related data file
 3. Manager module should be able to create metadata file for projects and tasks
 4. Manager module should be able to update metadata file when user create or delete project or task
+5. Manager should reflect the data on disk to database, cause the data on database will gone when the docker container is shutdown
 """
 
 def create_project_folder(path):
