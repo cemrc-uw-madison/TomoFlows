@@ -169,6 +169,8 @@ def ProjectTaskList(request):
             data = serializer.data
             data["parameters"] = json.loads(data["parameters"])
             run = Run.objects.create(project_task_id=data["id"], status="CREATED", logs="[]", errors="[]")
+            run.project_task.project.last_updated = datetime.now()
+            run.project_task.project.save()
             run_serialized = RunSerializer(run)
             data["run"] = run_serialized.data
             del data["run"]["project_task"]
@@ -206,6 +208,8 @@ def ProjectTaskDetail(request, id):
             serializer.save()
             data = serializer.data
             data["parameters"] = json.loads(data["parameters"])
+            project_task.project.last_updated = datetime.now()
+            project_task.project.save()
             try:
                 run = Run.objects.get(project_task_id=data["id"])
                 run_serialized = RunSerializer(run)
@@ -218,6 +222,8 @@ def ProjectTaskDetail(request, id):
             return Response(data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
+        project_task.project.last_updated = datetime.now()
+        project_task.project.save()
         project_task.delete()
         return Response({"detail": "ProjectTask deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
@@ -244,6 +250,8 @@ def RunProjectTask(request, id):
         run.status = "RUNNING"
         run.start_time = datetime.now()
         run.save()
+        run.project_task.project.last_updated = datetime.now()
+        run.project_task.project.save()
         serializer = ProjectTaskSerializer(project_task)
         data = serializer.data
         data["parameters"] = json.loads(data["parameters"])

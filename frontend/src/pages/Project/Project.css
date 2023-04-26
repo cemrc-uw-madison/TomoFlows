@@ -108,6 +108,11 @@
 	padding: 3px;
 }
 
+.Project .dropdown-item:focus {
+	background-color: #38023B;
+	color: white;
+}
+
 .Project .task-cards::-webkit-scrollbar {
 	display: none;
   }

@@ -1,5 +1,5 @@
 .TaskCard {
-	height: 200px;
+	height: 175px;
 	width: 320px;
 	border: 1px solid #dee2e6;
 	border-radius: 20px;
@@ -17,6 +17,11 @@
 	flex-direction: column;
 }
 
+.TaskCard .dropdown-item:focus {
+	background-color: #38023B;
+	color: white;
+}
+
 .TaskCard h4 {
 	margin-top: -4px;
 	margin-bottom: 4px;
@@ -31,8 +36,8 @@
 	overflow: hidden;
    	text-overflow: ellipsis;
    	display: -webkit-box;
-   	-webkit-line-clamp: 4;
-    		line-clamp: 4;
+   	-webkit-line-clamp: 3;
+    		line-clamp: 3;
    	-webkit-box-orient: vertical;
 }
 

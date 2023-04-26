@@ -139,6 +139,7 @@ const Tasks = (props) => {
 				{loading ? 
 					<Spinner animation="border" variant="primary" /> :
 					<>
+						{tasks.length === 0 && <p>No Tasks available at the moment.</p>}
 						{
 							tasks.map((task, idx) => 
 								<TaskCard

@@ -37,19 +37,26 @@ const CustomMenu = React.forwardRef((
 			className={className}
 			aria-labelledby={labeledBy}
 		>
-			<Form.Control
-				autoFocus
-				className="mb-2 w-100"
-				placeholder="Search..."
-				onChange={(e) => setValue(e.target.value)}
-				value={value}
-			/>
-			<ul className="list-unstyled" style={{marginBottom: 0}}>
-				{React.Children.toArray(children).filter(
-				(child) =>
-					!value || child.props.children.toLowerCase().includes(value.toLowerCase())
-				)}
-			</ul>
+			{
+					React.Children.toArray(children).length === 0 ?
+					<small>No Tasks available at the moment.</small>:
+					<>
+						<Form.Control
+							autoFocus
+							className="mb-2 w-100"
+							placeholder="Search..."
+							onChange={(e) => setValue(e.target.value)}
+							value={value}
+						/>
+						
+						<ul className="list-unstyled" style={{marginBottom: 0}}>
+							{React.Children.toArray(children).filter(
+							(child) =>
+								!value || child.props.children.toLowerCase().includes(value.toLowerCase())
+							)}
+						</ul>
+					</>
+				}
 		</div>
 	);
 	}
@@ -106,6 +113,12 @@ const Project = (props) => {
 							if (response.data[i].id === projecttaskId) {
 								setSelected(i)
 							}
+						}
+					}
+					for (let i = 0; i < response.data.length; i++) {
+						if (response.data[i].run.status === "RUNNING") {
+							setTimeout(() => fetchTasksBackground(), 4000);
+							break;
 						}
 					}
 					axios.get(`/api/tasks`, {

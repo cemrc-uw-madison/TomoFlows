@@ -16,20 +16,27 @@ const CustomMenu = React.forwardRef((
 				style={{width: 270, marginTop: 5, padding: 10, ...style}}
 				className={className}
 				aria-labelledby={labeledBy}
-			>
-				<Form.Control
-					autoFocus
-					className="mb-2 w-100"
-					placeholder="Search..."
-					onChange={(e) => setValue(e.target.value)}
-					value={value}
-				/>
-				<ul className="list-unstyled" style={{marginBottom: 0}}>
-					{React.Children.toArray(children).filter(
-					(child) =>
-						!value || child.props.children.toLowerCase().includes(value.toLowerCase())
-					)}
-				</ul>
+			>	
+				{
+					React.Children.toArray(children).length === 0 ?
+					<small>No Projects available at the moment</small>:
+					<>
+						<Form.Control
+							autoFocus
+							className="mb-2 w-100"
+							placeholder="Search..."
+							onChange={(e) => setValue(e.target.value)}
+							value={value}
+						/>
+						
+						<ul className="list-unstyled" style={{marginBottom: 0}}>
+							{React.Children.toArray(children).filter(
+							(child) =>
+								!value || child.props.children.toLowerCase().includes(value.toLowerCase())
+							)}
+						</ul>
+					</>
+				}
 			</div>
 		);
 	}
