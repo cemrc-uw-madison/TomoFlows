@@ -1,0 +1,73 @@
+.TaskCard {
+	height: 200px;
+	width: 320px;
+	border: 1px solid #dee2e6;
+	border-radius: 20px;
+	padding: 22px;
+	box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.1);
+	transition: box-shadow 0.3s;
+	display: flex;
+	flex-direction: column;
+}
+
+.TaskCard:hover {
+	cursor: pointer;
+	box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.25);
+	display: flex;
+	flex-direction: column;
+}
+
+.TaskCard h4 {
+	margin-top: -4px;
+	margin-bottom: 4px;
+}
+
+.TaskCard p {
+	margin-bottom: 0px;
+}
+
+.TaskCard .description {
+	color: #68717a;
+	overflow: hidden;
+   	text-overflow: ellipsis;
+   	display: -webkit-box;
+   	-webkit-line-clamp: 4;
+    		line-clamp: 4;
+   	-webkit-box-orient: vertical;
+}
+
+.TaskCard .actions {
+	display: flex;
+	flex-direction: row;
+	gap: 15px;
+	margin-top: 5px;
+	margin-top: auto;
+	margin-bottom: -4px;
+}
+
+.TaskCard .actions svg {
+	margin-top: -3px;
+	margin-right: 6px;
+}
+
+.TaskCard .know-more {
+	color: #38023B;
+	border-color: #38023B;
+}
+
+.TaskCard .know-more:hover {
+	color: white;
+	background-color: #38023B;
+	border-color: #38023B;
+}
+
+.TaskCard .add-to-project {
+	background-color: #38023B !important;
+	border-color: #38023B !important;
+}
+
+.TaskCard .add-to-project:hover {
+	background-color: #49034d !important;
+	border-color: #49034d !important;
+}
+

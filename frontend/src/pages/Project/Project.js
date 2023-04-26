@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ArrowLeft, ArrowRight, BoxArrowUpRight, CheckCircle, Hourglass, PencilSquare, PlayFill, PlusCircle, Trash, XCircle } from "react-bootstrap-icons"
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -9,7 +9,6 @@ import Form from 'react-bootstrap/Form';
 import Button from "react-bootstrap/Button";
 import Spinner from 'react-bootstrap/Spinner';
 import Dropdown from 'react-bootstrap/Dropdown';
-import Badge from 'react-bootstrap/Badge';
 import Alert from 'react-bootstrap/Alert';
 import "./Project.css";
 
@@ -54,7 +53,7 @@ const CustomMenu = React.forwardRef((
 		</div>
 	);
 	}
-  );
+);
 
 const Project = (props) => {
 	const { id } = useParams();
@@ -73,10 +72,12 @@ const Project = (props) => {
 	const [description, setDescription] = useState("");
 	const [error, setError] = useState("");
 	const [success, setSuccess] = useState("");
+	const [searchParams, setSearchParams] = useSearchParams();
 	const navigate = useNavigate();
 	
 	useEffect(() => {
-		fetchProject();
+		fetchProject(parseInt(searchParams.get("selected")));
+		setSearchParams({});
 	}, [])
 	
 	const fetchProject = (projecttaskId = null) => {
@@ -424,14 +425,18 @@ const Project = (props) => {
 						</div>
 						<Dropdown>
 							<div className="task-cards">
-								{
+								{	
 									tasks.map((task, idx) => 
 										<div 
 											onClick={() => setSelected(idx)}
 											className={"task-card " + (idx === selected ? "selected" : "")}
 											key={task.id}
-										>
-											<h5>{task.task.name}</h5>
+										>	
+											<div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "flex-end", gap: 5}}>
+												<h5>{task.task.name}</h5>
+												<small className="text-body-secondary id"><b>ID: {task.run.id}</b></small>
+											</div>
+											
 											{task.run.status === "FAILED" ?
 												<XCircle size={30} color="red"/> :
 											task.run.status === "SUCCESS" ?

@@ -2,6 +2,21 @@
 	margin: 50px;
 }
 
-.Tasks div button {
-	margin-right: 10px
+.Tasks .heading {
+	margin-bottom: 30px;
+}
+
+.Tasks .cards {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 30px;
+	padding-bottom: 50px;
+}
+
+.Tasks .spinner-border {
+	width: 100px;
+	height: 100px;
+	margin: 180px auto;
+	color: #38023B !important; 
 }
