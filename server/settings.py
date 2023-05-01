@@ -145,6 +145,7 @@ REST_AUTH = {
     'JWT_AUTH_COOKIE': 'tf-auth-token',
     'JWT_AUTH_REFRESH_COOKIE': 'tf-refresh-token',
     'USER_DETAILS_SERIALIZER': 'api.serializers.UserSerializer',
+    'REGISTER_SERIALIZER': 'api.serializers.RegistrationSerializer'
 }
 
 SIMPLE_JWT = {

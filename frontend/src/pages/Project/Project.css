@@ -1,0 +1,231 @@
+.Project {
+	margin: 50px;
+}
+
+.Project .div {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+
+.Project .spinner-border {
+	width: 100px;
+	height: 100px;
+	margin: 230px auto;
+	color: #38023B !important; 
+}
+
+.Project .task-card .spinner-border {
+	width: 30px !important;
+	height: 30px !important;
+	margin: 0px !important;
+	color: #38023B !important; 
+}
+
+.Project .task-details .heading .button-div .spinner-border {
+	width: 15px !important;
+	height: 15px !important;
+	margin: 0px !important;
+	margin-right: 8px !important;
+	margin-bottom: -1px !important;
+	color: white !important;
+	font-size: 9px;
+}
+
+.Project .heading {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: start;
+}
+
+.Project .heading h2 {
+	margin-bottom: 0px;
+}
+
+.Project .button-div {
+	display: flex;
+	flex-direction: row;
+	gap: 15px;
+	margin-top: 5px;
+}
+
+.Project .button-div .primary-button {
+	background-color: #38023B !important;
+	border-color: #38023B !important;
+}
+
+.Project .button-div .primary-button:hover {
+	background-color: #49034d !important;
+	border-color: #49034d !important;
+}
+
+.Project .button-div svg {
+	margin-top: -3px;
+	margin-right: 7px;
+}
+
+.edit-project {
+	padding: 0px 16px;
+	padding-top: 20px;
+}
+
+.edit-project input {
+	margin-bottom: 20px;
+}
+
+.edit-project-button {
+	background-color: #38023B !important;
+	border-color: #38023B !important;
+}
+
+.edit-project-button:disabled {
+	background-color: #3a193c !important;
+	border-color: #3a193c !important;
+}
+
+.edit-project-button .spinner-border {
+	margin-bottom: -1px;
+	font-size: 9px;
+}
+
+.delete-project-button .spinner-border {
+	margin-bottom: -1px;
+	font-size: 9px;
+}
+
+.Project .next-button {
+	font-size: 22px !important;
+	margin-top: -18px !important;
+	margin-right: -7px !important;
+	color: #38023B;
+}
+
+.Project .task-cards {
+	display: flex;
+	gap: 10px;
+	overflow-x: auto;
+	padding: 3px;
+}
+
+.Project .dropdown-item:focus {
+	background-color: #38023B;
+	color: white;
+}
+
+.Project .task-cards::-webkit-scrollbar {
+	display: none;
+  }
+
+.Project .task-card {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	height: 55px;
+	padding: 14px 15px;
+	min-width: 300px !important;
+	border: 1px solid #DEE2E6;
+	border-radius: 14px;
+	box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.1);
+	transition: box-shadow 0.2s;
+}
+
+.Project .task-card:hover {
+	cursor: pointer;
+	box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.2);
+}
+
+.Project .task-card.selected {
+	background: rgba(56, 2, 59, 0.08);
+	border: 1px solid rgba(56, 2, 59, 0.08);
+}
+
+.Project .task-card h5 {
+	margin-bottom: 0px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 190px;
+}
+
+.Project .task-card .id {
+	font-size: 11px;
+}
+
+.Project .task-card.add-task svg {
+	color: #38023B;
+}
+
+.Project .task-details {
+	padding: 20px;
+	margin: 20px 4px;
+	border: 1px solid #DEE2E6;
+	border-radius: 14px;
+	box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.1);
+	min-height: 500px;
+}
+
+.Project .task-details .heading h5 {
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+.Project .task-details h5 {
+	margin-top: 15px;
+}
+
+.Project .task-details .last-run h5 {
+	margin-top: 20px;
+	margin-bottom: 3px;
+}
+
+.Project .task-details .button-div {
+	margin-right: 5px;
+	gap: 10px;
+}
+
+.Project .task-details .button-div .know-more {
+	color: #38023B;
+	border-color: #38023B;
+}
+
+.Project .task-details .button-div .know-more:hover {
+	color: white;
+	background-color: #38023B;
+	border-color: #38023B;
+}
+
+.Project .task-details .parameters .input-fields {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 20px;
+}
+
+.Project .task-details .parameters .input-fields input {
+	width: 350px;
+}
+
+.Project .task-details .last-run .error-badge {
+	display: flex;
+	flex-direction: column;
+	margin-top: 5px;
+	border: 1px solid #dc3545;
+	border-radius: 8px;
+	padding: 3px 8px 6px 7px;
+	max-width: 400px;
+	color: #dc3545;
+	transition: background-color 0.2s ease, color 0.2s ease;
+	font-size: 14px;
+}
+
+.Project .task-details .last-run .error-badge:hover {
+	background-color: #dc3545;
+	color: white;
+}
+
+.Project .task-details .last-run .error-badge small {
+	margin-top: -2px;
+	line-height: 17px;
+}

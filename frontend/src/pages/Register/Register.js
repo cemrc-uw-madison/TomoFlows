@@ -18,6 +18,8 @@ import "./Register.css"
 const Register = (props) => {
 	// Initialize state variables and hooks
 	const [email, setEmail] = useState("")				// email input state
+	const [firstname, setFirstname] = useState("")		// firstname input state
+	const [lastname, setLastname] = useState("")		// lastname input state
 	const [password1, setPassword1] = useState("")		// password input state
 	const [password2, setPassword2] = useState("")		// confirm password state
 	const [error, setError] = useState("")				// error response state
@@ -34,13 +36,19 @@ const Register = (props) => {
 		setLoading(true);
 		setError("");
 		axios.post('/api/auth/register/', {
+			first_name: firstname,
+			last_name: lastname,
 			email: email,
 			password1: password1,
 			password2: password2
 		})
 		.then(response => {
+			console.log(response)
 			Cookies.set('auth-token', response.data.access_token)
+			Cookies.set('auth-user', JSON.stringify(response.data.user))
 			setEmail("");
+			setFirstname("");
+			setLastname("");
 			setPassword1("");
 			setPassword2("");
 			setLoading(false);
@@ -87,6 +95,8 @@ const Register = (props) => {
 				Create an account
 			</p>
 			<div className="register-form">
+				<Form.Control value={firstname} onChange={e => setFirstname(e.target.value)} placeholder="Enter first name" />
+				<Form.Control value={lastname} onChange={e => setLastname(e.target.value)} placeholder="Enter last name" />
 				<Form.Control value={email} onChange={e => setEmail(e.target.value)} placeholder="Enter email" />
 				<Form.Control value={password1} onChange={e => setPassword1(e.target.value)} type="password" placeholder="Enter password" />
 				<Form.Control value={password2} onChange={e => setPassword2(e.target.value)} type="password" placeholder="Confirm password" onKeyDown={(e) => e.key === 'Enter' && register()}/>
