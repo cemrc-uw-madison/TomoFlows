@@ -86,13 +86,27 @@ def TaskList(request):
     if request.method == 'GET':
         tasks = Task.objects.all()
         serializer = TaskSerializer(tasks, many=True)
+        data = serializer.data
+        for i in range(len(data)):
+            if data[i]["parameter_fields"] is not None:
+                data[i]["parameter_fields"] = json.loads(data[i]["parameter_fields"])
         return Response(serializer.data)
 
     elif request.method == 'POST':
         serializer = TaskSerializer(data=request.data)
         if serializer.is_valid():
+            if 'parameter_fields' in serializer.validated_data:
+                try:
+                    json.loads(serializer.validated_data['parameter_fields'])
+                except json.decoder.JSONDecodeError:
+                    serializer.validated_data['parameter_fields'] = json.dumps([])
+            else:
+                serializer.validated_data['parameter_fields'] = json.dumps([])
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            data = serializer.data
+            print(data)
+            data["parameter_fields"] = json.loads(data["parameter_fields"])
+            return Response(data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -108,12 +122,23 @@ def TaskDetail(request, id):
     
     if request.method == 'GET':
         serializer = TaskSerializer(task)
+        data = serializer.data
+        data["parameter_fields"] = json.loads(data["parameter_fields"])
         return Response(serializer.data)
     elif request.method == 'PUT':
         serializer = TaskSerializer(task, data=request.data)
         if serializer.is_valid():
+            if 'parameter_fields' in serializer.validated_data:
+                try:
+                    json.loads(serializer.validated_data['parameter_fields'])
+                except json.decoder.JSONDecodeError:
+                    serializer.validated_data['parameter_fields'] = json.dumps({})
+            else:
+                serializer.validated_data['parameter_fields'] = json.dumps({})
             serializer.save()
-            return Response(serializer.data)
+            data = serializer.data
+            data["parameter_fields"] = json.loads(data["parameter_fields"])
+            return Response(data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
         task.delete()
@@ -140,8 +165,8 @@ def ProjectTaskList(request):
         serializer = ProjectTaskSerializer(project_tasks, many=True)
         data = serializer.data
         for i in range(len(data)):
-            if data[i]["parameters"] is not None:
-                data[i]["parameters"] = json.loads(data[i]["parameters"])
+            if data[i]["parameter_values"] is not None:
+                data[i]["parameter_values"] = json.loads(data[i]["parameter_values"])
             try:
                 run = Run.objects.get(project_task_id=data[i]["id"])
                 run_serialized = RunSerializer(run)
@@ -164,10 +189,16 @@ def ProjectTaskList(request):
         if serializer.is_valid():
             serializer.validated_data['project'] = project
             serializer.validated_data['task'] = task
-            serializer.validated_data['parameters'] = json.dumps({})
+            if 'parameter_values' in serializer.validated_data:
+                try:
+                    json.loads(serializer.validated_data['parameter_values'])
+                except json.decoder.JSONDecodeError:
+                    serializer.validated_data['parameter_values'] = json.dumps([])
+            else:
+                serializer.validated_data['parameter_values'] = json.dumps([])
             serializer.save()
             data = serializer.data
-            data["parameters"] = json.loads(data["parameters"])
+            data["parameter_values"] = json.loads(data["parameter_values"])
             run = Run.objects.create(project_task_id=data["id"], status="CREATED", logs="[]", errors="[]")
             run.project_task.project.last_updated = datetime.now()
             run.project_task.project.save()
@@ -191,7 +222,7 @@ def ProjectTaskDetail(request, id):
     if request.method == 'GET':
         serializer = ProjectTaskSerializer(project_task)
         data = serializer.data
-        data["parameters"] = json.loads(data["parameters"])
+        data["parameter_values"] = json.loads(data["parameter_values"])
         try:
             run = Run.objects.get(project_task_id=data["id"])
             run_serialized = RunSerializer(run)
@@ -205,9 +236,16 @@ def ProjectTaskDetail(request, id):
     elif request.method == 'PUT':
         serializer = ProjectTaskSerializer(project_task, data=request.data)
         if serializer.is_valid():
+            if 'parameter_values' in serializer.validated_data:
+                try:
+                    json.loads(serializer.validated_data['parameter_values'])
+                except json.decoder.JSONDecodeError:
+                    serializer.validated_data['parameter_values'] = json.dumps([])
+            else:
+                serializer.validated_data['parameter_values'] = json.dumps([])
             serializer.save()
             data = serializer.data
-            data["parameters"] = json.loads(data["parameters"])
+            data["parameter_values"] = json.loads(data["parameter_values"])
             project_task.project.last_updated = datetime.now()
             project_task.project.save()
             try:
@@ -254,7 +292,7 @@ def RunProjectTask(request, id):
         run.project_task.project.save()
         serializer = ProjectTaskSerializer(project_task)
         data = serializer.data
-        data["parameters"] = json.loads(data["parameters"])
+        data["parameter_values"] = json.loads(data["parameter_values"])
         data["run"] = RunSerializer(run).data
         data["run"]["logs"] = json.loads(data["run"]["logs"])
         data["run"]["errors"] = json.loads(data["run"]["errors"])

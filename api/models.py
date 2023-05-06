@@ -22,11 +22,12 @@ class Project(models.Model):
 class Task(models.Model):
     name = models.CharField("Name",  max_length=25, unique=True)
     description = models.CharField("Description", max_length=100)
+    parameter_fields = models.TextField("Parameter Fields", null=True, blank=True)
     
 class ProjectTask(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    parameters = models.TextField("Parameters", null=True, blank=True)
+    parameter_values = models.TextField("Parameter Values", null=True, blank=True)
     
 class Run(models.Model):
     project_task = models.ForeignKey(ProjectTask, on_delete=models.CASCADE)
