@@ -18,7 +18,7 @@ WORKDIR $DjangoDir
 # imod
 RUN wget https://bio3d.colorado.edu/imod/AMD64-RHEL5/imod_4.11.24_RHEL7-64_CUDA10.1.sh
 RUN chmod +x imod_4.11.24_RHEL7-64_CUDA10.1.sh
-RUN echo 'deb http://ftp.debian.org/debian stretch-backports main' | tee /etc/apt/sources.list.d/stretch-backports.list
+RUN echo 'deb http://ftp.debian.org/debian buster-backports main' | tee /etc/apt/sources.list.d/buster-backports.list
 RUN apt-get update
 RUN apt-get -y install openssh-client
 RUN apt-get -y install libjpeg62
