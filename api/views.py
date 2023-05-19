@@ -12,6 +12,7 @@ import random
 from api.models import User, Project, Task, ProjectTask, Run
 from api.serializers import UserSerializer, ProjectSerializer, TaskSerializer, ProjectTaskSerializer, RunSerializer
 
+VERIFICATION_CODE = "12345"
 
 @api_view(['GET'])
 @permission_classes((permissions.AllowAny,))
@@ -93,6 +94,8 @@ def TaskList(request):
         return Response(serializer.data)
 
     elif request.method == 'POST':
+        if request.data.get("verification_code", "0") != VERIFICATION_CODE:
+            return Response({"detail": "Incorrect verification code"}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = TaskSerializer(data=request.data)
         if serializer.is_valid():
             if 'parameter_fields' in serializer.validated_data:

@@ -5,3 +5,77 @@
 .Navigation .nav-link {
 	margin-left: 20px;
 }
+
+.Navigation .dropdown-item:focus {
+	background-color: #38023B;
+	color: white;
+}
+
+.create-task {
+	padding: 0px 16px;
+	padding-top: 20px;
+}
+
+.create-task input {
+	margin-bottom: 20px;
+}
+
+.create-task select {
+	margin-bottom: 20px;
+}
+
+.create-task select.unset {
+	color: rgb(90, 98, 106, 0.9);
+}
+
+.create-task-button .spinner-border {
+	margin-bottom: -1px;
+	font-size: 9px;
+}
+
+.create-task-button {
+	background-color: #38023B !important;
+	border-color: #38023B !important;
+}
+
+.create-task-button:disabled {
+	background-color: #3a193c !important;
+	border-color: #3a193c !important;
+}
+
+.create-task .parameter-heading {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	margin-bottom: 20px;
+}
+
+.create-task .primary-button {
+	background-color: #38023B !important;
+	border-color: #38023B !important;
+}
+
+.create-task .primary-button:hover {
+	background-color: #49034d !important;
+	border-color: #49034d !important;
+}
+
+.create-task .primary-button svg {
+	margin-top: -3px;
+	margin-left: -1px;
+	margin-right: 5px;
+}
+
+.create-task .parameter-fields {
+	display: flex;
+	flex-direction: row;
+	gap: 5px;
+}
+
+.create-task .parameter-fields .type {
+	width: 100px;
+}
+
+.create-task .parameter-delete {
+	height: 31px;
+}

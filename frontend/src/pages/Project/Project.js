@@ -588,7 +588,9 @@ const Project = (props) => {
 								<h5>Parameters</h5>
 								<div className="input-fields">
 									{
-										JSON.parse(tasks[selected].task.parameter_fields).map((item, idx) => 
+										JSON.parse(tasks[selected].task.parameter_fields).length === 0 ?
+										<small>No Parameters</small>
+										:JSON.parse(tasks[selected].task.parameter_fields).map((item, idx) => 
 											<Form.Group key={idx}>
 												<Form.Label>{item.name}</Form.Label>
 												{item.type === "file" ?
