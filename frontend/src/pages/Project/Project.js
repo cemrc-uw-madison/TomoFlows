@@ -10,6 +10,7 @@ import Button from "react-bootstrap/Button";
 import Spinner from 'react-bootstrap/Spinner';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Alert from 'react-bootstrap/Alert';
+import InputGroup from 'react-bootstrap/InputGroup';
 import "./Project.css";
 
 const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
@@ -107,16 +108,23 @@ const Project = (props) => {
 				})
 				.then(response => {
 					console.log(response.data)
-					setTasks(response.data)
+					let taskList = JSON.parse(JSON.stringify(response.data));
+					for (let i = 0; i < taskList.length; i++) {
+						if (taskList[i].parameter_values.length === 0) {
+							let parameter_fields = JSON.parse(taskList[i].task.parameter_fields)
+							taskList[i]["parameter_values"] = parameter_fields.map((field) => field["default"]);
+						}
+					}
+					setTasks(taskList);
 					if (projecttaskId !== null) {
-						for (let i = 0; i < response.data.length; i++) {
-							if (response.data[i].id === projecttaskId) {
+						for (let i = 0; i < taskList.length; i++) {
+							if (taskList[i].id === projecttaskId) {
 								setSelected(i)
 							}
 						}
 					}
-					for (let i = 0; i < response.data.length; i++) {
-						if (response.data[i].run.status === "RUNNING") {
+					for (let i = 0; i < taskList.length; i++) {
+						if (taskList[i].run.status === "RUNNING") {
 							setTimeout(() => fetchTasksBackground(), 4000);
 							break;
 						}
@@ -137,17 +145,18 @@ const Project = (props) => {
 					})
 					.catch(error => {
 						setLoading(false);
+						console.error(error);
 						if (error.response.status === 401 || error.response.status === 403) {
 							Cookies.remove('auth-token');
 							Cookies.remove('auth-user');
 							navigate("/login");
 						}
-						console.error(error);
 					})
 				})
 				.catch(error => {
 					setLoading(false);
-					if (error.repsonse.status === 404) {
+					console.error(error);
+					if (error.response.status === 404) {
 						navigate("/");
 					}
 					else if (error.response.status === 401 || error.response.status === 403) {
@@ -155,7 +164,6 @@ const Project = (props) => {
 						Cookies.remove('auth-user');
 						navigate("/login");
 					}
-					console.error(error);
 				})
 			})
 			.catch(error => {
@@ -184,9 +192,16 @@ const Project = (props) => {
 			}
 		})
 		.then(response => {
-			setTasks(response.data)
-			for (let i = 0; i < response.data.length; i++) {
-				if (response.data[i].run.status === "RUNNING") {
+			let taskList = JSON.parse(JSON.stringify(response.data));
+			for (let i = 0; i < taskList.length; i++) {
+				if (taskList[i].parameter_values.length === 0) {
+					let parameter_fields = JSON.parse(taskList[i].task.parameter_fields)
+					taskList[i]["parameter_values"] = parameter_fields.map((field) => field["default"]);
+				}
+			}
+			setTasks(taskList)
+			for (let i = 0; i < taskList.length; i++) {
+				if (taskList[i].run.status === "RUNNING") {
 					setTimeout(() => fetchTasksBackground(), 4000);
 					break;
 				}
@@ -289,17 +304,36 @@ const Project = (props) => {
 		});
 	}
 	
-	const runTask = async (projecttaskId) => {
+	const runTask = (projecttaskId, parameter_values) => {
 		let token = Cookies.get('auth-token')
-		setError("");
-		axios.get(`/api/run-project-task/${projecttaskId}`,
+		setError("")
+		axios.put(`/api/project-tasks/${projecttaskId}`,
+		{
+			parameter_values: JSON.stringify(parameter_values)
+		},
 		{
 			headers: {
 				'Authorization': `Bearer ${token}`
 			}
 		})
 		.then(response => {
-			fetchTasksBackground()
+			axios.get(`/api/run-project-task/${projecttaskId}`,
+			{
+				headers: {
+					'Authorization': `Bearer ${token}`
+				}
+			})
+			.then(response => {
+				fetchTasksBackground()
+			})
+			.catch(error => {
+				console.log(error);
+				if (error.response.status in [401, 403, 404]) {
+					setError(error.response.data.detail);
+				} else {
+					setError("Something went wrong! Please try again later.")
+				}
+			});
 		})
 		.catch(error => {
 			console.log(error);
@@ -526,7 +560,7 @@ const Project = (props) => {
 										variant={tasks[selected].run.status === "RUNNING" ? "secondary" : "primary"}
 										size="sm"
 										disabled={tasks[selected].run.status === "RUNNING"}
-										onClick={() => runTask(tasks[selected].id)}
+										onClick={() => runTask(tasks[selected].id, tasks[selected].parameter_values)}
 									>	
 										{tasks[selected].run.status === "RUNNING" ? 
 											<Spinner
@@ -553,18 +587,60 @@ const Project = (props) => {
 							<div className="parameters">
 								<h5>Parameters</h5>
 								<div className="input-fields">
-									<Form.Group>
-										<Form.Label>Parameter X</Form.Label>
-										<Form.Control size="sm" placeholder="enter parameter value" />
-									</Form.Group>
-									<Form.Group>
-										<Form.Label>Parameter Y</Form.Label>
-										<Form.Control size="sm" placeholder="enter parameter value" />
-									</Form.Group>
-									<Form.Group>
-										<Form.Label>Parameter Z</Form.Label>
-										<Form.Control size="sm" placeholder="enter parameter value" />
-									</Form.Group>
+									{
+										JSON.parse(tasks[selected].task.parameter_fields).length === 0 ?
+										<small>No Parameters</small>
+										:JSON.parse(tasks[selected].task.parameter_fields).map((item, idx) => 
+											<Form.Group key={idx}>
+												<Form.Label>{item.name}</Form.Label>
+												{item.type === "file" ?
+													(
+														tasks[selected].parameter_values[idx] instanceof File ?
+														<InputGroup>
+															<Form.Control
+																className="file-selected"
+																value={tasks[selected].parameter_values[idx].name}
+																size="sm"
+																disabled
+															/>
+															<Button
+																variant="outline-secondary"
+																size="sm"
+																onClick={() => {
+																	let newTasks = JSON.parse(JSON.stringify(tasks));
+																	newTasks[selected].parameter_values[idx] = null;
+																	setTasks(newTasks)
+																}}
+															>
+																Clear
+															</Button>
+														</InputGroup>
+														:
+														<Form.Control
+															type={item.type}
+															value=""
+															onChange={(e) => {
+																let newTasks = JSON.parse(JSON.stringify(tasks));
+																newTasks[selected].parameter_values[idx] = e.target.files[0];
+																setTasks(newTasks)
+															}}
+															size="sm"
+														/>
+													)
+												: <Form.Control
+													type={item.type}
+													value={tasks[selected].parameter_values[idx] ?? ""}
+													onChange={(e) => {
+														let newTasks = JSON.parse(JSON.stringify(tasks));
+														newTasks[selected].parameter_values[idx] = e.target.value;
+														setTasks(newTasks)
+													}}
+													size="sm"
+													placeholder="enter parameter value"
+												/>}
+											</Form.Group>
+										)
+									}
 								</div>
 							</div>
 							{
