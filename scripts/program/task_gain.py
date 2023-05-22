@@ -1,7 +1,7 @@
 import typing
 import subprocess
 import os
-from program.task import Task
+from task import Task
 import uuid
 
 def check_image_format(file_name, required_format):
@@ -86,7 +86,7 @@ class TaskGain(Task):
         subprocess.call(args_dm2mrc)
         # 2. Shrink a gain reference to a different format
         stack_infile = outfile
-        stack_outfile = f"{infile.split(".")[0]}-Shrink.mrc"
+        stack_outfile = f"{infile.split('.')[0]}-Shrink.mrc"
         command2 = 'newstack'
 
         args_newstack = [command2,
