@@ -76,6 +76,12 @@ class TaskGain(Task):
         args_dm2mrc = [command1,
                 infile,   # Input file could be passed as a parameter
                 outfile]  # Output file should be saved within the job directory <gain.mrc or other>
+        
+        # 1. Alternative: Convert a format (.gain/.tiff) to (MRC)
+        command_tiff2mrc = 'tiff2mrc'
+        args_tiff2mrc = [command1,
+                infile,   # Input file could be passed as a parameter
+                outfile]  # Output file should be saved within the job directory <gain.mrc or other>
 
         subprocess.call(args_dm2mrc)
         # 2. Shrink a gain reference to a different format
