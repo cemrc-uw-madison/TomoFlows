@@ -71,6 +71,12 @@ class Task(ABC):
         :return: instance of Param class
         """
 
+    @property
+    @abstractproperty
+    def task_id(self):
+        pass
+
+
     @abstractmethod
     def description(self) -> str:
         """

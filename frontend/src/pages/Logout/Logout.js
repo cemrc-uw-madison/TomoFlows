@@ -27,11 +27,13 @@ const Logout = (props) => {
 		axios.post('/api/auth/logout/')
 		.then(response => {
 			Cookies.remove('auth-token');
+			Cookies.remove('auth-user');
 			navigate("/");
 		})
 		.catch(error => {
 			console.log(error);
 			Cookies.remove('auth-token');
+			Cookies.remove('auth-user');
 			navigate("/");
 		});
 	}

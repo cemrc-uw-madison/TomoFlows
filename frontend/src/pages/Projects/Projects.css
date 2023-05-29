@@ -15,4 +15,36 @@
 	flex-direction: row;
 	flex-wrap: wrap;
 	gap: 30px;
+	padding-bottom: 50px;
+}
+
+.Projects .spinner-border {
+	width: 100px;
+	height: 100px;
+	margin: 180px auto;
+	color: #38023B !important; 
+}
+
+.create-project {
+	padding: 0px 16px;
+	padding-top: 20px;
+}
+
+.create-project input {
+	margin-bottom: 20px;
+}
+
+.create-project-button {
+	background-color: #38023B !important;
+	border-color: #38023B !important;
+}
+
+.create-project-button:disabled {
+	background-color: #3a193c !important;
+	border-color: #3a193c !important;
+}
+
+.create-project-button .spinner-border {
+	margin-bottom: -1px;
+	font-size: 9px;
 }

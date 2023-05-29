@@ -46,6 +46,7 @@ const Login = (props) => {
 		.then(response => {
 			console.log(response);
 			Cookies.set('auth-token', response.data.access_token)
+			Cookies.set('auth-user', JSON.stringify(response.data.user))
 			setEmail("");
 			setPassword("");
 			setLoading(false);
