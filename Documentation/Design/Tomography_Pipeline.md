@@ -54,3 +54,25 @@ The workflow for processing this image data handles basic preprocessing (motion 
 3. Parameters that describe how to run AreTomo.
 4. Output is an MRC of a 3D volume reconstructed by AreTomo.
 5. Output is console and error logs. 
+
+### Manager
+Manager should be able to locate root path and create **_/data_** folder on there. Every time a new project or task is created, Manager should be responsible to create folder to store project or task data on it. </br>
+The following diagram describe data folder structure
+
+```
+TomoFlows
+|___data
+|   |   project_metadata.json
+|   |___project1
+|   |   |   task_metadata.json
+|   |   |___task1
+|   |   |   |   task1_metadata.json
+|   |   |   |___data
+|   |   |___task2
+|   |       |   task2_metadata.json
+|   |       |___data
+|   |   ...
+|   |___project2
+|       |   task_metadata.json
+|       ...
+```

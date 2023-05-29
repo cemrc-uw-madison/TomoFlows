@@ -8,6 +8,18 @@
 5. Manager should reflect the data on disk to database, cause the data on database will gone when the docker container is shutdown
 """
 
+def get_root_path():
+    """
+    get_root_path should be able to get /TomoFlow path from anywhere
+    """
+    pass
+
+def create_data_folder(path):
+    """
+    create_data_folder will create /data folder on given path
+    """
+    pass
+
 def create_project_folder(path):
     """
     create_project_folder needs the project's information to generate a unique folder
