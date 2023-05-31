@@ -80,7 +80,7 @@ class TaskGain(Task):
         subprocess.call(args_dm2mrc)
         # 2. Shrink a gain reference to a different format
         stack_infile = outfile
-        stack_outfile = f"{infile.split(".")[0]}-Shrink.mrc"
+        stack_outfile = f"{infile.split('.')[0]}-Shrink.mrc"
         command2 = 'newstack'
 
         args_newstack = [command2,
