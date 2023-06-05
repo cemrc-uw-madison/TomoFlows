@@ -32,16 +32,66 @@ def create_data_folder(path):
     if os.path.exists(data_path):
         # if /data exists, there is no need to call create_data folder
         return False
-    print(data_path)
     os.mkdir(data_path)
     return True
     
-def create_project_folder(path):
+def create_data_metadata(path):
+    """
+    create_data_metadata should be able to create metadata for all projects
+    what infomation should be stored in metadata needs discussion
+    Arguments: 
+    1. path: absolute path of /data
+    return True if data.json is successfully created
+    return False if data.json exists 
+    """
+    if "data.json" in os.listdir(path):
+        return False
+    info = {"num": 0, "projects": []}  
+    json_info = json.dumps(info)
+    json_path = os.path.join(os.path.join(path, "data.json"))
+    with open(json_path, "w") as fp:
+        fp.write(json_info)
+    return True
+
+def create_project_folder(path, project_id):
     """
     create_project_folder needs the project's information to generate a unique folder
     what information is required needs discussion
+    Arguments: 
+    1. path: absolute path of /data
+    2. project_id: project's id 
+    return True if /project_id is successfully created
+    return False if /project_id exists
     """
-    pass
+    project_name = "project_" + str(project_id)
+    if project_name in os.listdir(path):
+        return False 
+    project_path = os.path.join(path, project_name)
+    os.mkdir(project_path)
+    return True
+
+def create_project_metadata(path, project_id):
+    """
+    create_project_metadata should be able to create project metadata based on given arguments
+    what infomation should be stored in metadata needs discussion
+    Arguments: 
+    1. path: absolute path of /data
+    2. project_id: project's id 
+    return True if project_id.json is successfully created
+    return False if project_id.json exists or project_id doesn't exists in data.json
+    """
+    if "data.json" not in os.listdir(path):
+        return False
+    with open("data.json", "r") as fp:
+        data = json.load(fp)
+        if project_id not in data["projects"]:
+            return False
+    project_name = "project_" + str(project_id)
+    if project_name in os.listdir(path):
+        return False
+    project_path = os.path.join(path, project_name)
+    os.mkdir(project_path)
+    return True    
 
 def create_task_folder(path):
     """
@@ -50,21 +100,21 @@ def create_task_folder(path):
     """
     pass
 
-def create_project_metadata(info):
-    """
-    create_project_metadata should be able to create project metadata based on given arguments
-    what infomation should be stored in metadata needs discussion
-    """
-    pass
 
-def create_task_metadata(info):
+
+def create_task_metadata(path):
     """
     create_task_metadata should be able to create task metadata based on given arguments
     what infomation should be stored in metadata needs discussion
     """
     pass
 
-def update_metadata(path):
+def update_data_metadata(path, info):
     """
-    update_metadata should be able to update the latest information of tasks or projects on server
+    update_data_metadata should be able to update the latest information of tasks or projects on server
+    Arguments:
+    path: absolute path where /data located
+    info: information needs to be updated
     """
+    pass 
+

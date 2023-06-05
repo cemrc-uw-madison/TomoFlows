@@ -1,7 +1,8 @@
 import pytest
 from program import manager 
 import os 
-
+import json 
+import shutil 
 test_path = os.getcwd()
 os.chdir("../..")
 root_path = os.getcwd()
@@ -37,3 +38,40 @@ def test_create_data_folder2():
     flag = manager.create_data_folder(test_path)
     assert flag == False
     os.rmdir(os.path.join(test_path, "data"))
+
+def test_create_data_metadata1():
+    """
+    Test if create_data_metadata create json file correctly
+    """
+    if manager.create_data_folder(test_path):
+        data_path = os.path.join(test_path, "data")
+        assert manager.create_data_metadata(data_path) == True
+        json_path = os.path.join(data_path, "data.json")
+        with open(json_path, "r") as fp:
+            data = json.load(fp)
+            assert data["num"] == 0
+            assert len(data["projects"]) == 0
+
+def test_create_data_metadata2():
+    """
+    Test if create_data_metadata return False if data.json exists already
+    """
+    data_path = os.path.join(test_path, "data")
+    assert manager.create_data_metadata(data_path) == False 
+    shutil.rmtree(data_path)
+
+def test_create_project_folder1():
+    manager.create_data_folder(test_path)
+    data_path = os.path.join(test_path, "data")
+    assert manager.create_project_folder(data_path, 1) == True 
+    assert "project_1" in os.listdir(data_path)
+
+def test_create_project_folder2():
+    data_path = os.path.join(test_path, "data")
+    assert manager.create_project_folder(data_path, 1) == False 
+    assert "project_1" in os.listdir(data_path)
+    assert manager.create_project_folder(data_path, 2) == True 
+    assert "project_2" in os.listdir(data_path)
+    shutil.rmtree(data_path)
+
+    
