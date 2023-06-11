@@ -62,14 +62,14 @@ The following diagram describe data folder structure
 ```
 TomoFlows
 |___data
-|   |   data_metadata.json
+|   |   data.json
 |   |___project1
 |   |   |   project_1.json
 |   |   |___task1
-|   |   |   |   task1_metadata.json
+|   |   |   |   task_1.json
 |   |   |   |___data
 |   |   |___task2
-|   |       |   task2_metadata.json
+|   |       |   task_2.json
 |   |       |___data
 |   |   ...
 |   |___project2

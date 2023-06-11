@@ -9,10 +9,12 @@
 """
 import os
 import json
+from program.scripts_constants import TASK_NUM, PROJECT_ID, TASKS, PROJECT_NUM, PROJECTS
+
 
 def get_root_path():
     """
-    get_root_path should be able to get /TomoFlow path from anywhere
+    get_root_path should be able to get /TomoFlow path from anywhere inside /TomoFlow, like /TomoFlow/scripts
     """
     current_wd = os.getcwd()
     index = 0
@@ -46,11 +48,26 @@ def create_data_metadata(path):
     """
     if "data.json" in os.listdir(path):
         return False
-    info = {"num": 0, "projects": []}  
+    info = {PROJECT_NUM: 0, PROJECTS: {}}
     json_info = json.dumps(info)
-    json_path = os.path.join(os.path.join(path, "data.json"))
+    json_path = os.path.join(path, "data.json")
     with open(json_path, "w") as fp:
         fp.write(json_info)
+    return True
+
+def setup_data(path):
+    """
+    setup_data is a wrapper of create_data_folder and create_data_metadata
+    Arguments:
+    path: absolute path to create /data
+    return False if setup fails
+    return True if setup succeeds
+    """
+    if not create_data_folder(path):
+        return False
+    data_path = os.path.join(path, "data")
+    if not create_data_metadata(data_path):
+        return False 
     return True
 
 def create_project_folder(path, project_id):
@@ -80,18 +97,42 @@ def create_project_metadata(path, project_id):
     return True if project_id.json is successfully created
     return False if project_id.json exists or project_id doesn't exists in data.json
     """
-    if "data.json" not in os.listdir(path):
-        return False
-    with open("data.json", "r") as fp:
-        data = json.load(fp)
-        if project_id not in data["projects"]:
-            return False
     project_name = "project_" + str(project_id)
-    if project_name in os.listdir(path):
+    if "data.json" not in os.listdir(path) or project_name not in os.listdir(path):
         return False
     project_path = os.path.join(path, project_name)
-    os.mkdir(project_path)
+    project_json = project_name + ".json"
+    if project_json in os.listdir(project_path):
+        return False
+    json_path = os.path.join(project_path, project_json)
+    with open(json_path, "w") as fp:
+        info = {TASK_NUM: 0, TASKS: {}, PROJECT_ID: project_id}  
+        fp.write(json.dumps(info))
     return True    
+
+def create_project(data_path):
+    """
+    create_project is a wrapper of create_project_folder and create_project_metadata
+    Arguments:
+    data_path: absolute path to create project on
+    It should return False if project creation fails and return True if project is successfully created  
+    """
+
+    data_json_path = os.path.join(data_path, "data.json")
+    with open(data_json_path, "r+") as fp:
+        data_json = json.load(fp)
+        project_id = data_json[PROJECT_NUM] + 1
+        if not create_project_folder(data_path, project_id):
+            return False
+        if not create_project_metadata(data_path, project_id):
+            return False 
+        data_json[PROJECT_NUM] = project_id
+        project_name = "project_" + str(project_id)
+        data_json[PROJECTS][project_name] = os.path.join(data_path, project_name)
+        fp.seek(0)
+        json.dump(data_json, fp)
+    return True
+    
 
 def create_task_folder(path):
     """
