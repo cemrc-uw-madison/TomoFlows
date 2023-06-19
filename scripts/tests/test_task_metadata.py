@@ -14,8 +14,8 @@ absolute_list = absolute_path.split("/")
 absolute_list[-1] = "metadata/"
 sys.path.append("/".join(absolute_list))
 
-from metadata import TaskDescription
-from metadata import TaskOutputDescription
+from task_metadata import TaskDescription
+from task_metadata import TaskOutputDescription
 
 @pytest.fixture
 def sample_task():
