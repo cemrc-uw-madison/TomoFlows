@@ -33,8 +33,6 @@ class TaskDescription:
 
         return task
 
-import json
-
 class TaskOutputDescription:
     def __init__(self, task_name, task_description):
         self.task_name = task_name
