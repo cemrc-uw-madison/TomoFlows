@@ -1,10 +1,11 @@
 """
 This module is used for the interface of All kinds of Task class
 """
+import os
 from abc import ABC, abstractmethod, abstractproperty
-
 from typing import List
 
+from metadata.task_metadata import TaskDescription, TaskOutputDescription
 
 class Param:
     """
@@ -63,6 +64,18 @@ class Task(ABC):
                 then it could be possible to 'continue'.
     """
 
+    # This should be constant for all tasks
+    result_json = 'result.json'
+    task_folder = ''
+
+    def get_result(self):
+        """
+        this method should get the result of the completing task
+        """
+        result_path= os.path.join(self.task_folder, self.result_json)
+        loaded_task = TaskDescription.load_from_json(result_path)
+        return loaded_task
+
     @property
     @abstractproperty
     def param(self):
@@ -75,7 +88,6 @@ class Task(ABC):
     @abstractproperty
     def task_id(self):
         pass
-
 
     @abstractmethod
     def description(self) -> str:
@@ -95,13 +107,7 @@ class Task(ABC):
     @abstractmethod
     def run(self):
         """
-        this method should actually run the task
-        """
-
-    @abstractmethod
-    def get_result(self):
-        """
-        this method should get the result of the completing task
+        this method should actually run the task; must be implemented by each task
         """
 
     @abstractmethod
