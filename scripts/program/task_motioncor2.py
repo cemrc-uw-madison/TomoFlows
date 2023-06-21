@@ -12,7 +12,6 @@ class TaskMotionCor2(Task):
 
     # Parameters should include gain filename.
     # Parameters should include a list of input files to motion correct.
-    parameters = {}
 
     def __init__(self, task_folder):
         """
@@ -139,29 +138,8 @@ class TaskMotionCor2(Task):
         # TODO: build a results.json file and serialize to disk.
         #  can keep the results.json in the class as a member.
 
-    def get_result(self):
-        """ comment """
-
-    def get_logs(self):
-        """ comment """
-
-    @property
-    def param(self):
-        """
-        TODO
-        This method should return Parameter that needed to run the task
-        :return: instance of Param class
-        """
+    def name(self) -> str:
+        return "Motion Correction"
 
     def description(self) -> str:
-        """
-        This method should return the detailed description of the task
-        :return: string
-        """
         return 'Motion Correction via UCSF MotionCor2'
-
-    def get_param(self, key: str) -> str:
-        """ 
-        TODO
-        Should provide the Param with name-value pairs 
-        """

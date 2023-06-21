@@ -38,28 +38,13 @@ class TaskStackAlignFrames(Task):
         This method should return Parameter that needed to run the task
         :return: instance of Param class
         """
+    
+    def name(self) -> str:
+        return "Alignframes"
 
     def description(self) -> str:
-        """
-        TODO
-        This method should return the detailed description of the task
-        :return: string
-        """
-
-    def get_param(self, key: str) -> str:
-        """ 
-        TODO
-        Should provide the Param with name-value pairs 
-        """
+        return "Build a stack for each tilt-series using `alignframes`"
 
     def run(self):
         """ Execute two steps to convert and scale the image """
 
-        # Input 
-
-
-    def get_result(self):
-        """ comment """
-
-    def get_logs(self):
-        """ comment """

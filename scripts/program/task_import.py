@@ -24,8 +24,6 @@ class TaskImport(Task):
     # Parameters should include import_data: path to a directory of data to import
     # Parameters should include import_directory_type: ['frames' or 'stack'] 
     parameters = {}
-    task_name = "Import"
-    task_description = "Import a list of images and associatiated metadata"
     images_filename = "imagesets.json"
 
     def __init__(self, task_folder):
@@ -89,7 +87,7 @@ class TaskImport(Task):
         # Need to save the image metadata, then can include as a result.
         image_json_path = os.path.join(self.task_folder, self.images_filename)
         imageMD.save_to_json(image_json_path)
-        results = TaskOutputDescription(self.task_name, self.task_description)
+        results = TaskOutputDescription(self.name(), self.description())
         results.add_output_file(image_json_path, 'json')
         return results
 
@@ -101,7 +99,7 @@ class TaskImport(Task):
             raise ValueError("Parameter 'import_directory_type' is not provided")
 
         # Create a TaskDescription with parameters.
-        task_meta = TaskDescription(self.task_name, self.task_description)
+        task_meta = TaskDescription(self.name(), self.description())
         # Add the Task parameters.
         task_meta.add_parameter('import_data', self.parameters['import_data'])
         task_meta.add_parameter('import_directory_type', self.parameters['import_directory_type'])
@@ -122,23 +120,8 @@ class TaskImport(Task):
         results_json_path = os.path.join(self.task_folder, 'results.json')
         results.save_to_json(results_json_path)
 
-    def get_logs(self):
-        """ comment """
-
-    @property
-    def param(self):
-        """
-        This method should return Parameter that needed to run the task
-        :return: instance of Param class
-        """
+    def name(self) -> str:
+        return "Import"
 
     def description(self) -> str:
-        """
-        This method should return the detailed description of the task
-        :return: string
-        """
-
-    def get_param(self, key: str) -> str:
-        """ 
-        Should provide the Param with name-value pairs 
-        """
+        return 'Import micrographs into a project'

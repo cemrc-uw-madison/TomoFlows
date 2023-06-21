@@ -23,43 +23,16 @@ class TaskAreTomo(Task):
     required_input_format = "mrc"
     required_output_format = "mrc"
 
-    def __init__(self, input_file):
+    def __init__(self, task_folder):
         """
-        :param input_file: file name in format conversion, required to be dm4 format
-        """
-        self.input_file = input_file
-        if not check_image_format(input_file, self.required_input_format):
-            raise ValueError("Input image format must be mrc!")
-
-    @property
-    def param(self):
-        """
-        TODO
-        This method should return Parameter that needed to run the task
-        :return: instance of Param class
-        """
-
-    def description(self) -> str:
-        """
-        TODO
-        This method should return the detailed description of the task
-        :return: string
-        """
-
-    def get_param(self, key: str) -> str:
-        """ 
-        TODO
-        Should provide the Param with name-value pairs 
+        :param task_folder: where to write output for the task
         """
 
     def run(self):
-        """ Execute two steps to convert and scale the image """
+        """ Execute AreTomo for each tilt-series """
 
-        # Input 
-
-
-    def get_result(self):
-        """ comment """
-
-    def get_logs(self):
-        """ comment """
+    def name(self) -> str:
+        return 'AreTomo'
+    
+    def description(self) -> str:
+        return 'Build a tomogram for each tilt-series with `AreTomo`'

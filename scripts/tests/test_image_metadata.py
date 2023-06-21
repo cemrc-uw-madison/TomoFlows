@@ -9,12 +9,12 @@ absolute_list[-1] = "metadata/"
 sys.path.append("/".join(absolute_list))
 
 from image_metadata import ImageSet
-from image_metadata import ImageDataMetadata
+from image_metadata import ImageMetadata
 from image_metadata import ImageSetEncoder
 
 @pytest.fixture
-def sample_metadata() -> ImageDataMetadata:
-    metadata = ImageDataMetadata()
+def sample_metadata() -> ImageMetadata:
+    metadata = ImageMetadata()
 
     image_set1 = ImageSet(
         header={
@@ -43,7 +43,7 @@ def test_save_and_load_json(sample_metadata, tmp_path):
     sample_metadata.save_to_json(str(filename))
 
     # Load metadata from JSON
-    loaded_metadata = ImageDataMetadata.load_from_json(str(filename))
+    loaded_metadata = ImageMetadata.load_from_json(str(filename))
 
     # Check number of image sets
     assert len(loaded_metadata.image_sets) == len(sample_metadata.image_sets)
