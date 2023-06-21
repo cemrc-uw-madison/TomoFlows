@@ -73,7 +73,7 @@ class Task(ABC):
         this method should get the result of the completing task
         """
         result_path= os.path.join(self.task_folder, self.result_json)
-        loaded_task = TaskDescription.load_from_json(result_path)
+        loaded_task = TaskOutputDescription.load_from_json(result_path)
         return loaded_task
 
     @property
@@ -84,10 +84,10 @@ class Task(ABC):
         :return: instance of Param class
         """
 
-    @property
-    @abstractproperty
-    def task_id(self):
-        pass
+    #@property
+    #@abstractproperty
+    #def task_id(self):
+    #    pass
 
     @abstractmethod
     def description(self) -> str:

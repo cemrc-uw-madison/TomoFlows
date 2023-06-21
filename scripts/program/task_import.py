@@ -55,11 +55,12 @@ class TaskImport(Task):
     def import_from_frames(self, path_to_frames):
         """
         :param path_to_frames: relative path to find the folder containing tilt-series information.
-
         Import script that would create Import job metadata from a "frames folder"
         """
         
         imageMD = ImageMetadata()
+
+        # TODO: 'gain' image files should be excluded from below, and identified uniquely.
 
         # 1. find each subdirectory containing image files, then finding the files to 'import'
         for childDir in os.listdir(path_to_frames):
@@ -87,7 +88,8 @@ class TaskImport(Task):
 
         # Need to save the image metadata, then can include as a result.
         image_json_path = os.path.join(self.task_folder, self.images_filename)
-        results = TaskOutputDescription()
+        imageMD.save_to_json(image_json_path)
+        results = TaskOutputDescription(self.task_name, self.task_description)
         results.add_output_file(image_json_path, 'json')
         return results
 
@@ -140,12 +142,3 @@ class TaskImport(Task):
         """ 
         Should provide the Param with name-value pairs 
         """
-
-### Defining import metadata formatting.
-# The 'TaskOutputDescription' should describe the output metadata
-# This currently only describes output files.
-# How can it describe the more complex relationship of the image files in a tilt-series?
-# 'tilt-series: name'
-# 'images: [ image_1, image_2, image_3, image_4 ] 
-# 'parameters: metadata of parameters'
-# 
