@@ -1,6 +1,9 @@
 import typing
 import subprocess
 import os
+
+from metadata.image_metadata import ImageMetadata, ImageSet
+from metadata.task_metadata import TaskDescription, TaskOutputDescription
 from program.task import Task
 
 class TaskMotionCor2(Task):
@@ -19,7 +22,7 @@ class TaskMotionCor2(Task):
         """
         self.task_folder = task_folder
 
-    def addArguments(self, args):
+    def __addArguments(self, args):
         """ Append any motion correction required or optional arguments """
 
         # Required parameters
@@ -71,8 +74,8 @@ class TaskMotionCor2(Task):
 
         return args
 
-    def motionCorrectEer(self, in_eer, out_mrc, fmIntFilePath, EEROpts):
-        ''' Given EER and mdoc describing file do motion correction '''
+    def __motionCorrectEer(self, in_eer, out_mrc, fmIntFilePath, EEROpts):
+        """ Given EER and mdoc describing file do motion correction """
 
         if (os.path.exists(out_mrc)):
             print(str(out_mrc) + ' exists: skipping motionCor')
@@ -100,13 +103,13 @@ class TaskMotionCor2(Task):
         else:
             raise ValueError('-FtBin: Missing')
         
-        args = self.AddArguments(args)
+        args = self.__addArguments(args)
 
         subprocess.call(args)
         # NOTE observed that EER processing results in a flip to be corrected.
 
-    def motionCorrectTiff(self, in_tiff, out_mrc, pixelSize, motionOptions, gain = None):
-        ''' Given TIFF or MRC inputs, do motion correction '''
+    def __motionCorrectTiff(self, in_tiff, out_mrc):
+        """ Given TIFF or MRC inputs, do motion correction """
 
         if (os.path.exists(out_mrc)):
             print(str(out_mrc) + ' exists: skipping motionCor')
@@ -114,29 +117,61 @@ class TaskMotionCor2(Task):
             print(str(out_mrc) + ' will be created by motionCor...')
 
         args = ['motioncor2', "-InTiff", in_tiff, "-OutMrc", out_mrc]
-        args = self.AddArguments(args)
+        args = self.__addArguments(args)
         subprocess.call(args)
 
     def run(self):
         """ This should motion correct a set of micrographs """
-
         # Input:
         #  - set of input files
         #  - gain file (if provided)
         #  - options related to motion correction parameters
 
+        # Create a TaskDescription with parameters.
+        task_meta = TaskDescription(self.name(), self.description())
+        # Add the Task parameters.
+        # Require an imageset containing *.mrc (stack) files
+        input_image_meta = None
+        if 'imageset' in self.parameters.keys:
+            task_meta.add_parameter('imageset', self.parameters['imageset'])
+            imageset_filename = self.parameters['imageset']
+            input_image_meta = ImageMetadata.load_from_json(imageset_filename)
+        else: 
+            raise ValueError("Parameter 'imageset' is not provided")
+
+        # Create Task folder if missing.
+        if not os.path.isdir(self.task_folder):
+            os.path.mkdirs(self.task_folder)
+
+        results_image_meta = ImageMetadata()
+
+        # Iterate through the image_meta.
+        for image_set in input_image_meta.image_sets:
+            image_list = []
+            for image in image_set.images:
+                if image.endswith('.' + '.tif'):
+                    outfile = f[:-len('.tif')] + '.mc.mrc'
+                    self.__motionCorrectTiff(image, outfile)
+                    # [TODO] - the resulting motion corrected image needs to be in a results imageset.
+                    # 
+            if len(image_list) > 0:
+                # add the motion-corrected images into metadata for the task.
+                header = {}
+                tiltset = ImageSet(header, image_list)
+                results_image_meta.add_image_set(tiltset)
+
         # Output:
         #  - set of output.mrc files
         #  - log files
-        #  - metadata describing the list of output.mrc files.
+        #  - image metadata, describing the output mrc files.
+        image_json_path = os.path.join(self.task_folder, self.imageset_filename)
+        results_image_meta.save_to_json(image_json_path)
 
-        # Skeleton 
-        infile = ''
-        outfile = ''
-
-        # Output is an MRC format, final image size should be 5760x4092 pixels.
-        # TODO: build a results.json file and serialize to disk.
-        #  can keep the results.json in the class as a member.
+        #  Serialize the `result.json` metadata file that points to `imageset.json`
+        results = TaskOutputDescription(self.name(), self.description())
+        results.add_output_file(results_image_meta, 'json')
+        results_json_path = os.path.join(self.task_folder, self.result_json)
+        results.save_to_json(results_json_path)
 
     def name(self) -> str:
         return "Motion Correction"

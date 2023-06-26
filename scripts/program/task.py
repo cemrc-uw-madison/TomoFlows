@@ -17,6 +17,7 @@ class Task(ABC):
 
     # This should be constant for all tasks
     result_json = 'result.json'
+    imageset_filename = "imageset.json"
     task_folder = ''
     parameters = {}
 

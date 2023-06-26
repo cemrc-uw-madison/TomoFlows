@@ -24,7 +24,6 @@ class TaskImport(Task):
     # Parameters should include import_data: path to a directory of data to import
     # Parameters should include import_directory_type: ['frames' or 'stack'] 
     parameters = {}
-    images_filename = "imagesets.json"
 
     def __init__(self, task_folder):
         """
@@ -85,7 +84,7 @@ class TaskImport(Task):
                     imageMD.add_image_set(tiltset)
 
         # Need to save the image metadata, then can include as a result.
-        image_json_path = os.path.join(self.task_folder, self.images_filename)
+        image_json_path = os.path.join(self.task_folder, self.imageset_filename)
         imageMD.save_to_json(image_json_path)
         results = TaskOutputDescription(self.name(), self.description())
         results.add_output_file(image_json_path, 'json')
@@ -105,7 +104,7 @@ class TaskImport(Task):
         task_meta.add_parameter('import_directory_type', self.parameters['import_directory_type'])
         # Create Task folder if missing.
         if not os.path.isdir(self.task_folder):
-            os.path.mkdirs(self.task_folder)
+            os.makedirs(self.task_folder)
         # Serialize the Task description metatadata
         task_meta.save_to_json(os.path.join(self.task_folder, self.result_json))
 
