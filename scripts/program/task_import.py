@@ -32,14 +32,14 @@ class TaskImport(Task):
         """
         self.task_folder = task_folder
 
-    def find_mdoc(self, directory):
+    def __find_mdoc(self, directory):
         ''' Find all the mdoc files '''
         # [TODO - this will support ]
 
-    def read_mdoc(self):
+    def __read_mdoc(self):
         ''' Read the mdoc files '''
 
-    def import_from_stacks(self, path_to_stacks):
+    def __import_from_stacks(self, path_to_stacks):
         """
         :param path_to_stacks: relative path to find the folder containing stacks (.st) and (.mdoc) information.
 
@@ -50,7 +50,7 @@ class TaskImport(Task):
         # 2. each mdoc file should then be attempted to be imported with the job
         # 3. the mdoc will need to be reparsed to pull out the critical information.
 
-    def import_from_frames(self, path_to_frames):
+    def __import_from_frames(self, path_to_frames):
         """
         :param path_to_frames: relative path to find the folder containing tilt-series information.
         Import script that would create Import job metadata from a "frames folder"
@@ -112,12 +112,12 @@ class TaskImport(Task):
         # Import the datafiles, building imageset.json and results.json
         results = None
         if self.parameters['import_directory_type'] == 'frames':
-            results = self.import_from_frames(self.parameters['import_data'])
+            results = self.__import_from_frames(self.parameters['import_data'])
         elif self.parameters['import_directory_type'] == 'stack':
-            results = self.import_from_stacks(self.parameters['import_data'])
+            results = self.__import_from_stacks(self.parameters['import_data'])
 
         #  Serialize the `result.json` metadata file that points to `imageset.json`
-        results_json_path = os.path.join(self.task_folder, 'results.json')
+        results_json_path = os.path.join(self.task_folder, self.result_json)
         results.save_to_json(results_json_path)
 
     def name(self) -> str:
