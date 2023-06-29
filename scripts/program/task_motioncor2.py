@@ -4,7 +4,7 @@ import os
 
 from metadata.image_metadata import ImageMetadata, ImageSet
 from metadata.task_metadata import TaskDescription, TaskOutputDescription
-from program.task import Task
+from task import Task
 
 class TaskMotionCor2(Task):
     """
@@ -132,7 +132,7 @@ class TaskMotionCor2(Task):
         # Add the Task parameters.
         # Require an imageset containing *.mrc (stack) files
         input_image_meta = None
-        if 'imageset' in self.parameters.keys:
+        if 'imageset' in self.parameters:
             task_meta.add_parameter('imageset', self.parameters['imageset'])
             imageset_filename = self.parameters['imageset']
             input_image_meta = ImageMetadata.load_from_json(imageset_filename)
@@ -141,19 +141,28 @@ class TaskMotionCor2(Task):
 
         # Create Task folder if missing.
         if not os.path.isdir(self.task_folder):
-            os.path.mkdirs(self.task_folder)
+            os.makedirs(self.task_folder)
 
         results_image_meta = ImageMetadata()
 
         # Iterate through the image_meta.
         for image_set in input_image_meta.image_sets:
             image_list = []
-            for image in image_set.images:
+            for image in image_set['images']:
                 if image.endswith('.' + '.tif'):
-                    outfile = f[:-len('.tif')] + '.mc.mrc'
-                    self.__motionCorrectTiff(image, outfile)
-                    # [TODO] - the resulting motion corrected image needs to be in a results imageset.
-                    # 
+                    outfile = image[:-len('.tif')] + '.mc.mrc'
+                    # self.__motionCorrectTiff(image, outfile)
+                    # [TODO] : processing step
+                    image_list.append(outfile)
+                if image.endswith('.' + '.eer'):
+                    outfile = image[:-len('.eer')] + '.mc.mrc'
+                    # [TODO] : processing step
+                    image_list.append(outfile)
+                if image.endswith('.' + '.mrc'):
+                    outfile = image[:-len('.mrc')] + '.mc.mrc'
+                    # [TODO] : processing step
+                    image_list.append(outfile)
+
             if len(image_list) > 0:
                 # add the motion-corrected images into metadata for the task.
                 header = {}
@@ -169,7 +178,7 @@ class TaskMotionCor2(Task):
 
         #  Serialize the `result.json` metadata file that points to `imageset.json`
         results = TaskOutputDescription(self.name(), self.description())
-        results.add_output_file(results_image_meta, 'json')
+        results.add_output_file(image_json_path, 'json')
         results_json_path = os.path.join(self.task_folder, self.result_json)
         results.save_to_json(results_json_path)
 

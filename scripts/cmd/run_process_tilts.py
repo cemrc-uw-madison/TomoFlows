@@ -8,6 +8,7 @@ absolute_list[-1] = "program/"
 sys.path.append("/".join(absolute_list))
 
 from task_import import TaskImport
+from task_motioncor2 import TaskMotionCor2
 
 def run_pipeline(frames_directory, output_directory):
     """
@@ -26,7 +27,16 @@ def run_pipeline(frames_directory, output_directory):
     task_import.run()
 
     # 2. task_motioncor2, should then be called providing the task_import results to continue.
-    # [TODO]
+    import_result = task_import.get_result()
+    # The only output_file, from TaskImport should be a JSON file, and 'imageset'
+    imported_images = import_result.output_files[0]
+    print("Imported images in: " + str(imported_images['file_name']))
+
+    task_directory = os.path.join(output_directory, "task_02_motioncor")
+    task_motioncor2 = TaskMotionCor2(task_directory)
+    task_motioncor2.set_parameter('PixSize', '4.727')
+    task_motioncor2.set_parameter('imageset', imported_images['file_name'])
+    task_motioncor2.run()
 
 ## This is a helper utility to run all the tasks for a data collection
 ## This runner will be used for the initial code port; testing; review.
