@@ -5,6 +5,7 @@ import os
 from abc import ABC, abstractmethod, abstractproperty
 from typing import List
 
+import scripts_constants
 from metadata.task_metadata import TaskDescription, TaskOutputDescription
 
 class Task(ABC):
@@ -16,8 +17,8 @@ class Task(ABC):
     """
 
     # This should be constant for all tasks
-    result_json = 'result.json'
-    imageset_filename = "imageset.json"
+    result_json = scripts_constants.RESULT_JSON
+    imageset_filename = scripts_constants.IMAGESET_JSON
     task_folder = ''
     parameters = {}
 

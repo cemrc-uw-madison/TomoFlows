@@ -14,6 +14,7 @@ absolute_list = absolute_path.split("/")
 absolute_list[-1] = "program/"
 sys.path.append("/".join(absolute_list))
 
+import scripts_constants
 from metadata.workflow_metadata import WorkflowMetadata
 
 @pytest.fixture
@@ -37,7 +38,7 @@ def sample_metadata():
 
 def test_save_and_load_json(sample_metadata, tmp_path):
     # Save metadata to JSON
-    filename = tmp_path / "workflow_metadata.json"
+    filename = tmp_path / scripts_constants.WORKFLOW_JSON
     sample_metadata.save_to_json(str(filename))
 
     # Load metadata from JSON
@@ -53,7 +54,7 @@ def test_save_and_load_json(sample_metadata, tmp_path):
 
 def test_save_and_load_json_file_content(sample_metadata, tmp_path):
     # Save metadata to JSON
-    filename = tmp_path / "workflow_metadata.json"
+    filename = tmp_path / scripts_constants.WORKFLOW_JSON
     sample_metadata.save_to_json(str(filename))
 
     # Load JSON file and compare its content

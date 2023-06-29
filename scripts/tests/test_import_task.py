@@ -14,6 +14,7 @@ absolute_list = absolute_path.split("/")
 absolute_list[-1] = "program/"
 sys.path.append("/".join(absolute_list))
 
+import scripts_constants
 from task_import import TaskImport
 
 from metadata.task_metadata import TaskOutputDescription
@@ -37,9 +38,9 @@ def test_import_from_frames(tmp_path):
     task.run()
 
     # 3. task import will serialize the imageset.json and result.json
-    result_path = os.path.join(task_folder, 'result.json')
+    result_path = os.path.join(task_folder, scripts_constants.RESULT_JSON)
     assert os.path.exists(result_path)
-    imagesets_path = os.path.join(task_folder, 'imageset.json')
+    imagesets_path = os.path.join(task_folder, scripts_constants.IMAGESET_JSON)
     assert os.path.exists(imagesets_path)
 
     # 4. test will deserialize result.json to find result file of imageset.json
