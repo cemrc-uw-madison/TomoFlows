@@ -4,7 +4,8 @@ import os
 
 from metadata.image_metadata import ImageMetadata, ImageSet
 from metadata.task_metadata import TaskDescription, TaskOutputDescription
-from program.task import Task
+
+from task import Task
 
 def list_suffix(directory, extension):
     return (f for f in os.listdir(directory) if f.endswith('.' + extension))

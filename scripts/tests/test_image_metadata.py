@@ -5,12 +5,12 @@ import sys
 
 absolute_path = os.path.dirname(__file__)
 absolute_list = absolute_path.split("/")
-absolute_list[-1] = "metadata/"
+absolute_list[-1] = "program"
 sys.path.append("/".join(absolute_list))
 
-from image_metadata import ImageSet
-from image_metadata import ImageMetadata
-from image_metadata import ImageSetEncoder
+from metadata.image_metadata import ImageSet
+from metadata.image_metadata import ImageMetadata
+from metadata.image_metadata import ImageSetEncoder
 
 @pytest.fixture
 def sample_metadata() -> ImageMetadata:

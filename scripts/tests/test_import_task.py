@@ -16,12 +16,7 @@ sys.path.append("/".join(absolute_list))
 
 from task_import import TaskImport
 
-absolute_path = os.path.dirname(__file__)
-absolute_list = absolute_path.split("/")
-absolute_list[-1] = "metadata/"
-sys.path.append("/".join(absolute_list))
-
-from task_metadata import TaskOutputDescription
+from metadata.task_metadata import TaskOutputDescription
 
 def test_import_from_frames(tmp_path):
     """
@@ -42,9 +37,9 @@ def test_import_from_frames(tmp_path):
     task.run()
 
     # 3. task import will serialize the imageset.json and result.json
-    result_path = os.path.join(task_folder, 'results.json')
+    result_path = os.path.join(task_folder, 'result.json')
     assert os.path.exists(result_path)
-    imagesets_path = os.path.join(task_folder, 'imagesets.json')
+    imagesets_path = os.path.join(task_folder, 'imageset.json')
     assert os.path.exists(imagesets_path)
 
     # 4. test will deserialize result.json to find result file of imageset.json

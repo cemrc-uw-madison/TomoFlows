@@ -11,10 +11,10 @@ import os
 
 absolute_path = os.path.dirname(__file__)
 absolute_list = absolute_path.split("/")
-absolute_list[-1] = "metadata/"
+absolute_list[-1] = "program/"
 sys.path.append("/".join(absolute_list))
 
-from workflow_metadata import WorkflowMetadata
+from metadata.workflow_metadata import WorkflowMetadata
 
 @pytest.fixture
 def sample_metadata():
