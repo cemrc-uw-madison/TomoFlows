@@ -5,6 +5,16 @@ import os
 from metadata.image_metadata import ImageMetadata, ImageSet
 from metadata.task_metadata import TaskDescription, TaskOutputDescription
 from task import Task
+from mdoc import MDoc, FrameSet
+
+import scripts_constants
+import processEER
+
+class EERMotionOptions:
+    """ Simple data class for EER motion correction options """
+    gain = None
+    pixelSize = None
+    exposureDose = None
 
 class TaskMotionCor2(Task):
     """
@@ -26,50 +36,50 @@ class TaskMotionCor2(Task):
         """ Append any motion correction required or optional arguments """
 
         # Required parameters
-        if self.parameters['PixSize']:
+        if 'PixSize' in self.parameters:
             args.append('-PixSize')
             args.append(str(self.parameters['PixSize']))
         else:
             raise ValueError('-PixSize: Missing')
         
-        if self.parameters['Patch']:
+        if 'Patch' in self.parameters:
             args.append('-Patch')
             args.append(str(self.parameters['Patch']))
         else:
             raise ValueError('-Patch: Missing')
 
         # Optional parameters
-        if self.parameters['Iter']:
+        if 'Iter' in self.parameters:
             args.append('-Iter')
             args.append(str(self.parameters['Iter']))
 
-        if self.paramters['Tol']:
+        if 'Tol' in self.parameters:
             args.append('-Tol')
             args.append(str(self.parameters['Tol']))   
 
-        if self.parameters['Gpu']:
+        if 'Gpu' in self.parameters:
             args.append('-Gpu')
             args.append(str(self.parameters['Gpu']))
 
-        if self.parameters['Gain']:
+        if 'Gain' in self.parameters:
             args.append('-Gain')
             args.append(str(self.parameters['Gain']))
 
-        if self.parameters['RotGain']:
+        if 'RotGain' in self.parameters:
             args.append("-RotGain")
             args.append(str(self.parameters['RotGain']))
 
-        if self.parameters['FlipGain']:
+        if 'FlipGain' in self.parameters:
             args.append("-FlipGain")
             args.append(str(self.parameters['FlipGain']))
 
-        if self.parameters['Throw']:
+        if 'Throw' in self.parameters:
             args.append("-Throw")
             args.append(str(self.parameters['Throw']))
 
-        if self.parameters['-FtBin']:
+        if 'FtBin' in self.parameters:
             args.append("-FtBin")
-            args.append(str(self.parameters['-FtBin']))
+            args.append(str(self.parameters['FtBin']))
             # NOTE: may need to be combined with use of PixSize / 2.
 
         return args
@@ -120,6 +130,18 @@ class TaskMotionCor2(Task):
         args = self.__addArguments(args)
         subprocess.call(args)
 
+    def __motionCorrectMRC(self, in_mrc, out_mrc):
+        """ Given TIFF or MRC inputs, do motion correction """
+
+        if (os.path.exists(out_mrc)):
+            print(str(out_mrc) + ' exists: skipping motionCor')
+        else:
+            print(str(out_mrc) + ' will be created by motionCor...')
+
+        args = ['motioncor2', "-InMRC", in_mrc, "-OutMrc", out_mrc]
+        args = self.__addArguments(args)
+        subprocess.call(args)
+
     def run(self):
         """ This should motion correct a set of micrographs """
         # Input:
@@ -129,7 +151,15 @@ class TaskMotionCor2(Task):
 
         # Create a TaskDescription with parameters.
         task_meta = TaskDescription(self.name(), self.description())
-        # Add the Task parameters.
+        
+        # [TODO] Add the Task parameters.
+        
+        # Create Task folder if missing.
+        if not os.path.isdir(self.task_folder):
+            os.makedirs(self.task_folder)
+        # Serialize the Task description metatadata
+        task_meta.save_to_json(os.path.join(self.task_folder, self.task_json))
+
         # Require an imageset containing *.mrc (stack) files
         input_image_meta = None
         if 'imageset' in self.parameters:
@@ -148,20 +178,56 @@ class TaskMotionCor2(Task):
         # Iterate through the image_meta.
         for image_set in input_image_meta.image_sets:
             image_list = []
-            for image in image_set['images']:
-                if image.endswith('.' + '.tif'):
+
+            header = image_set['header']
+
+            # Get header and images
+            imageset_ID = header[scripts_constants.HEADER_IMAGESET_NAME]
+            images = image_set['images']
+            
+            # Prepare output folder
+            out_folder = os.path.join(self.task_folder, scripts_constants.DATA_SUBFOLDER, imageset_ID)
+            if not os.path.isdir(out_folder):
+                os.makedirs(out_folder)
+
+            for image in images:
+                print(image + '\n')
+                if image.endswith('.tif'):
                     outfile = image[:-len('.tif')] + '.mc.mrc'
                     # self.__motionCorrectTiff(image, outfile)
-                    # [TODO] : processing step
                     image_list.append(outfile)
-                if image.endswith('.' + '.eer'):
+                elif image.endswith('.eer'):
                     outfile = image[:-len('.eer')] + '.mc.mrc'
-                    # [TODO] : processing step
+
+                    # TODO: need to read the mdoc file.
+                    # TODO: will need an FmIntfile.txt
+                    # TODO: gain file(s) provided in .tiff should have been converted to .mrc
+                    # TODO: may need an exposure dose from the mdoc.
+
+                    # Prepare an FmIntFile
+                    print(image)
+                    mdoc_filename = image + '.mdoc'
+                    EEROpts = processEER.readMdoc(mdoc_filename)
+
+                    dosefile = os.path.join(out_folder, 'FmIntFile.txt')
+                    processEER.prepareIntFile(image, EEROpts.exposureDose, dosefile)
+
+                    # TODO:
+                    # Convert gain if needed from .tiff -> .mrc format.
+                    # Note: this is problematic, doesn't have the full source path.
+                    # gain_tiff = EEROpts.gain
+                    # gain_mrc = os.path.join(out_folder, 'gain.mrc')
+                    # processEER.convertTifMrc(gain_tiff, gain_mrc)
+                    # EEROpts.gain = gain_mrc
+                    # self.__motionCorrectEer(image, outfile)
+                    
                     image_list.append(outfile)
-                if image.endswith('.' + '.mrc'):
+                elif image.endswith('.mrc'):
                     outfile = image[:-len('.mrc')] + '.mc.mrc'
-                    # [TODO] : processing step
+                    # self.__motionCorrectMRC(image, outfile)
                     image_list.append(outfile)
+                else:
+                    print('Unable to process image: ' + image)
 
             if len(image_list) > 0:
                 # add the motion-corrected images into metadata for the task.

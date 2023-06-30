@@ -36,6 +36,7 @@ def run_pipeline(frames_directory, output_directory):
     task_motioncor2 = TaskMotionCor2(task_directory)
     task_motioncor2.set_parameter('PixSize', '4.727')
     task_motioncor2.set_parameter('imageset', imported_images['file_name'])
+    task_motioncor2.set_parameter('Patch', '5 5')
     task_motioncor2.run()
 
 ## This is a helper utility to run all the tasks for a data collection
@@ -45,6 +46,7 @@ def main():
     parser = argparse.ArgumentParser(description='Prepare tilt-series data for use')
     parser.add_argument('--frames', help='parent directory containing multiple tilt stacks', required=False, default=None)
     parser.add_argument('--outputDirectory', help='directory to deposit results', required=True)
+    # [TODO] - add an option to take a workflow.json, parse and run the tasks /w arguments.
 
     args = parser.parse_args()
 

@@ -17,6 +17,7 @@ class Task(ABC):
     """
 
     # This should be constant for all tasks
+    task_json = scripts_constants.TASK_JSON
     result_json = scripts_constants.RESULT_JSON
     imageset_filename = scripts_constants.IMAGESET_JSON
     task_folder = ''

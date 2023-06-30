@@ -7,6 +7,8 @@ from metadata.task_metadata import TaskDescription, TaskOutputDescription
 
 from task import Task
 
+import scripts_constants
+
 def list_suffix(directory, extension):
     return (f for f in os.listdir(directory) if f.endswith('.' + extension))
 
@@ -63,6 +65,7 @@ class TaskImport(Task):
         # 1. find each subdirectory containing image files, then finding the files to 'import'
         for childDir in os.listdir(path_to_frames):
             relativePath = os.path.join(path_to_frames, childDir)
+            imageset_id = childDir
             if (os.path.isdir(relativePath)):
                 image_list = []
                 # 2. find all *.tiff, *.eer, or *.mrc files in this folder with accompaning .mdoc information.
@@ -81,6 +84,7 @@ class TaskImport(Task):
                 if len(image_list) > 0:
                     # 3. add the tilt-series ImageSet into imageMD
                     header = {}
+                    header[scripts_constants.HEADER_IMAGESET_NAME] = imageset_id
                     tiltset = ImageSet(header, image_list)
                     imageMD.add_image_set(tiltset)
 
@@ -107,7 +111,7 @@ class TaskImport(Task):
         if not os.path.isdir(self.task_folder):
             os.makedirs(self.task_folder)
         # Serialize the Task description metatadata
-        task_meta.save_to_json(os.path.join(self.task_folder, self.result_json))
+        task_meta.save_to_json(os.path.join(self.task_folder, self.task_json))
 
         # Import the datafiles, building imageset.json and results.json
         results = None
