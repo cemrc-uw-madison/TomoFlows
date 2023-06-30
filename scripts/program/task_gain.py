@@ -4,6 +4,8 @@ import os
 from task import Task
 import uuid
 
+from metadata.task_metadata import TaskDescription, TaskOutputDescription
+
 def check_image_format(file_name, required_format):
     """
 
@@ -25,8 +27,9 @@ class TaskGain(Task):
     required_input_format = "dm4"
     required_output_format = "mrc"
     task_id = uuid.uuid4()
+    task_folder = ''
 
-    def __init__(self, input_file):
+    def __init__(self, task_folder, input_file):
         """
         :param input_file: file name in format conversion, required to be dm4 format
         output_file will always be input_file name with mrc extension
@@ -36,34 +39,21 @@ class TaskGain(Task):
             raise ValueError("Input image format must be dm4!")
         self.input_file = input_file
         self.output_file = input_file.split(".")[0] + ".mrc"
-
-    @property
-    def param(self):
-        """
-        TODO
-        This method should return Parameter that needed to run the task
-        :return: instance of Param class
-        """
-
-    def description(self) -> str:
-        """
-        TODO
-        This method should return the detailed description of the task
-        :return: string
-        """
-
-    def get_param(self, key: str) -> str:
-        """ 
-        TODO
-        Should provide the Param with name-value pairs 
-        """
+        self.task_folder = task_folder
 
     def run(self):
         """ Execute two steps to convert and scale the image """
 
-        """
-        TODO - this should get parameters from Param
-        """
+        # Create a TaskDescription with parameters.
+        task_meta = TaskDescription(self.name(), self.description())
+        # TODO: might need to be changed to instead reference the TaskImport (result.json) to find gain images.
+        # TODO: external use could provide "parameters" task_meta.add_parameter("input", self.input_file)
+        # TODO: this should be serialized to a task directory.
+
+        if not os.path.isdir(self.task_folder):
+            os.makedirs(self.task_folder)
+        # Serialize the Task description metatadata
+        task_meta.save_to_json(os.path.join(self.task_folder, self.result_json))
 
         # Input file is DM4 format, initial image size is super-resolution is 11520x8184
 
@@ -116,8 +106,10 @@ class TaskGain(Task):
                 outfile]
         subprocess.call(args_remove)
 
-    def get_result(self):
-        """ comment """
+        # TODO: write also results here.
 
-    def get_logs(self):
-        """ comment """
+    def name(self) -> str:
+        return "Gain"
+
+    def description(self) -> str:
+        return 'Conversion of gain file formats'

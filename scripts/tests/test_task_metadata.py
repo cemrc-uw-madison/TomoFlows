@@ -11,11 +11,11 @@ import os
 
 absolute_path = os.path.dirname(__file__)
 absolute_list = absolute_path.split("/")
-absolute_list[-1] = "metadata/"
+absolute_list[-1] = "program/"
 sys.path.append("/".join(absolute_list))
 
-from task_metadata import TaskDescription
-from task_metadata import TaskOutputDescription
+from metadata.task_metadata import TaskDescription
+from metadata.task_metadata import TaskOutputDescription
 
 @pytest.fixture
 def sample_task():
