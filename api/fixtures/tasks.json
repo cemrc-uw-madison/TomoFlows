@@ -1,0 +1,11 @@
+[
+	{
+	  "model": "api.Task",
+	  "pk": 1,
+	  "fields": {
+		"name": "Gain",
+		"description": "Convert dm4 to mrc format",
+		"parameter_fields": "[{\"name\":\"Input File\",\"type\":\"file\",\"default\":null}]"
+	  }
+	}
+  ]

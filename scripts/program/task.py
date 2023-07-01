@@ -5,8 +5,8 @@ import os
 from abc import ABC, abstractmethod, abstractproperty
 from typing import List
 
-import scripts_constants
-from metadata.task_metadata import TaskDescription, TaskOutputDescription
+import scripts.program.scripts_constants as scripts_constants
+from scripts.program.metadata.task_metadata import TaskDescription, TaskOutputDescription
 
 class Task(ABC):
     """

@@ -7,10 +7,10 @@ from datetime import datetime
 import os
 import json
 import threading
-import time
-import random
+import pytz
 from api.models import User, Project, Task, ProjectTask, Run
 from api.serializers import UserSerializer, ProjectSerializer, TaskSerializer, ProjectTaskSerializer, RunSerializer
+from api.taskwrapper import task_handler
 
 VERIFICATION_CODE = "12345"
 
@@ -45,7 +45,7 @@ def ProjectList(request):
         serializer = ProjectSerializer(data=request.data)
         if serializer.is_valid():
             serializer.validated_data['owner'] = request.user
-            serializer.validated_data['last_updated'] = datetime.now()
+            serializer.validated_data['last_updated'] = datetime.now().replace(tzinfo=pytz.utc)
             name = serializer.validated_data['name']
             path = os.path.join(settings.BASE_DIR, "data", name.lower().replace(' ', '-'))
             serializer.validated_data['folder_path'] = path
@@ -70,7 +70,7 @@ def ProjectDetail(request, id):
     elif request.method == 'PUT':
         serializer = ProjectSerializer(project, data=request.data)
         if serializer.is_valid():
-            serializer.validated_data['last_updated'] = datetime.now()
+            serializer.validated_data['last_updated'] = datetime.now().replace(tzinfo=pytz.utc)
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -203,7 +203,7 @@ def ProjectTaskList(request):
             data = serializer.data
             data["parameter_values"] = json.loads(data["parameter_values"])
             run = Run.objects.create(project_task_id=data["id"], status="CREATED", logs="[]", errors="[]")
-            run.project_task.project.last_updated = datetime.now()
+            run.project_task.project.last_updated = datetime.now().replace(tzinfo=pytz.utc)
             run.project_task.project.save()
             run_serialized = RunSerializer(run)
             data["run"] = run_serialized.data
@@ -249,7 +249,7 @@ def ProjectTaskDetail(request, id):
             serializer.save()
             data = serializer.data
             data["parameter_values"] = json.loads(data["parameter_values"])
-            project_task.project.last_updated = datetime.now()
+            project_task.project.last_updated = datetime.now().replace(tzinfo=pytz.utc)
             project_task.project.save()
             try:
                 run = Run.objects.get(project_task_id=data["id"])
@@ -263,7 +263,7 @@ def ProjectTaskDetail(request, id):
             return Response(data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
-        project_task.project.last_updated = datetime.now()
+        project_task.project.last_updated = datetime.now().replace(tzinfo=pytz.utc)
         project_task.project.save()
         project_task.delete()
         return Response({"detail": "ProjectTask deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
@@ -284,14 +284,12 @@ def RunProjectTask(request, id):
         return Response({"detail": "Task already running"}, status=status.HTTP_400_BAD_REQUEST)
     
     if request.method == 'GET':
-        # TODO: run task script
-        starter = threading.Thread(target=startTask, name="StartTask", args=[id])
+        starter = threading.Thread(target=start_task, name=f"StartTask-{id}", args=[id])
         starter.start()
-        ## SAMPLE END
         run.status = "RUNNING"
-        run.start_time = datetime.now()
+        run.start_time = datetime.now().replace(tzinfo=pytz.utc)
         run.save()
-        run.project_task.project.last_updated = datetime.now()
+        run.project_task.project.last_updated = datetime.now().replace(tzinfo=pytz.utc)
         run.project_task.project.save()
         serializer = ProjectTaskSerializer(project_task)
         data = serializer.data
@@ -302,51 +300,10 @@ def RunProjectTask(request, id):
         del data["run"]["project_task"]
         return Response(data)
 
-def startTask(projectTaskId):
-    time.sleep(10)
-    project_task = ProjectTask.objects.get(pk=projectTaskId)
+def start_task(project_task_id):
+    project_task = ProjectTask.objects.get(pk=project_task_id)
     run = Run.objects.get(project_task=project_task)
-    choice = random.choice(["SUCCESS", "FAILED"])
-    run.status = choice
-    run.end_time = datetime.now()
-    if choice == "SUCCESS":
-        run.logs = json.dumps([
-            {
-                "timestamp": str(datetime.now()),
-                "detail": "Running task...",
-            },
-            {
-                "timestamp": str(datetime.now()),
-                "detail": "Waiting for 10s"
-            },
-            {
-                "timestamp": str(datetime.now()),
-                "detail": "Task run completed successfully"
-            },
-        ])
-        run.errors = json.dumps([])
-    else:
-        run.logs = json.dumps([
-            {
-                "timestamp": str(datetime.now()),
-                "detail": "Running sample task..."
-            },
-            {
-                "timestamp": str(datetime.now()),
-                "detail": "Waiting for 10s"
-            },
-            {
-                "timestamp": str(datetime.now()),
-                "detail": "Task run failed. Check errors for more information"
-            }
-        ])
-        run.errors = json.dumps([
-            {
-                "type": "Server Error",
-                "detail": "Task run programmed to fail or succeed randomly"
-            }
-        ])
-    run.save()
+    task_handler(project_task, run)
     
 @api_view(['GET', 'PUT'])
 @permission_classes((permissions.IsAuthenticated,))
