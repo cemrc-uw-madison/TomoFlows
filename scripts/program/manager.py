@@ -9,7 +9,7 @@
 """
 import os
 import json
-from program.scripts_constants import TASK_NUM, PROJECT_ID, TASKS, PROJECT_NUM, PROJECTS
+import scripts.program.scripts_constants as CONSTANTS
 
 
 def get_root_path():
@@ -48,7 +48,7 @@ def create_data_metadata(path):
     """
     if "data.json" in os.listdir(path):
         return False
-    info = {PROJECT_NUM: 0, PROJECTS: {}}
+    info = {CONSTANTS.PROJECT_NUM: 0, CONSTANTS.PROJECTS: {}}
     json_info = json.dumps(info)
     json_path = os.path.join(path, "data.json")
     with open(json_path, "w") as fp:
@@ -106,7 +106,7 @@ def create_project_metadata(path, project_id):
         return False
     json_path = os.path.join(project_path, project_json)
     with open(json_path, "w") as fp:
-        info = {TASK_NUM: 0, TASKS: {}, PROJECT_ID: project_id}  
+        info = {CONSTANTS.TASK_NUM: 0, CONSTANTS.TASKS: {}, CONSTANTS.PROJECT_ID: project_id}  
         fp.write(json.dumps(info))
     return True    
 
@@ -121,14 +121,14 @@ def create_project(data_path):
     data_json_path = os.path.join(data_path, "data.json")
     with open(data_json_path, "r+") as fp:
         data_json = json.load(fp)
-        project_id = data_json[PROJECT_NUM] + 1
+        project_id = data_json[CONSTANTS.PROJECT_NUM] + 1
         if not create_project_folder(data_path, project_id):
             return False
         if not create_project_metadata(data_path, project_id):
             return False 
-        data_json[PROJECT_NUM] = project_id
+        data_json[CONSTANTS.PROJECT_NUM] = project_id
         project_name = "project_" + str(project_id)
-        data_json[PROJECTS][project_name] = os.path.join(data_path, project_name)
+        data_json[CONSTANTS.PROJECTS][project_name] = os.path.join(data_path, project_name)
         fp.seek(0)
         json.dump(data_json, fp)
     return True

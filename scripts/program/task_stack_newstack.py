@@ -1,7 +1,7 @@
 import typing
 import subprocess
 import os
-from program.task import Task
+from scripts.program.task import Task
 
 class generate_stack(Task):
     """

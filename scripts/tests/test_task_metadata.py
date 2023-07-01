@@ -1,21 +1,9 @@
 import pytest
 import json
-
 import sys
 import os
-
-# NOTE: we need absolute imports to reach the metadata module, 
-# and it may be clearer to instead import as:
-#   `from program.metadata.metadata import TaskDescription``
-# which would require that the top-level program folder is included in the PYTHONPATH environment variable.
-
-absolute_path = os.path.dirname(__file__)
-absolute_list = absolute_path.split("/")
-absolute_list[-1] = "program/"
-sys.path.append("/".join(absolute_list))
-
-from metadata.task_metadata import TaskDescription
-from metadata.task_metadata import TaskOutputDescription
+from scripts.program.metadata.task_metadata import TaskDescription
+from scripts.program.metadata.task_metadata import TaskOutputDescription
 
 @pytest.fixture
 def sample_task():

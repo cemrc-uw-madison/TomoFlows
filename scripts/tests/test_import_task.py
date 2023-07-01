@@ -1,23 +1,10 @@
 import pytest
 import json
-
 import sys
 import os
-
-# NOTE: we need absolute imports to reach the program module, 
-# and it may be clearer to instead import as:
-#   `from program.task_motioncor2 import TaskMotionCor2`
-# which would require that the top-level program folder is included in the PYTHONPATH environment variable.
-
-absolute_path = os.path.dirname(__file__)
-absolute_list = absolute_path.split("/")
-absolute_list[-1] = "program/"
-sys.path.append("/".join(absolute_list))
-
-import scripts_constants
-from task_import import TaskImport
-
-from metadata.task_metadata import TaskOutputDescription
+import scripts.program.scripts_constants as CONSTANTS
+from scripts.program.task_import import TaskImport
+from scripts.program.metadata.task_metadata import TaskOutputDescription
 
 def test_import_from_frames(tmp_path):
     """
@@ -38,9 +25,9 @@ def test_import_from_frames(tmp_path):
     task.run()
 
     # 3. task import will serialize the imageset.json and result.json
-    result_path = os.path.join(task_folder, scripts_constants.RESULT_JSON)
+    result_path = os.path.join(task_folder, CONSTANTS.RESULT_JSON)
     assert os.path.exists(result_path)
-    imagesets_path = os.path.join(task_folder, scripts_constants.IMAGESET_JSON)
+    imagesets_path = os.path.join(task_folder, CONSTANTS.IMAGESET_JSON)
     assert os.path.exists(imagesets_path)
 
     # 4. test will deserialize result.json to find result file of imageset.json

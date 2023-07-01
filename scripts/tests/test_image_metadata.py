@@ -2,15 +2,7 @@ import pytest
 import json
 import os
 import sys
-
-absolute_path = os.path.dirname(__file__)
-absolute_list = absolute_path.split("/")
-absolute_list[-1] = "program"
-sys.path.append("/".join(absolute_list))
-
-from metadata.image_metadata import ImageSet
-from metadata.image_metadata import ImageMetadata
-from metadata.image_metadata import ImageSetEncoder
+from scripts.program.metadata.image_metadata import ImageSet, ImageMetadata, ImageSetEncoder
 
 @pytest.fixture
 def sample_metadata() -> ImageMetadata:
