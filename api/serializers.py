@@ -26,14 +26,14 @@ class ProjectSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'name', 'description']
+        fields = ['id', 'name', 'description', 'parameter_fields']
     
 class ProjectTaskSerializer(serializers.ModelSerializer):
     project = ProjectSerializer(required=False)
     task = TaskSerializer(required=False)
     class Meta:
         model = ProjectTask
-        fields = ['id', 'project', 'task', 'parameters']
+        fields = ['id', 'project', 'task', 'parameter_values']
         
 class RunSerializer(serializers.ModelSerializer):
     project_task = ProjectTaskSerializer(required=False)
