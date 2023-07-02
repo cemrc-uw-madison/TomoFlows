@@ -7,6 +7,7 @@ See [Design Documentation](scripts/Documentation/Design/index.md)
 ## Running on Docker
 1. Install Docker: See [Docker Documentation](https://docs.docker.com/get-docker/)
 2. Configure "Preferences > Resources > File Sharing" in Docker Desktop to include `/tmp`
+3. Navigate to `frontend` and build React files with `npm install && npm run build`
 2. Build Docker Image: `docker build . -t tomoflows-img`
 3. Run Docker Container: `docker compose up -d` (remove -d to attach container to terminal and not run in background)
 4. Open Browser and visit `http://localhost:8000`
