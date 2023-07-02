@@ -1,8 +1,10 @@
 import typing
 import subprocess
 import os
-from program.task import Task
 
+from metadata.image_metadata import ImageMetadata, ImageSet
+from metadata.task_metadata import TaskDescription, TaskOutputDescription
+from program.task import Task
 
 def check_image_format(file_name, required_format):
     """
@@ -23,43 +25,84 @@ class TaskAreTomo(Task):
     required_input_format = "mrc"
     required_output_format = "mrc"
 
-    def __init__(self, input_file):
+    def __init__(self, task_folder):
         """
-        :param input_file: file name in format conversion, required to be dm4 format
-        """
-        self.input_file = input_file
-        if not check_image_format(input_file, self.required_input_format):
-            raise ValueError("Input image format must be mrc!")
-
-    @property
-    def param(self):
-        """
-        TODO
-        This method should return Parameter that needed to run the task
-        :return: instance of Param class
+        :param task_folder: where to write output for the task
         """
 
-    def description(self) -> str:
-        """
-        TODO
-        This method should return the detailed description of the task
-        :return: string
-        """
+        self.task_folder = task_folder
 
-    def get_param(self, key: str) -> str:
-        """ 
-        TODO
-        Should provide the Param with name-value pairs 
+    def __batch_aretomo(self, imageset):
         """
+        Run AreTomo on each of the stacks from an imageset
+        """
+        results = TaskOutputDescription(self.name(), self.description())
+        
+        # [TODO] - make the runner on all the stacks here.
+        # add each of the resulting tomograms into a result.json file.
+        # return this as the result of the method.
 
     def run(self):
-        """ Execute two steps to convert and scale the image """
+        """ Execute AreTomo for each tilt-series """
 
-        # Input 
+        # Create a TaskDescription with parameters.
+        task_meta = TaskDescription(self.name(), self.description())
+        # Add the Task parameters.
+        # Require an imageset containing *.mrc (stack) files
+        imageset = None
+        if 'imageset' in self.parameters.keys:
+            task_meta.add_parameter('imageset', self.parameters['imageset'])
+            iamgeset_filename = self.parameters['imageset']
+        else: 
+            raise ValueError("Parameter 'imageset' is not provided")
 
+        # Create Task folder if missing.
+        if not os.path.isdir(self.task_folder):
+            os.path.mkdirs(self.task_folder)
 
-    def get_result(self):
-        """ comment """
+        # Add all the required/optional parameters here.
+        if 'VolZ' in self.parameters.keys:
+            task_meta.add_parameter('VolZ', self.parameters['VolZ'])
+        if 'AlignZ' in self.parameters.keys:
+            task_meta.add_parameter('AlignZ', self.parameters['AlignZ'])
+        if 'OutBin' in self.parameters.keys:
+            task_meta.add_parameter('OutBin', self.parameters['OutBin'])
+        if 'DarkTol' in self.parameters.keys:
+            task_meta.add_parameter('DarkTol', self.parameters['DarkTol'])
+        if 'OutImod' in self.parameters.keys:
+            task_meta.add_parameter('OutImod', self.parameters['OutImod'])
+        if 'FlipVol' in self.parameters.keys:
+            task_meta.add_parameter('FlipVol', self.parameters['FlipVol'])
+        if 'Patch' in self.parameters.keys:
+            task_meta.add_parameter('Patch', self.parameters['Patch'])
+        if 'Kv' in self.parameters.keys:
+            task_meta.add_parameter('Kv', self.parameters['Kv'])           
+        if 'PixSize' in self.parameters.keys:
+            task_meta.add_parameter('PixSize', self.parameters['PixSize'])
+        if 'Wbp' in self.parameters.keys:
+            task_meta.add_parameter('Wbp', self.parameters['Wbp'])
+        # This provides what are the tilt angles in the stack for each image layer.
+        if 'AngFile' in self.parameters.keys:
+            task_meta.add_parameter('AngFile', self.parameters['AngFile']) 
+        # Alternative to AngFile is to provide a TiltRange. 
+        if 'TiltRange' in self.parameters.keys:
+            task_meta.add_parameter('TiltRange', self.parameters['TiltRange'])    
+        if 'TiltCor' in self.parameters.keys:
+            task_meta.add_parameter('TiltCor', self.parameters['TiltCor'])            
+        if 'TiltAxisAngle' in self.parameters.keys:
+            task_meta.add_parameter('TiltAxisAngle', self.parameters['TiltAxisAngle'])      
+        # Serialize the Task description metatadata
+        task_meta.save_to_json(os.path.join(self.task_folder, self.result_json))
 
-    def get_logs(self):
-        """ comment """
+        # Run AreTomo on each of the stacks.
+        results = self.__batch_aretomo(imageset)
+
+        #  Serialize the `result.json` metadata file that points to `imageset.json`
+        results_json_path = os.path.join(self.task_folder, self.result_json)
+        results.save_to_json(results_json_path)
+
+    def name(self) -> str:
+        return 'AreTomo'
+    
+    def description(self) -> str:
+        return 'Build a tomogram for each tilt-series with `AreTomo`'

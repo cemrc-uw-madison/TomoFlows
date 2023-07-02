@@ -10,7 +10,7 @@ class ImageSet:
         self.header = header
         self.images = images
 
-class ImageDataMetadata:
+class ImageMetadata:
     """
     Describes the imported datasets.
     """
@@ -30,7 +30,7 @@ class ImageDataMetadata:
             json.dump(data, file, indent=4, cls=ImageSetEncoder)
 
     @classmethod
-    def load_from_json(cls, filename: str) -> "ImageDataMetadata":
+    def load_from_json(cls, filename: str) -> "ImageMetadata":
         with open(filename, "r") as file:
             data = json.load(file)
 

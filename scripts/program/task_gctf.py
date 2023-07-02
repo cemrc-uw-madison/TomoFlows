@@ -30,36 +30,27 @@ class TaskGctf(Task):
         self.input_file = input_file
         if not check_image_format(input_file, self.required_input_format):
             raise ValueError("Input image format must be mrc!")
+        
+    def run_gctf(in_mrc, out_mrc, output_EPA, pixelSize):
+        """ Run gCTF to provide CTF estimation """
 
-    @property
-    def param(self):
-        """
-        TODO
-        This method should return Parameter that needed to run the task
-        :return: instance of Param class
-        """
+        if (os.path.exists(output_EPA)):
+            print(output_EPA + ' exists: skipping gCTF')
+        else:
+            command = 'Gctf'
+            args = [command, '--apix', str(pixelSize), '--kV', str(motionOptions.voltage), '--cs', str(motionOptions.sphericalAberration), '--ac', str(motionOptions.amplitudeContrast), input_mrc]
 
-    def description(self) -> str:
-        """
-        TODO
-        This method should return the detailed description of the task
-        :return: string
-        """
-
-    def get_param(self, key: str) -> str:
-        """ 
-        TODO
-        Should provide the Param with name-value pairs 
-        """
+            # Setup a temporary directory and run Gctf
+            with tempfile.TemporaryDirectory() as tmpdirname:
+                subprocess.call(args)
 
     def run(self):
-        """ Execute two steps to convert and scale the image """
+        """ CTF estimation for a list of files """
 
-        # Input 
+        # TODO: create a results.json describing the output.
 
+    def name(self) -> str:
+        return "Task Gctf"
 
-    def get_result(self):
-        """ comment """
-
-    def get_logs(self):
-        """ comment """
+    def description(self) -> str:
+        return "Perform CTF estimation for each micrograph"

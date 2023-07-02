@@ -15,3 +15,15 @@ TASKS: (task_name: task_absolute_path) key-value pairs
 TASK_NUM = "task_num"
 PROJECT_ID = "project_id"
 TASKS = "tasks"
+
+"""
+Contents inside task folder
+"""
+TASK_JSON = "task.json"
+RESULT_JSON = "result.json"
+IMAGESET_JSON = "imageset.json"
+
+"""
+Workflow JSON: a metadata file that supports 'run_process_tilts.py', a headless run.
+"""
+WORKFLOW_JSON = "workflow.json"
