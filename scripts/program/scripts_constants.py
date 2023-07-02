@@ -3,6 +3,8 @@ Contents inside data.json
 PROJECT_NUM: numbers of projects inside /data 
 PROJECTS: (project_name: project_absolute_path) key-value pairs
 """
+
+
 PROJECT_NUM = "project_num"
 PROJECTS = "projects"
 
