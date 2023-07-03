@@ -1,21 +1,9 @@
 import pytest
 import json
-
 import sys
 import os
-
-# NOTE: we need absolute imports to reach the metadata module, 
-# and it may be clearer to instead import as:
-#   `from program.metadata.metadata import TaskDescription``
-# which would require that the top-level program folder is included in the PYTHONPATH environment variable.
-
-absolute_path = os.path.dirname(__file__)
-absolute_list = absolute_path.split("/")
-absolute_list[-1] = "program/"
-sys.path.append("/".join(absolute_list))
-
-import scripts_constants
-from metadata.workflow_metadata import WorkflowMetadata
+import scripts.program.scripts_constants as CONSTANTS
+from scripts.program.metadata.workflow_metadata import WorkflowMetadata
 
 @pytest.fixture
 def sample_metadata():
@@ -38,7 +26,7 @@ def sample_metadata():
 
 def test_save_and_load_json(sample_metadata, tmp_path):
     # Save metadata to JSON
-    filename = tmp_path / scripts_constants.WORKFLOW_JSON
+    filename = tmp_path / CONSTANTS.WORKFLOW_JSON
     sample_metadata.save_to_json(str(filename))
 
     # Load metadata from JSON
@@ -54,7 +42,7 @@ def test_save_and_load_json(sample_metadata, tmp_path):
 
 def test_save_and_load_json_file_content(sample_metadata, tmp_path):
     # Save metadata to JSON
-    filename = tmp_path / scripts_constants.WORKFLOW_JSON
+    filename = tmp_path / CONSTANTS.WORKFLOW_JSON
     sample_metadata.save_to_json(str(filename))
 
     # Load JSON file and compare its content
