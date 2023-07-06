@@ -5,6 +5,8 @@ from scripts.program.metadata.image_metadata import ImageMetadata, ImageSet
 from scripts.program.metadata.task_metadata import TaskDescription, TaskOutputDescription
 from scripts.program.task import Task
 
+import scripts.program.scripts_constants as CONSTANTS
+
 def list_suffix(directory, extension):
     return (f for f in os.listdir(directory) if f.endswith('.' + extension))
 
@@ -91,9 +93,9 @@ class TaskImport(Task):
 
     def run(self):
         """ Should run the import task """
-        if not self.parameters['import_data']:
+        if not 'import_data' in self.parameters.keys():
             raise ValueError("Parameter 'import_data' is not provided")
-        if not self.parameters['import_directory_type']:
+        if not 'import_directory_type' in self.parameters.keys():
             raise ValueError("Parameter 'import_directory_type' is not provided")
 
         # Create a TaskDescription with parameters.
@@ -116,6 +118,7 @@ class TaskImport(Task):
 
         #  Serialize the `result.json` metadata file that points to `imageset.json`
         results_json_path = os.path.join(self.task_folder, self.result_json)
+        results.status = CONSTANTS.TASK_STATUS_SUCCESS 
         results.save_to_json(results_json_path)
 
     def name(self) -> str:

@@ -7,5 +7,14 @@
 		"description": "Convert dm4 to mrc format",
 		"parameter_fields": "[{\"name\":\"Input File\",\"type\":\"file\",\"default\":null}]"
 	  }
-	}
+    },
+    {
+        "model": "api.Task",
+        "pk": 2,
+        "fields": {
+            "name": "Import",
+            "description": "Import micrographs into a project",
+            "parameter_fields": "[{\"name\":\"import_data\",\"type\":\"directory\",\"default\":null}, {\"name\":\"import_directory_type\",\"type\":\"string\",\"default\":\"frames\"}]"
+        }
+    }
   ]
