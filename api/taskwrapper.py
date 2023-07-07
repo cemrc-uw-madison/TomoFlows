@@ -5,11 +5,16 @@ import pytz
 import os
 from datetime import datetime
 from scripts.program.task_gain import TaskGain
+from scripts.program.task_motioncor2 import TaskMotionCor2
 from django.conf import settings
+
+import scripts.program.scripts_constants as CONSTANTS
 
 def task_handler(project_task, run):
     if project_task.task.name == "Gain":
         task_gain_handler(project_task, run)
+    elif project_task.task.name == "Motion Correction (MotionCor2)":
+        task_motioncor2(project_task, run)
     else:
         task_sample_handler(project_task, run)
 
@@ -83,3 +88,28 @@ def task_gain_handler(project_task, run):
     run.errors = json.dumps([])
     run.save()
 
+def task_motioncor2(project_task, run):
+    project = project_task.project
+    # TODO: ideally parameters would provide name:value pairs as a dictionary? We only get the values.
+    parameters = json.loads(project_task.parameter_values)
+
+    logs = []
+    logs.append({
+        "timestamp": str(datetime.now().replace(tzinfo=pytz.utc)),
+        "detail": "Running Motion Correction (MotionCor2) task...",
+    })
+    
+    project_folder = os.path.join( project.folder_path, CONSTANTS.TASK_FOLDER_PREFIX + str(project_task.id) )
+    task_motioncor2 = TaskMotionCor2(project_folder)
+    # TODO: add the parameters here
+    task_motioncor2.run()
+    
+    run.status = task_motioncor2.get_result().status
+    run.end_time = datetime.now().replace(tzinfo=pytz.utc)
+    logs.append({
+        "timestamp": str(datetime.now().replace(tzinfo=pytz.utc)),
+        "detail": "Motion Correction (MotionCor2) task run completed successfully"
+    })
+    run.logs = json.dumps(logs)
+    run.errors = json.dumps([])
+    run.save()
