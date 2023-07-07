@@ -1,12 +1,14 @@
 import pytest
-from program import manager 
+from scripts.program import manager 
 import os 
 import json 
 import shutil 
-from program.scripts_constants import TASK_NUM, PROJECT_ID, TASKS, PROJECT_NUM, PROJECTS
+import scripts.program.scripts_constants as CONSTANTS
+
 test_path = os.getcwd()
 os.chdir("../..")
 root_path = os.getcwd()
+
 def test_get_root_path1():
     """
     Test if get_root_path can return correct root path from any directory
@@ -50,8 +52,8 @@ def test_create_data_metadata1():
         json_path = os.path.join(data_path, "data.json")
         with open(json_path, "r") as fp:
             data = json.load(fp)
-            assert data[PROJECT_NUM] == 0
-            assert len(data[PROJECTS]) == 0
+            assert data[CONSTANTS.PROJECT_NUM] == 0
+            assert len(data[CONSTANTS.PROJECTS]) == 0
 
 def test_create_data_metadata2():
     """
@@ -82,10 +84,10 @@ def test_create_project():
         manager.create_project(data_path)
     with open(os.path.join(data_path, "data.json"), "r") as fp:
         data_json = json.load(fp)
-        assert data_json[PROJECT_NUM] == 5
-        assert len(data_json[PROJECTS]) == 5
+        assert data_json[CONSTANTS.PROJECT_NUM] == 5
+        assert len(data_json[CONSTANTS.PROJECTS]) == 5
         for i in range(5):
             project_name = "project_" + str(i + 1)
-            assert data_json[PROJECTS][project_name] == os.path.join(data_path, project_name)
+            assert data_json[CONSTANTS.PROJECTS][project_name] == os.path.join(data_path, project_name)
     shutil.rmtree(data_path)
     

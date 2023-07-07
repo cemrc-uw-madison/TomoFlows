@@ -2,19 +2,17 @@ import typing
 import subprocess
 import os
 
-from metadata.image_metadata import ImageMetadata, ImageSet
-from metadata.task_metadata import TaskDescription, TaskOutputDescription
-from task import Task
 from mdoc import MDoc, FrameSet
 
-import scripts_constants
 import processEER
 
-class EERMotionOptions:
-    """ Simple data class for EER motion correction options """
-    gain = None
-    pixelSize = None
-    exposureDose = None
+from scripts.program.metadata.image_metadata import ImageMetadata, ImageSet
+from scripts.program.metadata.task_metadata import TaskDescription, TaskOutputDescription
+from scripts.program.task import Task
+
+import scripts.program.scripts_constants as CONSTANTS
+
+from scripts.program.processEER import prepareIntFile
 
 class TaskMotionCor2(Task):
     """
@@ -182,49 +180,44 @@ class TaskMotionCor2(Task):
             header = image_set['header']
 
             # Get header and images
-            imageset_ID = header[scripts_constants.HEADER_IMAGESET_NAME]
+            imageset_ID = header[CONSTANTS.HEADER_IMAGESET_NAME]
             images = image_set['images']
             
             # Prepare output folder
-            out_folder = os.path.join(self.task_folder, scripts_constants.DATA_SUBFOLDER, imageset_ID)
+            out_folder = os.path.join(self.task_folder, CONSTANTS.DATA_SUBFOLDER, imageset_ID)
             if not os.path.isdir(out_folder):
                 os.makedirs(out_folder)
 
             for image in images:
                 print(image + '\n')
                 if image.endswith('.tif'):
-                    outfile = image[:-len('.tif')] + '.mc.mrc'
-                    # self.__motionCorrectTiff(image, outfile)
+                    outfile = os.path.join(out_folder, image[:-len('.tif')] + '.mc.mrc')
+                    self.__motionCorrectTiff(image, outfile)
                     image_list.append(outfile)
+
                 elif image.endswith('.eer'):
-                    outfile = image[:-len('.eer')] + '.mc.mrc'
+                    outfile = os.path.join(out_folder, image[:-len('.eer')] + '.mc.mrc')
 
-                    # TODO: need to read the mdoc file.
-                    # TODO: will need an FmIntfile.txt
-                    # TODO: gain file(s) provided in .tiff should have been converted to .mrc
-                    # TODO: may need an exposure dose from the mdoc.
-
-                    # Prepare an FmIntFile
-                    print(image)
+                    # read the associated mdoc file
                     mdoc_filename = image + '.mdoc'
                     EEROpts = processEER.readMdoc(mdoc_filename)
 
+                    # preparse an FmIntFile.txt
                     dosefile = os.path.join(out_folder, 'FmIntFile.txt')
                     processEER.prepareIntFile(image, EEROpts.exposureDose, dosefile)
 
-                    # TODO:
                     # Convert gain if needed from .tiff -> .mrc format.
-                    # Note: this is problematic, doesn't have the full source path.
-                    # gain_tiff = EEROpts.gain
-                    # gain_mrc = os.path.join(out_folder, 'gain.mrc')
-                    # processEER.convertTifMrc(gain_tiff, gain_mrc)
-                    # EEROpts.gain = gain_mrc
-                    # self.__motionCorrectEer(image, outfile)
+                    # TODO: need the full relative source path, to add to 'gain_tiff' path.
+                    gain_tiff = EEROpts.gain
+                    gain_mrc = os.path.join(out_folder, 'gain.mrc')
+                    processEER.convertTifMrc(gain_tiff, gain_mrc)
+                    EEROpts.gain = gain_mrc
+                    self.__motionCorrectEer(image, outfile)
                     
                     image_list.append(outfile)
                 elif image.endswith('.mrc'):
-                    outfile = image[:-len('.mrc')] + '.mc.mrc'
-                    # self.__motionCorrectMRC(image, outfile)
+                    outfile = os.path.join(out_folder, image[:-len('.mrc')] + '.mc.mrc')
+                    self.__motionCorrectMRC(image, outfile)
                     image_list.append(outfile)
                 else:
                     print('Unable to process image: ' + image)
@@ -249,7 +242,7 @@ class TaskMotionCor2(Task):
         results.save_to_json(results_json_path)
 
     def name(self) -> str:
-        return "Motion Correction"
+        return "Motion Correction (MotionCor2)"
 
     def description(self) -> str:
-        return 'Motion Correction via UCSF MotionCor2'
+        return 'Motion Correction of micrographs via UCSF MotionCor2'
