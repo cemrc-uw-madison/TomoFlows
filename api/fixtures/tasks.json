@@ -16,6 +16,33 @@
             "description": "Motion Correction of micrographs via UCSF MotionCor2",
             "parameter_fields": "[{\"name\":\"Micrographs\",\"type\":\"task\",\"default\":null},{\"name\":\"PixSize\",\"type\":\"integer\",\"default\":1.0},{\"name\":\"Patch\",\"type\":\"string\",\"default\":null},{\"name\":\"Iter\",\"type\":\"integer\",\"default\":10},{\"name\":\"Tol\",\"type\":\"integer\",\"default\":10},{\"name\":\"Gpu\",\"type\":\"string\",\"default\":null},{\"name\":\"Gain\",\"type\":\"string\",\"default\":null},{\"name\":\"RotGain\",\"type\":\"string\",\"default\":null},{\"name\":\"FlipGain\",\"type\":\"string\",\"default\":null},{\"name\":\"Throw\",\"type\":\"string\",\"default\":null},{\"name\":\"FtBin\",\"type\":\"string\",\"default\":null}]"
         }
-
+    },
+    {
+        "model": "api.Task",
+        "pk": 4,
+        "fields": {
+            "name": "CTF Estimation (Gctf)",
+            "description": "Perform CTF estimation for each micrograph with Gctf",
+            "parameter_fields": "[{\"name\":\"Micrgraphs\",\"type\":\"task\",\"default\":null}]"
+        }
+    },
+    {
+        "model": "api.Task",
+        "pk": 5,
+        "fields": {
+            "name": "Assemble stacks (newstack)",
+            "description": "Create ordered image stacks for each tilt-series'",
+            "parameter_fields": "[{\"name\":\"Micrgraphs\",\"type\":\"task\",\"default\":null}]"
+        }
+    },
+    {
+        "model": "api.Task",
+        "pk": 6,
+        "fields": {
+            "name": "Tomogram Generation (AreTomo)",
+            "description": "Build a tomogram for each stack with UCSF AreTomo",
+            "parameter_fields": "[{\"name\":\"Stacks\",\"type\":\"task\",\"default\":null}]"
+        }
     }
+
   ]

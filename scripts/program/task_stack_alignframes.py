@@ -1,8 +1,10 @@
 import typing
 import subprocess
 import os
-from scripts.program.task import Task
 
+from scripts.program.metadata.image_metadata import ImageMetadata, ImageSet
+from scripts.program.metadata.task_metadata import TaskDescription, TaskOutputDescription
+from scripts.program.task import Task
 
 def check_image_format(file_name, required_format):
     """

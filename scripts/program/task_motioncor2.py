@@ -2,17 +2,15 @@ import typing
 import subprocess
 import os
 
-from mdoc import MDoc, FrameSet
-
-import processEER
+from scripts.program.mdoc import MDoc, FrameSet
+import scripts.program.processEER
 
 from scripts.program.metadata.image_metadata import ImageMetadata, ImageSet
 from scripts.program.metadata.task_metadata import TaskDescription, TaskOutputDescription
 from scripts.program.task import Task
 
 import scripts.program.scripts_constants as CONSTANTS
-
-from scripts.program.processEER import prepareIntFile
+import scripts.program.processEER as processEER
 
 class TaskMotionCor2(Task):
     """

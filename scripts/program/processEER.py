@@ -3,9 +3,9 @@
 import os
 import argparse
 import subprocess
-import mdoc
-
 from pathlib import Path
+
+import scripts.program.mdoc
 
 class EERMotionOptions:
     gain = None

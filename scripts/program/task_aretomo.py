@@ -102,7 +102,7 @@ class TaskAreTomo(Task):
         results.save_to_json(results_json_path)
 
     def name(self) -> str:
-        return 'AreTomo'
+        return 'Tomogram Generation (AreTomo)'
     
     def description(self) -> str:
-        return 'Build a tomogram for each tilt-series with `AreTomo`'
+        return 'Build a tomogram for each stack with UCSF AreTomo'
