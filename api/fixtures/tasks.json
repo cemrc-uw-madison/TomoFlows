@@ -23,7 +23,7 @@
         "fields": {
             "name": "CTF Estimation (Gctf)",
             "description": "Perform CTF estimation for each micrograph with Gctf",
-            "parameter_fields": "[{\"name\":\"Micrgraphs\",\"type\":\"task\",\"default\":null}]"
+            "parameter_fields": "[{\"name\":\"Micrographs\",\"type\":\"task\",\"default\":null}]"
         }
     },
     {
@@ -32,7 +32,7 @@
         "fields": {
             "name": "Assemble stacks (newstack)",
             "description": "Create ordered image stacks for each tilt-series'",
-            "parameter_fields": "[{\"name\":\"Micrgraphs\",\"type\":\"task\",\"default\":null}]"
+            "parameter_fields": "[{\"name\":\"Micrographs\",\"type\":\"task\",\"default\":null}]"
         }
     },
     {
