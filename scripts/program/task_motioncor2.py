@@ -147,8 +147,7 @@ class TaskMotionCor2(Task):
 
         # Create a TaskDescription with parameters.
         task_meta = TaskDescription(self.name(), self.description())
-        
-        # [TODO] Add the Task parameters.
+        task_meta.add_parameters(self.parameters)
         
         # Create Task folder if missing.
         if not os.path.isdir(self.task_folder):

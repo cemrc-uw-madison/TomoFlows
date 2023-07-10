@@ -83,7 +83,7 @@ class TaskImport(Task):
                 if len(image_list) > 0:
                     # 3. add the tilt-series ImageSet into imageMD
                     header = {}
-                    header[scripts_constants.HEADER_IMAGESET_NAME] = imageset_id
+                    header[CONSTANTS.HEADER_IMAGESET_NAME] = imageset_id
                     tiltset = ImageSet(header, image_list)
                     imageMD.add_image_set(tiltset)
 
@@ -109,7 +109,7 @@ class TaskImport(Task):
         # Create Task folder if missing.
         if not os.path.isdir(self.task_folder):
             os.makedirs(self.task_folder)
-        # Serialize the Task description metatadata
+        # Serialize the Task description metadata
         task_meta.save_to_json(os.path.join(self.task_folder, self.task_json))
 
         # Import the datafiles, building imageset.json and results.json
