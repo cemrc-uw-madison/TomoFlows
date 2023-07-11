@@ -6,6 +6,8 @@ from scripts.program.metadata.image_metadata import ImageMetadata, ImageSet
 from scripts.program.metadata.task_metadata import TaskDescription, TaskOutputDescription
 from scripts.program.task import Task
 
+import scripts.program.scripts_constants as CONSTANTS
+
 def check_image_format(file_name, required_format):
     """
 
@@ -29,30 +31,93 @@ class TaskAreTomo(Task):
         """
         :param task_folder: where to write output for the task
         """
-
         self.task_folder = task_folder
 
-    def __batch_aretomo(self, imageset):
+    def __runAreTomo(self, infile, outfile, AngFile=None, voltage=300, pixelSize=1.4, TiltRangePos=None, TiltRangeNeg=None, VolZ=1500, OutBin=4, TiltAxisAngle=None):
+        AreTomo = 'AreTomo'
+        inputType = '-InMrc'
+        outType = '-OutMrc'
+
+        if (os.path.exists(outfile)):
+            print(outfile + ' exists: skipping ' + AreTomo)
+        else:
+            print(outfile + ' will be created by AreTomo...')
+
+            # AlignZ should always be smaller than VolZ (and temporary volume for aligment)
+            AlignZ = int(VolZ * 0.8)
+
+            # TODO: check self.parameters for optional values for each of these parameters.
+
+            args = [AreTomo,
+                inputType, infile,
+                outType, outfile,
+                '-VolZ', str(VolZ),
+                '-AlignZ', str(AlignZ),
+                '-OutBin', str(OutBin),
+                '-DarkTol', str(0.1),
+                '-OutImod', str(1),
+                '-FlipVol', str(1),
+                '-Patch', '4 4',
+                '-Kv', str(voltage),
+                '-PixSize', str(pixelSize),
+                '-Wbp', str(1)
+            ]
+
+            if AngFile:
+                args.append('-AngFile')
+                args.append(str(AngFile))
+            else:
+                args.append('-TiltRange')
+                args.append(str(TiltRangeNeg))
+                args.append(str(TiltRangePos))
+
+            if TiltAxisAngle:
+                args.append('-TiltCor')
+                args.append('0') # no correction, only measurement
+                args.append('-TiltAxis')
+                args.append(str(TiltAxisAngle))
+                args.append(str(1)) # refine input angle at each tilt
+        
+        subprocess.call(args)
+
+    def __batch_aretomo(self, imagesets):
         """
         Run AreTomo on each of the stacks from an imageset
         """
         results = TaskOutputDescription(self.name(), self.description())
         
-        # [TODO] - make the runner on all the stacks here.
-        # add each of the resulting tomograms into a result.json file.
-        # return this as the result of the method.
+        # Iterate through the image_meta.
+        for image_set in imagesets:
+            image_list = []
+
+            # Get header and images
+            header = image_set['header']
+
+            # Get the images to combine as a stack
+            imageset_ID = header[CONSTANTS.HEADER_IMAGESET_NAME]
+            images = image_set['images']
+
+            # Each image_set should contain only a single stack.mrc
+            image = images[0]
+            outfile = 'tomogram.mrc'
+            self.__runAreTomo(image, outfile, AngFile=None, voltage=300, pixelSize=1.4, TiltRangePos=None, TiltRangeNeg=None, VolZ=1500, OutBin=4, TiltAxisAngle=None)
+
+            # TODO: add the resulting image to the results metadata.
+
+        return results
 
     def run(self):
         """ Execute AreTomo for each tilt-series """
 
         # Create a TaskDescription with parameters.
         task_meta = TaskDescription(self.name(), self.description())
-        # Add the Task parameters.
+
         # Require an imageset containing *.mrc (stack) files
-        imageset = None
-        if 'imageset' in self.parameters.keys:
+        input_image_meta = None
+        if 'imageset' in self.parameters:
             task_meta.add_parameter('imageset', self.parameters['imageset'])
-            iamgeset_filename = self.parameters['imageset']
+            imageset_filename = self.parameters['imageset']
+            input_image_meta = ImageMetadata.load_from_json(imageset_filename)
         else: 
             raise ValueError("Parameter 'imageset' is not provided")
 
@@ -61,41 +126,13 @@ class TaskAreTomo(Task):
             os.path.mkdirs(self.task_folder)
 
         # Add all the required/optional parameters here.
-        if 'VolZ' in self.parameters.keys:
-            task_meta.add_parameter('VolZ', self.parameters['VolZ'])
-        if 'AlignZ' in self.parameters.keys:
-            task_meta.add_parameter('AlignZ', self.parameters['AlignZ'])
-        if 'OutBin' in self.parameters.keys:
-            task_meta.add_parameter('OutBin', self.parameters['OutBin'])
-        if 'DarkTol' in self.parameters.keys:
-            task_meta.add_parameter('DarkTol', self.parameters['DarkTol'])
-        if 'OutImod' in self.parameters.keys:
-            task_meta.add_parameter('OutImod', self.parameters['OutImod'])
-        if 'FlipVol' in self.parameters.keys:
-            task_meta.add_parameter('FlipVol', self.parameters['FlipVol'])
-        if 'Patch' in self.parameters.keys:
-            task_meta.add_parameter('Patch', self.parameters['Patch'])
-        if 'Kv' in self.parameters.keys:
-            task_meta.add_parameter('Kv', self.parameters['Kv'])           
-        if 'PixSize' in self.parameters.keys:
-            task_meta.add_parameter('PixSize', self.parameters['PixSize'])
-        if 'Wbp' in self.parameters.keys:
-            task_meta.add_parameter('Wbp', self.parameters['Wbp'])
-        # This provides what are the tilt angles in the stack for each image layer.
-        if 'AngFile' in self.parameters.keys:
-            task_meta.add_parameter('AngFile', self.parameters['AngFile']) 
-        # Alternative to AngFile is to provide a TiltRange. 
-        if 'TiltRange' in self.parameters.keys:
-            task_meta.add_parameter('TiltRange', self.parameters['TiltRange'])    
-        if 'TiltCor' in self.parameters.keys:
-            task_meta.add_parameter('TiltCor', self.parameters['TiltCor'])            
-        if 'TiltAxisAngle' in self.parameters.keys:
-            task_meta.add_parameter('TiltAxisAngle', self.parameters['TiltAxisAngle'])      
+        task_meta.add_parameters(self.parameters)
+
         # Serialize the Task description metatadata
         task_meta.save_to_json(os.path.join(self.task_folder, self.result_json))
 
         # Run AreTomo on each of the stacks.
-        results = self.__batch_aretomo(imageset)
+        results = self.__batch_aretomo(input_image_meta.image_sets)
 
         #  Serialize the `result.json` metadata file that points to `imageset.json`
         results_json_path = os.path.join(self.task_folder, self.result_json)
