@@ -5,7 +5,7 @@ import argparse
 import subprocess
 from pathlib import Path
 
-import scripts.program.mdoc
+from scripts.program.mdoc import MDoc
 
 class EERMotionOptions:
     gain = None
@@ -27,7 +27,7 @@ def readMdoc(mdoc_filename):
     if (os.path.exists(mdoc_filename)):
         print('Extracting parameters from : ' + mdoc_filename)
         opts = EERMotionOptions()
-        eer_mdoc = mdoc.MDoc.parse(mdoc_filename)
+        eer_mdoc = MDoc.parse(mdoc_filename)
         if (eer_mdoc and len(eer_mdoc.framesets) > 0):
             frameDesc =  eer_mdoc.framesets[0]
             if 'PixelSpacing' in frameDesc.nameVal:
