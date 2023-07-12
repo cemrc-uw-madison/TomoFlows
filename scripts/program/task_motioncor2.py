@@ -89,29 +89,37 @@ class TaskMotionCor2(Task):
             print(str(out_mrc) + ' will be created by motionCor...')
 
         args = ['motioncor2', "-InEER", in_eer, "-OutMrc", out_mrc]
-        
-        # EER specific options, required if EER.
-        if self.parameters['-FmIntFile']:
+
+        # EER processing requires an FmIntFile, by default we should auto-generate this.
+        if 'FmIntFile' in self.parameters:
             args.append('-FmIntFile')
             args.append(str(self.parameters['FmIntFile']))
         else:
-            raise ValueError('-FmIntFile: Missing') 
+            args.append('-FmIntFile')
+            args.append(str(fmIntFilePath))
 
-        if self.parameters['-EerSampling']:
+        defaultBin = True
+        if 'EerSampling' in self.parameters:
             args.append("-EerSampling")
             args.append(str(self.parameters['EerSampling']))
-        else:
-            raise ValueError('-EerSampling: Missing') 
+            defaultBin = False
         
-        if self.parameters['-FtBin']:
+        if 'FtBin' in self.parameters:
             args.append("-FtBin")
             args.append(str(self.parameters["FtBin"]))
-        else:
-            raise ValueError('-FtBin: Missing')
+            defaultBin = False
+
+        if defaultBin:
+            # Upsampling + Fourier Cropping may be a good default.
+            args.append('-EerSampling')
+            args.append(str(2))
+            args.append('-FtBin')
+            args.append(str(2))
         
         args = self.__addArguments(args)
 
-        subprocess.call(args)
+        print (args)
+        # subprocess.call(args)
         # NOTE observed that EER processing results in a flip to be corrected.
 
     def __motionCorrectTiff(self, in_tiff, out_mrc):
@@ -164,10 +172,6 @@ class TaskMotionCor2(Task):
         else: 
             raise ValueError("Parameter 'imageset' is not provided")
 
-        # Create Task folder if missing.
-        if not os.path.isdir(self.task_folder):
-            os.makedirs(self.task_folder)
-
         results_image_meta = ImageMetadata()
 
         # Iterate through the image_meta.
@@ -187,13 +191,17 @@ class TaskMotionCor2(Task):
 
             for image in images:
                 print(image + '\n')
+                filename = os.path.basename(image)
                 if image.endswith('.tif'):
-                    outfile = os.path.join(out_folder, image[:-len('.tif')] + '.mc.mrc')
+                    outfile = os.path.join(out_folder, filename[:-len('.tif')] + '.mc.mrc')
                     self.__motionCorrectTiff(image, outfile)
                     image_list.append(outfile)
-
+                elif image.endswith('.mrc'):
+                    outfile = os.path.join(out_folder, filename[:-len('.mrc')] + '.mc.mrc')
+                    self.__motionCorrectMRC(image, outfile)
+                    image_list.append(outfile)
                 elif image.endswith('.eer'):
-                    outfile = os.path.join(out_folder, image[:-len('.eer')] + '.mc.mrc')
+                    outfile = os.path.join(out_folder, filename[:-len('.eer')] + '.mc.mrc')
 
                     # read the associated mdoc file
                     mdoc_filename = image + '.mdoc'
@@ -203,18 +211,17 @@ class TaskMotionCor2(Task):
                     dosefile = os.path.join(out_folder, 'FmIntFile.txt')
                     processEER.prepareIntFile(image, EEROpts.exposureDose, dosefile)
 
+                    # [TODO]: replace with the task that does gain reference conversions?
                     # Convert gain if needed from .tiff -> .mrc format.
-                    # TODO: need the full relative source path, to add to 'gain_tiff' path.
-                    gain_tiff = EEROpts.gain
+                    # This mechanism to find the gain file depends on SerialEM MDOC
+                    parent_folder = os.path.dirname(os.path.realpath(image))
+                    gain_infile = EEROpts.gain
+                    gain_inpath = os.path.join(parent_folder, EEROpts.gain)
                     gain_mrc = os.path.join(out_folder, 'gain.mrc')
-                    processEER.convertTifMrc(gain_tiff, gain_mrc)
+                    processEER.convertTifMrc(gain_inpath, gain_mrc)
                     EEROpts.gain = gain_mrc
-                    self.__motionCorrectEer(image, outfile)
+                    self.__motionCorrectEer(image, outfile, dosefile, EEROpts)
                     
-                    image_list.append(outfile)
-                elif image.endswith('.mrc'):
-                    outfile = os.path.join(out_folder, image[:-len('.mrc')] + '.mc.mrc')
-                    self.__motionCorrectMRC(image, outfile)
                     image_list.append(outfile)
                 else:
                     print('Unable to process image: ' + image)
