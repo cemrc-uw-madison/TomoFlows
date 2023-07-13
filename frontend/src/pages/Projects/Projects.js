@@ -22,7 +22,8 @@ const Projects = (props) => {
 	const [createLoad, setCreateLoad] = useState(false);
 	const [show, setShow] = useState(false);
 	const [name, setName] = useState("");
-	const [description, setDescription] = useState("");
+	// Default description of newly created project should be "default description"
+	const [description, setDescription] = useState("default description");
 	const [error, setError] = useState("");
 	const [success, setSuccess] = useState("");
 	const navigate = useNavigate();
@@ -90,7 +91,7 @@ const Projects = (props) => {
 			console.log(response)
 			setSuccess(`Project '${name}' created successfully!`)
 			setName("");
-			setDescription("");
+			setDescription("default description");
 			setCreateLoad(false);
 		})
 		.catch(error => {
@@ -101,7 +102,7 @@ const Projects = (props) => {
 				setError("Something went wrong! Please try again later.")
 			}
 			setName("");
-			setDescription("");
+			setDescription("default description");
 			setCreateLoad(false)
 		});
 	}
@@ -166,7 +167,7 @@ const Projects = (props) => {
 						className="create-project-button"
 						variant="primary"
 						onClick={createProject}
-						disabled={name.length == 0 || description.length == 0}
+						disabled={name.length == 0}
 					>
 						{
 							createLoad ?
