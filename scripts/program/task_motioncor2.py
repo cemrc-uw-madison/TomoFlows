@@ -118,8 +118,8 @@ class TaskMotionCor2(Task):
         
         args = self.__addArguments(args)
 
-        print (args)
-        # subprocess.call(args)
+        print (' '.join(args) + '\n')
+        subprocess.call(args)
         # NOTE observed that EER processing results in a flip to be corrected.
 
     def __motionCorrectTiff(self, in_tiff, out_mrc):
