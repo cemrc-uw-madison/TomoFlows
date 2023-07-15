@@ -8,6 +8,17 @@ from scripts.program.task import Task
 
 import scripts.program.scripts_constants as CONSTANTS
 
+def getAngle( fn ):
+    try:
+        name, num = fn.rsplit('_',1)  # split at the rightmost `_`
+        num = num.split('.')[0]
+        return int(num)
+    except ValueError: # no _ in there
+        return fn, None
+    
+def list_suffix(directory, extension):
+    return (f for f in os.listdir(directory) if f.endswith('.' + extension))
+
 class generate_stack(Task):
     """
     Run `newstack` to assemble a stack
@@ -27,6 +38,42 @@ class generate_stack(Task):
 
     def description(self) -> str:
         return 'Create ordered image stacks for each tilt-series'
+
+    def __createTextStack(self, tiltDirectory, inputFileList, outputText, outputTilt):
+        ''' Given a list of filenames, sort by their suffix describing angle and create text index '''
+
+        # Try to get sorting working
+        angleList = list(map(lambda x: getAngle(x), inputFileList))
+        angleList = sorted(angleList)
+
+        ''' Check the min and max angles '''
+        minAngle = min(angleList)
+        maxAngle = max(angleList)
+
+        with open(outputTilt, 'w') as file2:
+            for angle in angleList:
+                file2.write('{:7.2f}\n'.format(angle))
+
+        # Write this to TextStack filename
+        tiltList = sorted(inputFileList, key=getAngle)
+        lines = list(map(lambda x: os.path.join(tiltDirectory, x + '\n'), tiltList))
+
+        # Format for the text should be:
+        # number of input files
+        # name of first file to read
+        # list of sections to read from first file
+        # name of second file to read
+        # list of sections to read from second file
+
+        numberFiles = len(lines)
+
+        with open(outputText, 'w') as file1:
+            file1.write(str(numberFiles) + '\n')
+            for line in lines:
+                file1.write(line)
+                file1.write('0\n')
+
+        return True
     
     def __createNewStack(self, inputFileList, rawtlt, outputFile, postRotation = None):
         """ Create a stack of images, using text files of tilt angles and of input files """
@@ -58,6 +105,20 @@ class generate_stack(Task):
         subprocess.call(args)
         print("Added header information: " + header)
 
+    def __assemble(self, tiltDirectory, files, outputStack, motionOptions):
+        ''' Given that there are several .mrc in directory, create a new stack '''
+        if len(files) > 1: 
+            # 1. Create the index file 
+            txt = os.path.join(tiltDirectory, 'stackIndex.txt') # should use a temp directory?
+            tilt = os.path.join(tiltDirectory, 'rawtlt.txt')
+            complete = self.__createTextStack(tiltDirectory, files, txt, tilt)
+            
+            # 2. Create new stack
+            if complete:
+                self.__createNewStack(txt, tilt, outputStack, motionOptions)
+            else:
+                print('tilt incomplete, skipping assembly: ' + tiltDirectory)
+
     def run(self):
         """ Execute newstack for each tilt-series """
         # Input:
@@ -82,16 +143,10 @@ class generate_stack(Task):
         else: 
             raise ValueError("Parameter 'imageset' is not provided")
 
-        # Create Task folder if missing.
-        if not os.path.isdir(self.task_folder):
-            os.makedirs(self.task_folder)
-
         results_image_meta = ImageMetadata()
 
-        # Iterate through the image_meta.
+        # Iterate through the image_meta, making a stack for each tilt-series.
         for image_set in input_image_meta.image_sets:
-            image_list = []
-
             # Get header and images
             header = image_set['header']
 
@@ -99,11 +154,24 @@ class generate_stack(Task):
             imageset_ID = header[CONSTANTS.HEADER_IMAGESET_NAME]
             images = image_set['images']
 
-            # TODO:
-            # the list of images needs to be reorganized by tilt-degree
+            # Create an output stack for each tilt-series.
+            current_imageset = ImageSet()
+            current_imageset.header = header
+            
+            # Create a subfolder for each, for stack and associated text files.
+            stack_folder = os.path.join(self.task_folders, CONSTANTS.DATA_SUBFOLDER, imageset_ID, str(imageset_ID))
+            if not os.path.isdir(stack_folder):
+                os.makedirs(stack_folder)
+
+            stack_path = os.path.join(stack_folder, str(imageset_ID) + '.st')
+            current_imageset.images.append(stack_path)
+
+            # the list of images needs to be reorganized by tilt-degree and assembled.
+            self.__assemble(images, stack_path)
+    
             # then this can be used to build a stack.
             # the stack needs to be described as an output file.
-
+            results_image_meta.add_image_set(current_imageset)
 
         # Output:
         #  - set of output.mrc files for each stack

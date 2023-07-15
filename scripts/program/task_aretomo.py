@@ -46,8 +46,7 @@ class TaskAreTomo(Task):
             # AlignZ should always be smaller than VolZ (and temporary volume for aligment)
             AlignZ = int(VolZ * 0.8)
 
-            # TODO: check self.parameters for optional values for each of these parameters.
-
+            # Build the command.
             args = [AreTomo,
                 inputType, infile,
                 outType, outfile,
@@ -88,21 +87,36 @@ class TaskAreTomo(Task):
         
         # Iterate through the image_meta.
         for image_set in imagesets:
-            image_list = []
-
             # Get header and images
             header = image_set['header']
 
-            # Get the images to combine as a stack
+            # Get the imagesets that each will be built into a tomogram
             imageset_ID = header[CONSTANTS.HEADER_IMAGESET_NAME]
             images = image_set['images']
 
             # Each image_set should contain only a single stack.mrc
             image = images[0]
-            outfile = 'tomogram.mrc'
+            
+            current_imageset = ImageSet()
+            current_imageset.header = header
+
+            # Create a subfolder for each, for tomogram and associated files
+            tomogram_folder = os.path.join(self.task_folders, CONSTANTS.DATA_SUBFOLDER, imageset_ID, str(imageset_ID))
+            if not os.path.isdir(tomogram_folder):
+                os.makedirs(tomogram_folder)
+
+            # This should take the Argument options if provided.
+            outfile = os.path.join(tomogram_folder, 'tomogram.mrc')
+
+            # Defaults that are overridden by parameters.
+            voltage = 300
+            if 'Kv' in self.parameters:
+                voltage = self.parameters['kV']
+
             self.__runAreTomo(image, outfile, AngFile=None, voltage=300, pixelSize=1.4, TiltRangePos=None, TiltRangeNeg=None, VolZ=1500, OutBin=4, TiltAxisAngle=None)
 
-            # TODO: add the resulting image to the results metadata.
+            # Add the tomogram to the results
+            current_imageset.images.append(outfile)
 
         return results
 
