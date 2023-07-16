@@ -109,11 +109,35 @@ class TaskAreTomo(Task):
             outfile = os.path.join(tomogram_folder, 'tomogram.mrc')
 
             # Defaults that are overridden by parameters.
-            voltage = 300
+            kV = 300
             if 'Kv' in self.parameters:
-                voltage = self.parameters['kV']
+                kV = self.parameters['kV']
 
-            self.__runAreTomo(image, outfile, AngFile=None, voltage=300, pixelSize=1.4, TiltRangePos=None, TiltRangeNeg=None, VolZ=1500, OutBin=4, TiltAxisAngle=None)
+            pixSize = 1.4
+            if 'PixSize' in self.parameters:
+                pixSize = self.parameters['PixSize']
+
+            volZ = 1500
+            if 'VolZ' in self.parameters:
+                volZ =  self.parameters['VolZ']
+
+            outBin = 6
+            if 'OutBin' in self.parameters:
+                outBin = self.parameters['OutBin']
+
+            # TODO: should this take generate this angfile?
+            angFile = None
+            if 'angFile' in self.parameters:
+                angFile = self.parameters['AngFile']
+
+            # TiltRangePos, TiltRangeNeg (not used anymore)?
+
+            tiltAxisAngle = None
+            if 'tiltAxisAngle' in self.parameters:
+                tiltAxisAngle = self.parameters['TiltAxisAngle']
+
+            # Should use the AngFile, not TiltRange arguments, consider removing?
+            self.__runAreTomo(image, outfile, voltage=kV, pixelsize=pixSize, VolZ=volZ, OutBin=outBin, TiltAxisAngle=tiltAxisAngle, AngFile=angFile, TiltRangePos=None, TiltRangeNeg=None)
 
             # Add the tomogram to the results
             current_imageset.images.append(outfile)
