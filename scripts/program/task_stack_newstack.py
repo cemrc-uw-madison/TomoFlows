@@ -105,7 +105,7 @@ class TaskGenerateStack(Task):
         subprocess.call(args)
         print("Added header information: " + header)
 
-    def __assemble(self, tiltDirectory, files, outputStack, motionOptions):
+    def __assemble(self, tiltDirectory, files, outputStack):
         ''' Given that there are several .mrc in directory, create a new stack '''
         if len(files) > 1: 
             # 1. Create the index file 
@@ -115,7 +115,7 @@ class TaskGenerateStack(Task):
             
             # 2. Create new stack
             if complete:
-                self.__createNewStack(txt, tilt, outputStack, motionOptions)
+                self.__createNewStack(txt, tilt, outputStack)
             else:
                 print('tilt incomplete, skipping assembly: ' + tiltDirectory)
 
@@ -166,7 +166,7 @@ class TaskGenerateStack(Task):
             images.append(stack_path)
 
             # the list of images needs to be reorganized by tilt-degree and assembled.
-            self.__assemble(images, stack_path)
+            self.__assemble(images, stack_folder, stack_path)
     
             # then this can be used to build a stack.
             # the stack needs to be described as an output file.
