@@ -156,7 +156,8 @@ class TaskGenerateStack(Task):
             images = image_set['images']
 
             # Create an output stack for each tilt-series.
-            current_imageset = ImageSet(header, images)
+            stack_images = []
+            current_imageset = ImageSet(header, stack_images)
             
             # Create a subfolder for each, for stack and associated text files.
             stack_folder = os.path.join(self.task_folder, CONSTANTS.DATA_SUBFOLDER, str(imageset_ID))
@@ -164,7 +165,7 @@ class TaskGenerateStack(Task):
                 os.makedirs(stack_folder)
 
             stack_path = os.path.join(stack_folder, str(imageset_ID) + '.st')
-            images.append(stack_path)
+            stack_images.append(stack_path)
 
             # the list of images needs to be reorganized by tilt-degree and assembled.
             self.__assemble(images, stack_folder, stack_path)
