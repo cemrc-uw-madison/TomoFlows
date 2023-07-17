@@ -85,6 +85,7 @@ class TaskMotionCor2(Task):
 
         if (os.path.exists(out_mrc)):
             print(str(out_mrc) + ' exists: skipping motionCor')
+            return
         else:
             print(str(out_mrc) + ' will be created by motionCor...')
 
@@ -218,7 +219,10 @@ class TaskMotionCor2(Task):
                     gain_infile = EEROpts.gain
                     gain_inpath = os.path.join(parent_folder, EEROpts.gain)
                     gain_mrc = os.path.join(out_folder, 'gain.mrc')
-                    processEER.convertTifMrc(gain_inpath, gain_mrc)
+                    if (os.path.exists(gain_mrc)):
+                       print('already exists ' + gain_mrc)
+                    else:
+                       processEER.convertTifMrc(gain_inpath, gain_mrc)
                     EEROpts.gain = gain_mrc
                     self.__motionCorrectEer(image, outfile, dosefile, EEROpts)
                     
@@ -229,6 +233,7 @@ class TaskMotionCor2(Task):
             if len(image_list) > 0:
                 # add the motion-corrected images into metadata for the task.
                 header = {}
+                header[CONSTANTS.HEADER_IMAGESET_NAME] = imageset_ID
                 tiltset = ImageSet(header, image_list)
                 results_image_meta.add_image_set(tiltset)
 

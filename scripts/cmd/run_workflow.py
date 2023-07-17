@@ -4,6 +4,7 @@ import argparse
 
 from scripts.program.task_import import TaskImport
 from scripts.program.task_motioncor2 import TaskMotionCor2
+from scripts.program.task_stack_newstack import TaskGenerateStack
 from scripts.program.metadata.workflow_metadata import WorkflowMetadata
 
 import scripts.program.scripts_constants as CONSTANTS
@@ -46,6 +47,21 @@ def run_pipeline(workflow, output_directory):
     # TaskMotionCor2 results will include { imageset.json, result.json, task.json, /data/*mrc }
     task_motioncor2.run()
 
+    # 3. task_newstack
+    task3_directory = os.path.join(output_directory, "task_03_generate_stack")
+    task_genstack = TaskGenerateStack(task3_directory)   
+    
+    task3 = workflow.tasks[2]
+    task3_parameters = task3['parameters']
+    print('Task Newstack parameters: ' + str(task3_parameters) + '\n')
+    for key,value in task3_parameters.items():
+        task_genstack.set_parameter(key, value)
+
+    # link to prior task results.
+    task_genstack.set_parameter('imageset', os.path.join(task2_directory, CONSTANTS.IMAGESET_JSON))
+
+    # TaskMotionCor2 results will include { imageset.json, result.json, task.json, /data/*mrc }
+    task_genstack.run()
 
 ## This is a helper utility to run all the tasks for a data collection
 ## This runner will be used for the initial code port; testing; review.

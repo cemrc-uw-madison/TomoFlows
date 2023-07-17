@@ -19,7 +19,7 @@ def getAngle( fn ):
 def list_suffix(directory, extension):
     return (f for f in os.listdir(directory) if f.endswith('.' + extension))
 
-class generate_stack(Task):
+class TaskGenerateStack(Task):
     """
     Run `newstack` to assemble a stack
     """
@@ -155,16 +155,15 @@ class generate_stack(Task):
             images = image_set['images']
 
             # Create an output stack for each tilt-series.
-            current_imageset = ImageSet()
-            current_imageset.header = header
+            current_imageset = ImageSet(header, images)
             
             # Create a subfolder for each, for stack and associated text files.
-            stack_folder = os.path.join(self.task_folders, CONSTANTS.DATA_SUBFOLDER, imageset_ID, str(imageset_ID))
+            stack_folder = os.path.join(self.task_folder, CONSTANTS.DATA_SUBFOLDER, imageset_ID, str(imageset_ID))
             if not os.path.isdir(stack_folder):
                 os.makedirs(stack_folder)
 
             stack_path = os.path.join(stack_folder, str(imageset_ID) + '.st')
-            current_imageset.images.append(stack_path)
+            images.append(stack_path)
 
             # the list of images needs to be reorganized by tilt-degree and assembled.
             self.__assemble(images, stack_path)
