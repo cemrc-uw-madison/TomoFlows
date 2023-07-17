@@ -105,7 +105,7 @@ class TaskGenerateStack(Task):
         subprocess.call(args)
         print("Added header information: " + header)
 
-    def __assemble(self, tiltDirectory, files, outputStack):
+    def __assemble(self, files, tiltDirectory, outputStack):
         ''' Given that there are several .mrc in directory, create a new stack '''
         if len(files) > 1: 
             # 1. Create the index file 
@@ -158,7 +158,7 @@ class TaskGenerateStack(Task):
             current_imageset = ImageSet(header, images)
             
             # Create a subfolder for each, for stack and associated text files.
-            stack_folder = os.path.join(self.task_folder, CONSTANTS.DATA_SUBFOLDER, imageset_ID, str(imageset_ID))
+            stack_folder = os.path.join(self.task_folder, CONSTANTS.DATA_SUBFOLDER, str(imageset_ID))
             if not os.path.isdir(stack_folder):
                 os.makedirs(stack_folder)
 
