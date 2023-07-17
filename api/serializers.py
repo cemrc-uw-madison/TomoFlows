@@ -21,7 +21,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     owner = UserSerializer(required=False)
     class Meta:
         model = Project
-        fields = ['id', 'name', 'description', 'folder_path', 'owner', 'last_updated']
+        fields = ['id', 'name', 'description', 'folder_path', 'owner', 'last_updated', 'first_created']
     
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
