@@ -116,6 +116,7 @@ class TaskGenerateStack(Task):
             # 2. Create new stack
             if complete:
                 self.__createNewStack(txt, tilt, outputStack)
+                # 3. TODO: incorporate `alterheader` to save the tiltAxisAngle and binning in the header.
             else:
                 print('tilt incomplete, skipping assembly: ' + tiltDirectory)
 

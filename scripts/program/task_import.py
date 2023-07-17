@@ -59,7 +59,9 @@ class TaskImport(Task):
         
         imageMD = ImageMetadata()
 
-        # TODO: 'gain' image files should be excluded from below, and identified uniquely.
+        # 'gain' image files should be excluded from below, and identified uniquely.
+        gain_keyword1 = 'Gain'
+        gain_keyword2 = 'gain'
 
         # 1. find each subdirectory containing image files, then finding the files to 'import'
         for childDir in os.listdir(path_to_frames):
@@ -78,8 +80,12 @@ class TaskImport(Task):
                     image_list.append(filePath)
                 files = list_suffix(relativePath, "mrc")
                 for f in files:
-                    filePath = os.path.join(relativePath, f)
-                    image_list.append(filePath)
+                    if gain_keyword1 in f or gain_keyword2 in f:
+                        print('Excluding gain image from import: ' + f)
+                    else:
+                        filePath = os.path.join(relativePath, f)
+                        image_list.append(filePath)
+
                 if len(image_list) > 0:
                     # 3. add the tilt-series ImageSet into imageMD
                     header = {}

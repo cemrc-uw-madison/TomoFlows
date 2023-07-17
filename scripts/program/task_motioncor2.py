@@ -192,6 +192,7 @@ class TaskMotionCor2(Task):
 
             for image in images:
                 print(image + '\n')
+
                 filename = os.path.basename(image)
                 if image.endswith('.tif'):
                     outfile = os.path.join(out_folder, filename[:-len('.tif')] + '.mc.mrc')
