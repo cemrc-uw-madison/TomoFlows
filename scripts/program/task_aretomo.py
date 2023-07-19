@@ -77,7 +77,7 @@ class TaskAreTomo(Task):
                 args.append(str(TiltAxisAngle))
                 args.append(str(1)) # refine input angle at each tilt
         
-        subprocess.call(args)
+            subprocess.call(args)
 
     def __batch_aretomo(self, imagesets):
         """
@@ -140,7 +140,7 @@ class TaskAreTomo(Task):
 
             # Add the tomogram to the results
             aretomo_images.append(outfile)
-            results_image_meta.add_iamge_set(current_imageset)
+            results_image_meta.add_image_set(current_imageset)
 
         return results_image_meta
 
