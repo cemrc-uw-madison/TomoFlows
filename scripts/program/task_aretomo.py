@@ -101,7 +101,7 @@ class TaskAreTomo(Task):
             current_imageset = ImageSet(header, aretomo_images)
 
             # Create a subfolder for each, for tomogram and associated files
-            tomogram_folder = os.path.join(self.task_folder, CONSTANTS.DATA_SUBFOLDER, imageset_ID, str(imageset_ID))
+            tomogram_folder = os.path.join(self.task_folder, CONSTANTS.DATA_SUBFOLDER, str(imageset_ID))
             if not os.path.isdir(tomogram_folder):
                 os.makedirs(tomogram_folder)
 
@@ -125,18 +125,17 @@ class TaskAreTomo(Task):
             if 'OutBin' in self.parameters:
                 outBin = self.parameters['OutBin']
 
-            # TODO: should this take generate this angfile?
+            # [TODO] : need a mechanism to provide the angFile from the 'task_newstack" 
+            # TiltRangePos, TiltRangeNeg (not used anymore)?
             angFile = None
             if 'angFile' in self.parameters:
                 angFile = self.parameters['AngFile']
 
-            # TiltRangePos, TiltRangeNeg (not used anymore)?
-
+            # [TODO] : need a mechanism to provide this value.
             tiltAxisAngle = None
             if 'tiltAxisAngle' in self.parameters:
                 tiltAxisAngle = self.parameters['TiltAxisAngle']
 
-            # Should use the AngFile, not TiltRange arguments, consider removing?
             self.__runAreTomo(image, outfile, voltage=kV, pixelSize=pixSize, VolZ=volZ, OutBin=outBin, TiltAxisAngle=tiltAxisAngle, AngFile=angFile, TiltRangePos=None, TiltRangeNeg=None)
 
             # Add the tomogram to the results
