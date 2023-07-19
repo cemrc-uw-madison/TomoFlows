@@ -97,11 +97,11 @@ class TaskAreTomo(Task):
             # Each image_set should contain only a single stack.mrc
             image = images[0]
             
-            current_imageset = ImageSet()
-            current_imageset.header = header
+            aretomo_images = []
+            current_imageset = ImageSet(header, aretomo_images)
 
             # Create a subfolder for each, for tomogram and associated files
-            tomogram_folder = os.path.join(self.task_folders, CONSTANTS.DATA_SUBFOLDER, imageset_ID, str(imageset_ID))
+            tomogram_folder = os.path.join(self.task_folder, CONSTANTS.DATA_SUBFOLDER, imageset_ID, str(imageset_ID))
             if not os.path.isdir(tomogram_folder):
                 os.makedirs(tomogram_folder)
 
@@ -137,10 +137,10 @@ class TaskAreTomo(Task):
                 tiltAxisAngle = self.parameters['TiltAxisAngle']
 
             # Should use the AngFile, not TiltRange arguments, consider removing?
-            self.__runAreTomo(image, outfile, voltage=kV, pixelsize=pixSize, VolZ=volZ, OutBin=outBin, TiltAxisAngle=tiltAxisAngle, AngFile=angFile, TiltRangePos=None, TiltRangeNeg=None)
+            self.__runAreTomo(image, outfile, voltage=kV, pixelSize=pixSize, VolZ=volZ, OutBin=outBin, TiltAxisAngle=tiltAxisAngle, AngFile=angFile, TiltRangePos=None, TiltRangeNeg=None)
 
             # Add the tomogram to the results
-            current_imageset.images.append(outfile)
+            aretomo_images.append(outfile)
             results_image_meta.add_iamge_set(current_imageset)
 
         return results_image_meta
@@ -162,7 +162,7 @@ class TaskAreTomo(Task):
 
         # Create Task folder if missing.
         if not os.path.isdir(self.task_folder):
-            os.path.mkdirs(self.task_folder)
+            os.makedirs(self.task_folder)
 
         # Add all the required/optional parameters here.
         task_meta.add_parameters(self.parameters)
