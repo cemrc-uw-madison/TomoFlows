@@ -83,7 +83,7 @@ class TaskAreTomo(Task):
         """
         Run AreTomo on each of the stacks from an imageset
         """
-        results = TaskOutputDescription(self.name(), self.description())
+        results_image_meta = ImageMetadata()
         
         # Iterate through the image_meta.
         for image_set in imagesets:
@@ -141,8 +141,9 @@ class TaskAreTomo(Task):
 
             # Add the tomogram to the results
             current_imageset.images.append(outfile)
+            results_image_meta.add_iamge_set(current_imageset)
 
-        return results
+        return results_image_meta
 
     def run(self):
         """ Execute AreTomo for each tilt-series """
@@ -170,7 +171,20 @@ class TaskAreTomo(Task):
         task_meta.save_to_json(os.path.join(self.task_folder, self.result_json))
 
         # Run AreTomo on each of the stacks.
-        results = self.__batch_aretomo(input_image_meta.image_sets)
+        results_image_meta = self.__batch_aretomo(input_image_meta.image_sets)
+
+        # Output:
+        #  - set of output.mrc files for each tomogram
+        #  - log files
+        #  - image metadata, describing the output mrc files.
+        image_json_path = os.path.join(self.task_folder, self.imageset_filename)
+        results_image_meta.save_to_json(image_json_path)
+
+        #  Serialize the `result.json` metadata file that points to `imageset.json`
+        results = TaskOutputDescription(self.name(), self.description())
+        results.add_output_file(image_json_path, 'json')
+        results_json_path = os.path.join(self.task_folder, self.result_json)
+        results.save_to_json(results_json_path)
 
         #  Serialize the `result.json` metadata file that points to `imageset.json`
         results_json_path = os.path.join(self.task_folder, self.result_json)

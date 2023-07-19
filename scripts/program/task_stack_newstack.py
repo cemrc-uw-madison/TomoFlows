@@ -78,20 +78,26 @@ class TaskGenerateStack(Task):
     def __createNewStack(self, inputFileList, rawtlt, outputFile, postRotation = None):
         """ Create a stack of images, using text files of tilt angles and of input files """
         # Example: newstack -tilt AlignedStack_fcor.rawtlt -fileinlist inputfile_3degreeincrement.txt AlignedStack_fcor.st
-        command = 'newstack'
-        args = [ command,
-        #    '-UseMdocFiles',
-            '-tilt', rawtlt,
-            '-fileinlist', inputFileList,
-            outputFile
-        ]
 
-        # rotate images if needed. ie, for the Krios G4 Falcon4.
-        if postRotation:
-            args.append('-rotate')
-            args.append(postRotation)
+        if (os.path.exists(outputFile)):
+            print(str(outputFile) + ' exists: skipping newstack')
+            return
+        else:
+            print(str(outputFile) + ' will be created by newstack...')
+            command = 'newstack'
+            args = [ command,
+            #    '-UseMdocFiles',
+                '-tilt', rawtlt,
+                '-fileinlist', inputFileList,
+                outputFile
+            ]
 
-        subprocess.call(args)
+            # rotate images if needed. ie, for the Krios G4 Falcon4.
+            if postRotation:
+                args.append('-rotate')
+                args.append(postRotation)
+
+            subprocess.call(args)
 
     def __alterHeader(self, stackFile, tiltAxisAngle, binning):
         """ Add a header text line describing the tilt axis angle """
