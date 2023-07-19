@@ -28,7 +28,13 @@ Contents inside task folder
 """
 TASK_JSON = "task.json"
 RESULT_JSON = "result.json"
+DATA_SUBFOLDER = "data"
+
+"""
+Imageset metadata: descriptions of groupings of data files
+"""
 IMAGESET_JSON = "imageset.json"
+HEADER_IMAGESET_NAME = "imageset_name"
 
 """
 Workflow JSON: a metadata file that supports 'run_process_tilts.py', a headless run.

@@ -9,6 +9,10 @@ class TaskDescription:
     def add_parameter(self, name, value):
         self.parameters[name] = value
 
+    def add_parameters(self, dict):
+        for key, value in dict.items():
+            self.parameters[key] = value
+
     def save_to_json(self, filename):
         data = {
             'task_name': self.task_name,

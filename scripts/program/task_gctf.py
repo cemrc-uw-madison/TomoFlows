@@ -1,8 +1,10 @@
 import typing
 import subprocess
 import os
-from scripts.program.task import Task
 
+from scripts.program.metadata.image_metadata import ImageMetadata, ImageSet
+from scripts.program.metadata.task_metadata import TaskDescription, TaskOutputDescription
+from scripts.program.task import Task
 
 def check_image_format(file_name, required_format):
     """
@@ -31,7 +33,7 @@ class TaskGctf(Task):
         if not check_image_format(input_file, self.required_input_format):
             raise ValueError("Input image format must be mrc!")
         
-    def run_gctf(in_mrc, out_mrc, output_EPA, pixelSize):
+    def __run_gctf(in_mrc, out_mrc, output_EPA, pixelSize):
         """ Run gCTF to provide CTF estimation """
 
         if (os.path.exists(output_EPA)):
@@ -50,7 +52,7 @@ class TaskGctf(Task):
         # TODO: create a results.json describing the output.
 
     def name(self) -> str:
-        return "Task Gctf"
+        return "CTF Estimation (Gctf)"
 
     def description(self) -> str:
-        return "Perform CTF estimation for each micrograph"
+        return "Perform CTF estimation for each micrograph with Gctf"

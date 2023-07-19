@@ -1,8 +1,10 @@
 import typing
 import subprocess
 import os
-from scripts.program.task import Task
 
+from scripts.program.metadata.image_metadata import ImageMetadata, ImageSet
+from scripts.program.metadata.task_metadata import TaskDescription, TaskOutputDescription
+from scripts.program.task import Task
 
 def check_image_format(file_name, required_format):
     """
@@ -23,13 +25,11 @@ class TaskStackAlignFrames(Task):
     required_input_format = "mrc"
     required_output_format = "mrc"
 
-    def __init__(self, input_file):
+    def __init__(self, task_folder):
         """
-        :param input_file: file name in format conversion, required to be mrc format
+        :param task_folder: where to create the task folder
         """
-        self.input_file = input_file
-        if not check_image_format(input_file, self.required_input_format):
-            raise ValueError("Input image format must be mrc!")
+        self.task_folder = task_folder
 
     @property
     def param(self):
@@ -47,4 +47,6 @@ class TaskStackAlignFrames(Task):
 
     def run(self):
         """ Execute two steps to convert and scale the image """
+
+    
 

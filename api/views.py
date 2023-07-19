@@ -50,6 +50,9 @@ def ProjectList(request):
             path = os.path.join(settings.BASE_DIR, "data", name.lower().replace(' ', '-'))
             serializer.validated_data['folder_path'] = path
             serializer.save()
+
+            # TODO: manager could create folders + serialize metadata.
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         print(serializer["description"])
         print("invalid data")
@@ -202,6 +205,9 @@ def ProjectTaskList(request):
             else:
                 serializer.validated_data['parameter_values'] = json.dumps([])
             serializer.save()
+
+            # TODO: manager could create folders + serialize metadata.
+
             data = serializer.data
             data["parameter_values"] = json.loads(data["parameter_values"])
             run = Run.objects.create(project_task_id=data["id"], status="CREATED", logs="[]", errors="[]")
