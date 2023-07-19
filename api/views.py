@@ -54,6 +54,8 @@ def ProjectList(request):
             # TODO: manager could create folders + serialize metadata.
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print(serializer["description"])
+        print("invalid data")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'PUT', 'DELETE'])

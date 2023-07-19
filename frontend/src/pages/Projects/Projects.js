@@ -22,6 +22,8 @@ const Projects = (props) => {
 	const [createLoad, setCreateLoad] = useState(false);
 	const [show, setShow] = useState(false);
 	const [name, setName] = useState("");
+	// Default description of newly created project should be "default description"
+	const [defaultDescription, setDefaultDescription] = useState("default description");
 	const [description, setDescription] = useState("");
 	const [error, setError] = useState("");
 	const [success, setSuccess] = useState("");
@@ -72,38 +74,72 @@ const Projects = (props) => {
 		fetchProjects();
 	}
 	
+
 	const createProject = () => {
+		
 		let token = Cookies.get('auth-token')
 		setCreateLoad(true);
 		setError("");
-		axios.post('/api/projects', 
-		{
-			name: name,
-			description: description
-		}, 
-		{
-			headers: {
-				'Authorization': `Bearer ${token}`
-			}
-		})
-		.then(response => {
-			console.log(response)
-			setSuccess(`Project '${name}' created successfully!`)
-			setName("");
-			setDescription("");
-			setCreateLoad(false);
-		})
-		.catch(error => {
-			console.log(error);
-			if (error.response.status == 400 || error.response.status == 401) {
-				setError(error.response.data.detail);
-			} else {
-				setError("Something went wrong! Please try again later.")
-			}
-			setName("");
-			setDescription("");
-			setCreateLoad(false)
-		});
+		if (description.length == 0 || !description.trim().length) {
+			axios.post('/api/projects', 
+			{
+				name: name,
+				description: defaultDescription
+			}, 
+			{
+				headers: {
+					'Authorization': `Bearer ${token}`
+				}
+			})
+			.then(response => {
+				console.log(response)
+				setSuccess(`Project '${name}' created successfully!`)
+				setName("");
+				setDescription("");
+				setCreateLoad(false);
+			})
+			.catch(error => {
+				console.log(error);
+				if (error.response.status == 400 || error.response.status == 401) {
+					setError(error.response.data.detail);
+				} else {
+					setError("Something went wrong! Please try again later.")
+				}
+				setName("");
+				setDescription("");
+				setCreateLoad(false)
+			});
+		} else {
+			axios.post('/api/projects', 
+			{
+				name: name,
+				description: description
+			}, 
+			{
+				headers: {
+					'Authorization': `Bearer ${token}`
+				}
+			})
+			.then(response => {
+				console.log(response)
+				setSuccess(`Project '${name}' created successfully!`)
+				setName("");
+				setDescription("");
+				setCreateLoad(false);
+			})
+			.catch(error => {
+				console.log(error);
+				if (error.response.status == 400 || error.response.status == 401) {
+					setError(error.response.data.detail);
+				} else {
+					setError("Something went wrong! Please try again later.")
+				}
+				setName("");
+				setDescription("");
+				setCreateLoad(false)
+			});
+		}
+		
 	}
 	
 	return (
@@ -166,7 +202,7 @@ const Projects = (props) => {
 						className="create-project-button"
 						variant="primary"
 						onClick={createProject}
-						disabled={name.length == 0 || description.length == 0}
+						disabled={name.length == 0}
 					>
 						{
 							createLoad ?
