@@ -11,6 +11,7 @@ import pytz
 from api.models import User, Project, Task, ProjectTask, Run
 from api.serializers import UserSerializer, ProjectSerializer, TaskSerializer, ProjectTaskSerializer, RunSerializer
 from api.taskwrapper import task_handler
+from django.utils.timezone import now
 
 VERIFICATION_CODE = "12345"
 
@@ -47,7 +48,9 @@ def ProjectList(request):
             serializer.validated_data['owner'] = request.user
             serializer.validated_data['last_updated'] = datetime.now().replace(tzinfo=pytz.utc)
             name = serializer.validated_data['name']
-            path = os.path.join(settings.BASE_DIR, "data", name.lower().replace(' ', '-'))
+            first_created = now()
+            project_identifer = name.lower().replace(' ', '-') + '-' + request.user.email.lower().replace(' ', '-') + '-' + first_created.strftime("%m:%d:%Y-%H:%M:%S").lower().replace(' ', '-')
+            path = os.path.join(settings.BASE_DIR, "data", project_identifer)
             serializer.validated_data['folder_path'] = path
             serializer.save()
 

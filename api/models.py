@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from .managers import UserManager
+from django.utils.timezone import now
 
 class User(AbstractUser):
     username = None
@@ -13,10 +14,12 @@ class User(AbstractUser):
         return self.email
     
 class Project(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField("Name", max_length=25, unique=True)
     description = models.CharField("Description", max_length=100)
     folder_path = models.CharField("Folder Path", max_length=200, unique=True, blank=True)
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    first_created = models.DateTimeField("First Created", default=now)
     last_updated = models.DateTimeField("Last Updated", blank=True)
     
 class Task(models.Model):
@@ -25,6 +28,7 @@ class Task(models.Model):
     parameter_fields = models.TextField("Parameter Fields", null=True, blank=True)
     
 class ProjectTask(models.Model):
+    id = models.AutoField(primary_key=True)
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     parameter_values = models.TextField("Parameter Values", null=True, blank=True)

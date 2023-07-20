@@ -74,6 +74,11 @@ const Projects = (props) => {
 		fetchProjects();
 	}
 	
+	const handleKeyDown = e => {
+		// it triggers by enter key
+		alert(e);
+		
+	}
 
 	const createProject = () => {
 		
@@ -181,7 +186,7 @@ const Projects = (props) => {
 						disabled={createLoad}
 						value={description}
 						onChange={e => setDescription(e.target.value)}
-						placeholder="Project Description" 
+						placeholder="Project Description"
 					/>
 					{error.length != 0 && 
 						<Alert variant="danger" onClose={() => setError("")} dismissible>
@@ -195,14 +200,16 @@ const Projects = (props) => {
 					}
 				</Modal.Body>
 				<Modal.Footer>
-					<Button variant="secondary" onClick={handleClose}>
+					<Button variant="secondary" onClick={handleClose} onKeyDown={handleKeyDown}>
 						Cancel
 					</Button>
 					<Button
+						type='submit'
 						className="create-project-button"
 						variant="primary"
 						onClick={createProject}
 						disabled={name.length == 0}
+						onKeyDown={handleKeyDown}
 					>
 						{
 							createLoad ?
