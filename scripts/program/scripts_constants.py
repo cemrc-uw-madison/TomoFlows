@@ -17,6 +17,13 @@ TASKS: (task_name: task_absolute_path) key-value pairs
 TASK_NUM = "task_num"
 PROJECT_ID = "project_id"
 TASKS = "tasks"
+TASK_FOLDER_PREFIX = "task_"
+
+# CREATED, RUNNING, SUCCESS, FAILED
+TASK_STATUS_CREATED = "CREATED"
+TASK_STATUS_SUCCESS =  "SUCCESS"
+TASK_STATUS_RUNNING = "RUNNING"
+TASK_STATUS_FAILED = "FAILED"
 
 """
 Contents inside task folder
