@@ -1,6 +1,8 @@
+![tomoflows](Documentation/Design/img/TomoFlows_Logo.png)
+
 # TomoFlows
 
-Project for a pipeline process with visual web feedback on tasks completed in a pipeline.
+TomoFlows is a web-based UI for a task-based processing pipeline for Cryo-EM tomographic dataflows, intended for facility and independent users.
 
 See [Design Documentation](scripts/Documentation/Design/index.md)
 
