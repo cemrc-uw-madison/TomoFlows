@@ -19,7 +19,19 @@ See [Design Documentation](scripts/Documentation/Design/index.md)
 7. Stop and Remove Container: `docker compose down` (OPTIONAL)
 6. Kill Container: `docker compose kill` (OPTIONAL)
 
-## Local Developement
+> NOTE: important note - not all tasks/software packages are currently available in the containerized version, and the Dockerfile and instructions will need to be updated to support all tasks. For full use, the section below for a development environment should instead be followed. 
+
+## Local Development and non-docker use
+
+### Software environment
+
+Third-party software to be installed and available in your PATH:
+
+- IMOD (version 4.11.24 or higher)
+- UCSF MotionCor2 (version 1.5.0+ or higher)
+- UCSF AreTomo (version 1.3+)
+- gCTF (version 1.06+)
+
 ### Virtualenv Setup
 
 1. Create virtual env: `python3 -m virtualenv ~/path/to/env`
