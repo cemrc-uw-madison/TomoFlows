@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 
+import os
+from django.core.management.utils import get_random_secret_key
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,8 +23,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'fe$f8us8q&fou12on0scsfv*v5kohv%b69)^lc-&b365d@qvq('
+# Each instance of the TomoFlows Django project should have a unique secret_key
+# Below will create a secret key, and .gitignore excludes server/secret_key.py
+def generate_secret_key(filename):
+    secret = get_random_secret_key()
+    try:
+        with open(filename, 'w') as file:
+            file.write('SECRET_KEY = \"' + secret + '\"\n')
+    except IOError as e:
+        print(f"An error occurred while writing the file: {e}")
+
+try:
+    from .secret_key import SECRET_KEY
+except ImportError:
+    SETTINGS_DIR = os.path.abspath(os.path.dirname(__file__))
+    generate_secret_key(os.path.join(SETTINGS_DIR, 'secret_key.py'))
+    from .secret_key import SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
