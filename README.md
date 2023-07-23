@@ -4,6 +4,8 @@
 
 TomoFlows is a web-based UI for a task-based processing pipeline for Cryo-EM tomographic dataflows, intended for facility and independent users.
 
+![tomoflows](Documentation/Design/img/TomoFlows_Available_Tasks_UI.png)
+
 See [Design Documentation](scripts/Documentation/Design/index.md)
 
 ## Running on Docker
