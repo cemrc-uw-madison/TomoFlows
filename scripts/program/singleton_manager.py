@@ -4,13 +4,14 @@ import scripts.program.scripts_constants as CONSTANTS
 
 class Manager:
 
-    def __new__(cls):
-        if cls.self is None:
+    def __new__(cls, *args, **kwargs):
+        if not hasattr(cls, 'instance'):
             cls.instance = super().__new__(cls)
-        return cls.self
+        return cls.instance
 
     def __init__(self, path):
         # path represents BASE_DIR in django, the directory where manager.py is located
+        
         self.path = path
         self.data_path = os.path.join(path, 'data')
         self.setup_data()
@@ -60,10 +61,8 @@ class Manager:
         return False if setup fails
         return True if setup succeeds
         """
-        if not self.create_data_folder():
+        if not self.create_data_folder() or not self.create_data_metadata():
             return False
-        if not self.create_data_metadata():
-            return False 
         return True
 
     def create_project_folder(self, project_id):
@@ -96,17 +95,21 @@ class Manager:
         
         if "data.json" not in os.listdir(self.data_path) or project_id not in os.listdir(self.data_path):
             return False
+        project_name = project_id.split("-")[0]
+        owner = project_id.split("-")[1]
+        created_at = project_id.split("-")[2]
         project_path = os.path.join(self.data_path, project_id)
         project_json = project_id + ".json"
         if project_json in os.listdir(project_path):
             return False
         json_path = os.path.join(project_path, project_json)
         with open(json_path, "w") as fp:
-            info = {CONSTANTS.TASK_NUM: 0, CONSTANTS.TASKS: {}, CONSTANTS.PROJECT_ID: project_id}  
+            info = {CONSTANTS.TASK_NUM: 0, CONSTANTS.TASKS: {},
+                    CONSTANTS.PROJECT_ID: project_id, CONSTANTS.PROJECT_NAME: project_name, CONSTANTS.OWNER: owner, CONSTANTS.CREATED_AT: created_at}  
             fp.write(json.dumps(info))
         return True    
 
-    def create_project(self):
+    def create_project(self, project_id):
         """
         create_project is a wrapper of create_project_folder and create_project_metadata
         Arguments:
@@ -117,12 +120,11 @@ class Manager:
         data_json_path = os.path.join(self.data_path, "data.json")
         with open(data_json_path, "r+") as fp:
             data_json = json.load(fp)
-            project_id = data_json[CONSTANTS.PROJECT_NUM] + 1
             if not self.create_project_folder(project_id):
                 return False
             if not self.create_project_metadata(project_id):
                 return False 
-            data_json[CONSTANTS.PROJECT_NUM] = project_id
+            data_json[CONSTANTS.PROJECT_NUM] = data_json[CONSTANTS.PROJECT_NUM] + 1
             data_json[CONSTANTS.PROJECTS][project_id] = os.path.join(self.data_path, project_id)
             fp.seek(0)
             json.dump(data_json, fp)

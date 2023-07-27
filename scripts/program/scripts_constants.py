@@ -11,12 +11,15 @@ PROJECTS = "projects"
 """
 Contents inside project.json
 TASK_NUM: numbers of tasks inside current project
-PROJECT_ID: an auto increment number to locate current project
+PROJECT_ID: an project_name + project owner's email + project first created time string
 TASKS: (task_name: task_absolute_path) key-value pairs 
 """
 TASK_NUM = "task_num"
 PROJECT_ID = "project_id"
 TASKS = "tasks"
+PROJECT_NAME = "project_name"
+OWNER = "owner"
+CREATED_AT = "created_at"
 TASK_FOLDER_PREFIX = "task_"
 
 # CREATED, RUNNING, SUCCESS, FAILED
