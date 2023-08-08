@@ -142,7 +142,25 @@ def create_task_folder(path):
     pass
 
 
+def list_task(path, project_id):
+    """
+    List all associated tasks for specific project
+    path: absolute path where /data located
+    project_id: integer, id of project
+    return: False if project doesn't exist, List of task's name is project exists
+    """
+    data_json_path = os.path.join(path, "data.json")
+    project_name = "project_" + str(project_id)
+    with open(data_json_path, "r+") as fp:
+        data_json = json.load(fp)
+        if project_name not in data_json[CONSTANTS.PROJECTS]:
+            return False
+        project_json = os.path.join(data_json[CONSTANTS.PROJECTS][project_name], "project.json")
+        with open(project_json, "r") as project_fp:
+            project_json = json.load(project_fp)
+            return project_json[CONSTANTS.TASKS].keys()
 
+    
 def create_task_metadata(path):
     """
     create_task_metadata should be able to create task metadata based on given arguments
