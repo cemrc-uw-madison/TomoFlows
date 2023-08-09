@@ -14,6 +14,13 @@ from api.taskwrapper import task_handler
 from django.utils.timezone import now
 
 VERIFICATION_CODE = "12345"
+IMPORT_TASK_NAME = "Import"
+IMPORT_TASK_ID = 1
+
+def start_task(project_task_id):
+    project_task = ProjectTask.objects.get(pk=project_task_id)
+    run = Run.objects.get(project_task=project_task)
+    task_handler(project_task, run)
 
 @api_view(['GET'])
 @permission_classes((permissions.AllowAny,))
@@ -52,13 +59,17 @@ def ProjectList(request):
             project_identifer = name.lower().replace(' ', '-') + '-' + request.user.email.lower().replace(' ', '-') + '-' + first_created.strftime("%m:%d:%Y-%H:%M:%S").lower().replace(' ', '-')
             path = os.path.join(settings.BASE_DIR, "data", project_identifer)
             serializer.validated_data['folder_path'] = path
-            serializer.save()
+            project = serializer.save()
+            
+            # create and attach import task to project
+            
+            task = Task.objects.get(pk=IMPORT_TASK_ID) # import task
+            project_task = ProjectTask.objects.create(project=project, task=task, parameter_values=json.dumps([]))
+            run = Run.objects.create(project_task_id=project_task.id, status="CREATED", logs="[]", errors="[]")
 
             # TODO: manager could create folders + serialize metadata.
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        print(serializer["description"])
-        print("invalid data")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -93,7 +104,7 @@ def TaskList(request):
     GET, POST /api/tasks
     """
     if request.method == 'GET':
-        tasks = Task.objects.all()
+        tasks = Task.objects.all().exclude(pk=IMPORT_TASK_ID) # everything but import task
         serializer = TaskSerializer(tasks, many=True)
         data = serializer.data
         for i in range(len(data)):
@@ -115,7 +126,6 @@ def TaskList(request):
                 serializer.validated_data['parameter_fields'] = json.dumps([])
             serializer.save()
             data = serializer.data
-            print(data)
             data["parameter_fields"] = json.loads(data["parameter_fields"])
             return Response(data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -274,6 +284,8 @@ def ProjectTaskDetail(request, id):
             return Response(data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
+        if project_task.task.name == IMPORT_TASK_NAME and project_task.task.id == IMPORT_TASK_ID:
+            return Response({"detail": "Import task can't be deleted from project"}, status=status.HTTP_400_BAD_REQUEST)
         project_task.project.last_updated = datetime.now().replace(tzinfo=pytz.utc)
         project_task.project.save()
         project_task.delete()
@@ -310,11 +322,6 @@ def RunProjectTask(request, id):
         data["run"]["errors"] = json.loads(data["run"]["errors"])
         del data["run"]["project_task"]
         return Response(data)
-
-def start_task(project_task_id):
-    project_task = ProjectTask.objects.get(pk=project_task_id)
-    run = Run.objects.get(project_task=project_task)
-    task_handler(project_task, run)
     
 @api_view(['GET', 'PUT'])
 @permission_classes((permissions.IsAuthenticated,))

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { ArrowLeft, ArrowRight, BoxArrowUpRight, CheckCircle, Hourglass, PencilSquare, PlayFill, PlusCircle, Trash, XCircle } from "react-bootstrap-icons"
+import { ArrowLeft, ArrowRight, BoxArrowUpRight, CheckCircle, Hourglass, 
+		 PencilSquare, PlayFill, PlusCircle, Trash, XCircle, DatabaseFillAdd } from "react-bootstrap-icons"
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import Container from "react-bootstrap/Container";
@@ -12,6 +13,8 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import Alert from 'react-bootstrap/Alert';
 import InputGroup from 'react-bootstrap/InputGroup';
 import "./Project.css";
+
+const IMPORT_TASK_ID = 1;
 
 const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
 	<div
@@ -481,7 +484,7 @@ const Project = (props) => {
 										>	
 											<div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "flex-end", gap: 5}}>
 												<h5>{task.task.name}</h5>
-												<small className="text-body-secondary id"><b>ID: {task.run.id}</b></small>
+												{task.task.id !== IMPORT_TASK_ID && <small className="text-body-secondary id"><b>ID: {task.run.id}</b></small>}
 											</div>
 											
 											{task.run.status === "FAILED" ?
@@ -519,7 +522,7 @@ const Project = (props) => {
 									<small className="text-body-secondary">{tasks[selected].task.description}</small>
 								</div>
 								<div className="button-div">
-									<Button
+									{tasks[selected].task.id !== IMPORT_TASK_ID && <Button
 										className="know-more"
 										variant="outline-primary"
 										size="sm"
@@ -527,7 +530,7 @@ const Project = (props) => {
 									>	
 										<BoxArrowUpRight />
 										Know More
-									</Button>
+									</Button>}
 									{tasks[selected].run.status === "SUCCESS" && 
 										<Button
 											variant="outline-success"
@@ -552,7 +555,7 @@ const Project = (props) => {
 											size="sm"
 										>	
 											<Hourglass />
-											Pending Run
+											{tasks[selected].task.id === IMPORT_TASK_ID ? "Pending Import": "Pending Run"}
 										</Button>
 									}
 									<Button
@@ -569,10 +572,14 @@ const Project = (props) => {
 												animation="border"
 												size="sm"
 											/> : 
-											<PlayFill size={20} style={{marginLeft: -2, marginRight: 2}}/>}
-										{tasks[selected].run.status === "RUNNING" ? "Running" : "Run Task"}
+											(tasks[selected].task.id === IMPORT_TASK_ID ? <DatabaseFillAdd size={18} style={{marginLeft: -2, marginRight: 5}}/> : <PlayFill size={20} style={{marginLeft: -2, marginRight: 2}}/>)
+										}
+										{tasks[selected].task.id === IMPORT_TASK_ID ? 
+											(tasks[selected].run.status === "RUNNING" ? "Importing" : "Import") :
+											(tasks[selected].run.status === "RUNNING" ? "Running" : "Run Task")
+										}
 									</Button>
-									<Button
+									{tasks[selected].task.id !== IMPORT_TASK_ID && <Button
 										variant="outline-danger"
 										size="sm"
 										onClick={() => {
@@ -581,7 +588,7 @@ const Project = (props) => {
 										}}
 									>	
 										<Trash style={{marginRight: -1, marginTop: -1}}/>
-									</Button>
+									</Button>}
 								</div>
 							</div>
 							<div className="parameters">

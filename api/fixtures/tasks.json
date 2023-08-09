@@ -1,22 +1,22 @@
 [
-	{
-	  "model": "api.Task",
-	  "pk": 1,
-	  "fields": {
-		"name": "Gain",
-		"description": "Convert dm4 to mrc format",
-		"parameter_fields": "[{\"name\":\"Input File\",\"type\":\"file\",\"default\":null}]"
-	  }
-	},
     {
         "model": "api.Task",
-        "pk": 2,
+        "pk": 1,
         "fields": {
             "name": "Import",
             "description": "Import micrographs into a project",
             "parameter_fields": "[{\"name\":\"import_data\",\"type\":\"directory\",\"default\":null}, {\"name\":\"import_directory_type\",\"type\":\"string\",\"default\":\"frames\"}]"
         }
     },
+	{
+	    "model": "api.Task",
+	    "pk": 2,
+	    "fields": {
+		    "name": "Gain",
+		    "description": "Convert dm4 to mrc format",
+		    "parameter_fields": "[{\"name\":\"Input File\",\"type\":\"file\",\"default\":null}]"
+	    }
+	},
     {
         "model": "api.Task",
         "pk": 3,
