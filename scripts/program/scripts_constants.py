@@ -18,9 +18,11 @@ TASK_NUM = "task_num"
 PROJECT_ID = "project_id"
 TASKS = "tasks"
 PROJECT_NAME = "project_name"
+PROJECT_DESCRIPTION = "project_description"
 OWNER = "owner"
 CREATED_AT = "created_at"
 TASK_FOLDER_PREFIX = "task_"
+
 
 # CREATED, RUNNING, SUCCESS, FAILED
 TASK_STATUS_CREATED = "CREATED"

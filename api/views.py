@@ -52,11 +52,12 @@ def ProjectList(request):
             serializer.validated_data['last_updated'] = datetime.now().replace(tzinfo=pytz.utc)
             name = serializer.validated_data['name']
             first_created = now()
-            project_identifer = name.lower().replace(' ', '-') + '-' + request.user.email.lower().replace(' ', '-') + '-' + first_created.strftime("%m:%d:%Y-%H:%M:%S").lower().replace(' ', '-')
+            project_identifer = generate_project_identifer(name, request.user.email, first_created)
             path = os.path.join(settings.BASE_DIR, "data", project_identifer)
             serializer.validated_data['folder_path'] = path
             serializer.save()
-            DISK_MANAGER.create_project(project_identifer)
+            description = serializer.validated_data["description"]
+            DISK_MANAGER.create_project(project_identifer, description)
             # TODO: manager could create folders + serialize metadata.
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
