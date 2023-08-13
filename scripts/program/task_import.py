@@ -1,6 +1,7 @@
 import typing
 import subprocess
 import os
+
 from scripts.program.metadata.image_metadata import ImageMetadata, ImageSet
 from scripts.program.metadata.task_metadata import TaskDescription, TaskOutputDescription
 from scripts.program.task import Task
@@ -58,11 +59,14 @@ class TaskImport(Task):
         
         imageMD = ImageMetadata()
 
-        # TODO: 'gain' image files should be excluded from below, and identified uniquely.
+        # 'gain' image files should be excluded from below, and identified uniquely.
+        gain_keyword1 = 'Gain'
+        gain_keyword2 = 'gain'
 
         # 1. find each subdirectory containing image files, then finding the files to 'import'
         for childDir in os.listdir(path_to_frames):
             relativePath = os.path.join(path_to_frames, childDir)
+            imageset_id = childDir
             if (os.path.isdir(relativePath)):
                 image_list = []
                 # 2. find all *.tiff, *.eer, or *.mrc files in this folder with accompaning .mdoc information.
@@ -76,11 +80,16 @@ class TaskImport(Task):
                     image_list.append(filePath)
                 files = list_suffix(relativePath, "mrc")
                 for f in files:
-                    filePath = os.path.join(relativePath, f)
-                    image_list.append(filePath)
+                    if gain_keyword1 in f or gain_keyword2 in f:
+                        print('Excluding gain image from import: ' + f)
+                    else:
+                        filePath = os.path.join(relativePath, f)
+                        image_list.append(filePath)
+
                 if len(image_list) > 0:
                     # 3. add the tilt-series ImageSet into imageMD
                     header = {}
+                    header[CONSTANTS.HEADER_IMAGESET_NAME] = imageset_id
                     tiltset = ImageSet(header, image_list)
                     imageMD.add_image_set(tiltset)
 
@@ -106,8 +115,8 @@ class TaskImport(Task):
         # Create Task folder if missing.
         if not os.path.isdir(self.task_folder):
             os.makedirs(self.task_folder)
-        # Serialize the Task description metatadata
-        task_meta.save_to_json(os.path.join(self.task_folder, self.result_json))
+        # Serialize the Task description metadata
+        task_meta.save_to_json(os.path.join(self.task_folder, self.task_json))
 
         # Import the datafiles, building imageset.json and results.json
         results = None
