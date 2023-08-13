@@ -15,6 +15,9 @@ from django.utils.timezone import now
 from server.settings import DISK_MANAGER
 VERIFICATION_CODE = "12345"
 
+def generate_project_identifer(name, email, first_created):
+    return name.lower().replace(' ', '-') + '-' + email.lower().replace(' ', '-') + '-' + first_created.strftime("%m:%d:%Y-%H:%M:%S").lower().replace(' ', '-')
+
 @api_view(['GET'])
 @permission_classes((permissions.AllowAny,))
 def Ping(request):
@@ -70,6 +73,7 @@ def ProjectDetail(request, id):
     """
     try:
         project = Project.objects.get(pk=id)
+        project_identifier = generate_project_identifer(project.name, request.user.email, project.first_created)
     except Project.DoesNotExist:
         return Response({"detail": "Project not found with given id"}, status=status.HTTP_404_NOT_FOUND)
     
@@ -80,10 +84,15 @@ def ProjectDetail(request, id):
         serializer = ProjectSerializer(project, data=request.data)
         if serializer.is_valid():
             serializer.validated_data['last_updated'] = datetime.now().replace(tzinfo=pytz.utc)
+            new_project_name = serializer.validated_data['name']
+            new_project_description = serializer.validated_data['description']
+            DISK_MANAGER.update_project(project_identifier, new_project_name, new_project_description)
             serializer.save()
             return Response(serializer.data)
+        # TODO: error handling page
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
+        DISK_MANAGER.delete_project(project_identifier)
         project.delete()
         return Response({"detail": "Project deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 

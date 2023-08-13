@@ -130,7 +130,12 @@ class Manager:
             json.dump(data_json, fp)
         return True
         
+    def update_project(self, project_identifier, project_name, project_description):
+        pass
 
+    def delete_project(self, project_id):
+        pass
+    
     def create_task_folder(path):
         """
         create_task_folder needs the task's information to generate a unique folder
