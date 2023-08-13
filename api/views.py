@@ -12,7 +12,7 @@ from api.models import User, Project, Task, ProjectTask, Run
 from api.serializers import UserSerializer, ProjectSerializer, TaskSerializer, ProjectTaskSerializer, RunSerializer
 from api.taskwrapper import task_handler
 from django.utils.timezone import now
-
+from server.settings import DISK_MANAGER
 VERIFICATION_CODE = "12345"
 
 @api_view(['GET'])
@@ -53,11 +53,12 @@ def ProjectList(request):
             path = os.path.join(settings.BASE_DIR, "data", project_identifer)
             serializer.validated_data['folder_path'] = path
             serializer.save()
-
+            DISK_MANAGER.create_project(project_identifer)
             # TODO: manager could create folders + serialize metadata.
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        print(serializer["description"])
+        
+        # TODO: return error handlding page
         print("invalid data")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
