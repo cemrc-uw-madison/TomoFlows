@@ -1,8 +1,0 @@
-{
-    "task_name": "Import",
-    "task_description": "Import micrographs into a project",
-    "parameters": {
-        "import_data": null,
-        "import_directory_type": "frames"
-    }
-}
