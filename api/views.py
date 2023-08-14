@@ -22,16 +22,6 @@ def start_task(project_task_id):
     run = Run.objects.get(project_task=project_task)
     task_handler(project_task, run)
 
-def start_task(project_task_id):
-    project_task = ProjectTask.objects.get(pk=project_task_id)
-    run = Run.objects.get(project_task=project_task)
-    task_handler(project_task, run)
-
-def start_task(project_task_id):
-    project_task = ProjectTask.objects.get(pk=project_task_id)
-    run = Run.objects.get(project_task=project_task)
-    task_handler(project_task, run)
-
 @api_view(['GET'])
 @permission_classes((permissions.AllowAny,))
 def Ping(request):
