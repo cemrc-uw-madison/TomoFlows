@@ -145,7 +145,7 @@ node_modules/
 TestData/
 
 # Static frontend file
-static/
+/frontend/static/js/
 
 # Exclude a generated SECRET_KEY file
 server/secret_key.py

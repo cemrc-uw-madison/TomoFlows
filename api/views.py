@@ -321,11 +321,6 @@ def RunProjectTask(request, id):
         data["run"]["errors"] = json.loads(data["run"]["errors"])
         del data["run"]["project_task"]
         return Response(data)
-
-def start_task(project_task_id):
-    project_task = ProjectTask.objects.get(pk=project_task_id)
-    run = Run.objects.get(project_task=project_task)
-    task_handler(project_task, run)
     
 @api_view(['GET', 'PUT'])
 @permission_classes((permissions.IsAuthenticated,))

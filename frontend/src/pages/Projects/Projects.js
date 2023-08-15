@@ -22,8 +22,6 @@ const Projects = (props) => {
 	const [createLoad, setCreateLoad] = useState(false);
 	const [show, setShow] = useState(false);
 	const [name, setName] = useState("");
-	// Default description of newly created project should be "default description"
-	const [defaultDescription, setDefaultDescription] = useState("default description");
 	const [description, setDescription] = useState("");
 	const [error, setError] = useState("");
 	const [success, setSuccess] = useState("");
@@ -74,77 +72,40 @@ const Projects = (props) => {
 		fetchProjects();
 	}
 	
-	const handleKeyDown = e => {
-		// it triggers by enter key
-		alert(e);
-		
-	}
-
 	const createProject = () => {
-		
 		let token = Cookies.get('auth-token')
 		setCreateLoad(true);
 		setError("");
-		if (description.length == 0 || !description.trim().length) {
-			axios.post('/api/projects', 
-			{
-				name: name,
-				description: defaultDescription
-			}, 
-			{
-				headers: {
-					'Authorization': `Bearer ${token}`
-				}
-			})
-			.then(response => {
-				console.log(response)
-				setSuccess(`Project '${name}' created successfully!`)
-				setName("");
-				setDescription("");
-				setCreateLoad(false);
-			})
-			.catch(error => {
-				console.log(error);
-				if (error.response.status == 400 || error.response.status == 401) {
-					setError(error.response.data.detail);
+		axios.post('/api/projects', 
+		{
+			name: name,
+			description: description
+		},
+		{
+			headers: {
+				'Authorization': `Bearer ${token}`
+			}
+		})
+		.then(response => {
+			setSuccess(`Project '${name}' created successfully!`)
+			setName("");
+			setDescription("");
+			setCreateLoad(false);
+		})
+		.catch(error => {
+			if (error.response.status == 400 || error.response.status == 401) {
+				if ("name" in error.response.data) {
+					setError("A project with this name already exists.")
 				} else {
-					setError("Something went wrong! Please try again later.")
-				}
-				setName("");
-				setDescription("");
-				setCreateLoad(false)
-			});
-		} else {
-			axios.post('/api/projects', 
-			{
-				name: name,
-				description: description
-			}, 
-			{
-				headers: {
-					'Authorization': `Bearer ${token}`
-				}
-			})
-			.then(response => {
-				console.log(response)
-				setSuccess(`Project '${name}' created successfully!`)
-				setName("");
-				setDescription("");
-				setCreateLoad(false);
-			})
-			.catch(error => {
-				console.log(error);
-				if (error.response.status == 400 || error.response.status == 401) {
 					setError(error.response.data.detail);
-				} else {
-					setError("Something went wrong! Please try again later.")
 				}
-				setName("");
-				setDescription("");
-				setCreateLoad(false)
-			});
-		}
-		
+			} else {
+				setError("Something went wrong! Please try again later.")
+			}
+			setName("");
+			setDescription("");
+			setCreateLoad(false)
+		});
 	}
 	
 	return (
@@ -180,13 +141,14 @@ const Projects = (props) => {
 						disabled={createLoad}
 						value={name}
 						onChange={e => setName(e.target.value)}
-						placeholder="Project Name" 
+						placeholder="Project Name"
 					/>
 					<Form.Control
 						disabled={createLoad}
 						value={description}
 						onChange={e => setDescription(e.target.value)}
 						placeholder="Project Description"
+						onKeyDown={(e) => e.key === 'Enter' && name.length !== 0 && createProject()}
 					/>
 					{error.length != 0 && 
 						<Alert variant="danger" onClose={() => setError("")} dismissible>
@@ -200,7 +162,7 @@ const Projects = (props) => {
 					}
 				</Modal.Body>
 				<Modal.Footer>
-					<Button variant="secondary" onClick={handleClose} onKeyDown={handleKeyDown}>
+					<Button variant="secondary" onClick={handleClose}>
 						Cancel
 					</Button>
 					<Button
@@ -209,7 +171,6 @@ const Projects = (props) => {
 						variant="primary"
 						onClick={createProject}
 						disabled={name.length == 0}
-						onKeyDown={handleKeyDown}
 					>
 						{
 							createLoad ?

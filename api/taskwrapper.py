@@ -16,7 +16,7 @@ def task_handler(project_task, run):
     if project_task.task.name == "Gain":
         task_gain_handler(project_task, run)
     elif project_task.task.name == "Motion Correction (MotionCor2)":
-        task_motioncor2(project_task, run)
+        task_motioncor2_handler(project_task, run)
     elif project_task.task.name == "Import":
         task_import_handler(project_task, run)
     else:
@@ -101,7 +101,7 @@ def task_gain_handler(project_task, run):
     run.errors = json.dumps([])
     run.save()
 
-def task_motioncor2(project_task, run):
+def task_motioncor2_handler(project_task, run):
     project = project_task.project
     # TODO: ideally parameters would provide name:value pairs as a dictionary? We only get the values.
     parameters = json.loads(project_task.parameter_values)
