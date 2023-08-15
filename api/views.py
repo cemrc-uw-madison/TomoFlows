@@ -87,6 +87,7 @@ def ProjectDetail(request, id):
             serializer.validated_data['last_updated'] = datetime.now().replace(tzinfo=pytz.utc)
             new_project_name = serializer.validated_data['name']
             new_project_description = serializer.validated_data['description']
+            print(new_project_description)
             DISK_MANAGER.update_project(project_identifier, new_project_name, new_project_description)
             serializer.save()
             return Response(serializer.data)

@@ -1,6 +1,7 @@
 import os
 import json
 import scripts.program.scripts_constants as CONSTANTS
+import shutil
 
 class Manager:
 
@@ -133,10 +134,30 @@ class Manager:
         return True
         
     def update_project(self, project_identifier, project_name, project_description):
-        pass
+        project_path = os.path.join(self.data_path, project_identifier)
+        project_json = project_identifier + ".json"
+        json_path = os.path.join(project_path, project_json)
+        with open(json_path, "r+") as fp:
+            data = json.load(fp)
+            data[CONSTANTS.PROJECT_NAME] = project_name
+            data[CONSTANTS.PROJECT_DESCRIPTION] = project_description
+            fp.seek(0)
+            json.dump(data, fp)
+            fp.truncate()
+        return True    
 
-    def delete_project(self, project_id):
-        pass
+    def delete_project(self, project_identifier):
+        project_path = os.path.join(self.data_path, project_identifier)
+        shutil.rmtree(project_path)
+        data_json_path = os.path.join(self.data_path, "data.json")
+        with open(data_json_path, "r+") as fp:
+            data = json.load(fp)
+            data[CONSTANTS.PROJECT_NUM] -= 1
+            data[CONSTANTS.PROJECTS].pop(project_identifier)
+            fp.seek(0)
+            json.dump(data, fp)
+            fp.truncate()
+        return True
     
     def create_task_folder(path):
         """
