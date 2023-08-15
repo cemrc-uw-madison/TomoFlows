@@ -16,9 +16,10 @@ from datetime import timedelta
 import os
 from django.core.management.utils import get_random_secret_key
 
+from scripts.program.singleton_manager import Manager
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+DISK_MANAGER = Manager(BASE_DIR)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/

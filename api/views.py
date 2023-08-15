@@ -12,13 +12,11 @@ from api.models import User, Project, Task, ProjectTask, Run
 from api.serializers import UserSerializer, ProjectSerializer, TaskSerializer, ProjectTaskSerializer, RunSerializer
 from api.taskwrapper import task_handler
 from django.utils.timezone import now
-
+from server.settings import DISK_MANAGER
 VERIFICATION_CODE = "12345"
 
-def start_task(project_task_id):
-    project_task = ProjectTask.objects.get(pk=project_task_id)
-    run = Run.objects.get(project_task=project_task)
-    task_handler(project_task, run)
+def generate_project_identifer(name, email, first_created):
+    return name.lower().replace(' ', '-') + '-' + email.lower().replace(' ', '-') + '-' + first_created.strftime("%m:%d:%Y-%H:%M:%S").lower().replace(' ', '-')
 
 @api_view(['GET'])
 @permission_classes((permissions.AllowAny,))
@@ -54,14 +52,18 @@ def ProjectList(request):
             serializer.validated_data['last_updated'] = datetime.now().replace(tzinfo=pytz.utc)
             name = serializer.validated_data['name']
             first_created = now()
-            project_identifer = name.lower().replace(' ', '-') + '-' + request.user.email.lower().replace(' ', '-') + '-' + first_created.strftime("%m:%d:%Y-%H:%M:%S").lower().replace(' ', '-')
+            project_identifer = generate_project_identifer(name, request.user.email, first_created)
             path = os.path.join(settings.BASE_DIR, "data", project_identifer)
             serializer.validated_data['folder_path'] = path
             serializer.save()
-
+            description = serializer.validated_data["description"]
+            DISK_MANAGER.create_project(project_identifer, description)
             # TODO: manager could create folders + serialize metadata.
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        # TODO: return error handlding page
+        print("invalid data")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -72,6 +74,7 @@ def ProjectDetail(request, id):
     """
     try:
         project = Project.objects.get(pk=id)
+        project_identifier = generate_project_identifer(project.name, request.user.email, project.first_created)
     except Project.DoesNotExist:
         return Response({"detail": "Project not found with given id"}, status=status.HTTP_404_NOT_FOUND)
     
@@ -82,10 +85,16 @@ def ProjectDetail(request, id):
         serializer = ProjectSerializer(project, data=request.data)
         if serializer.is_valid():
             serializer.validated_data['last_updated'] = datetime.now().replace(tzinfo=pytz.utc)
+            new_project_name = serializer.validated_data['name']
+            new_project_description = serializer.validated_data['description']
+            print(new_project_description)
+            DISK_MANAGER.update_project(project_identifier, new_project_name, new_project_description)
             serializer.save()
             return Response(serializer.data)
+        # TODO: error handling page
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
+        DISK_MANAGER.delete_project(project_identifier)
         project.delete()
         return Response({"detail": "Project deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 

@@ -1,6 +1,7 @@
 import os
 import json
 import scripts.program.scripts_constants as CONSTANTS
+import shutil
 
 class Manager:
 
@@ -82,7 +83,7 @@ class Manager:
         os.mkdir(project_path)
         return True
 
-    def create_project_metadata(self, project_id):
+    def create_project_metadata(self, project_id, project_description):
         """
         create_project_metadata should be able to create project metadata based on given arguments
         what infomation should be stored in metadata needs discussion
@@ -105,11 +106,13 @@ class Manager:
         json_path = os.path.join(project_path, project_json)
         with open(json_path, "w") as fp:
             info = {CONSTANTS.TASK_NUM: 0, CONSTANTS.TASKS: {},
-                    CONSTANTS.PROJECT_ID: project_id, CONSTANTS.PROJECT_NAME: project_name, CONSTANTS.OWNER: owner, CONSTANTS.CREATED_AT: created_at}  
+                    CONSTANTS.PROJECT_ID: project_id, CONSTANTS.PROJECT_NAME: project_name,
+                    CONSTANTS.OWNER: owner, CONSTANTS.CREATED_AT: created_at,
+                    CONSTANTS.PROJECT_DESCRIPTION: project_description}  
             fp.write(json.dumps(info))
         return True    
 
-    def create_project(self, project_id):
+    def create_project(self, project_id, project_description):
         """
         create_project is a wrapper of create_project_folder and create_project_metadata
         Arguments:
@@ -122,7 +125,7 @@ class Manager:
             data_json = json.load(fp)
             if not self.create_project_folder(project_id):
                 return False
-            if not self.create_project_metadata(project_id):
+            if not self.create_project_metadata(project_id, project_description):
                 return False 
             data_json[CONSTANTS.PROJECT_NUM] = data_json[CONSTANTS.PROJECT_NUM] + 1
             data_json[CONSTANTS.PROJECTS][project_id] = os.path.join(self.data_path, project_id)
@@ -130,7 +133,32 @@ class Manager:
             json.dump(data_json, fp)
         return True
         
+    def update_project(self, project_identifier, project_name, project_description):
+        project_path = os.path.join(self.data_path, project_identifier)
+        project_json = project_identifier + ".json"
+        json_path = os.path.join(project_path, project_json)
+        with open(json_path, "r+") as fp:
+            data = json.load(fp)
+            data[CONSTANTS.PROJECT_NAME] = project_name
+            data[CONSTANTS.PROJECT_DESCRIPTION] = project_description
+            fp.seek(0)
+            json.dump(data, fp)
+            fp.truncate()
+        return True    
 
+    def delete_project(self, project_identifier):
+        project_path = os.path.join(self.data_path, project_identifier)
+        shutil.rmtree(project_path)
+        data_json_path = os.path.join(self.data_path, "data.json")
+        with open(data_json_path, "r+") as fp:
+            data = json.load(fp)
+            data[CONSTANTS.PROJECT_NUM] -= 1
+            data[CONSTANTS.PROJECTS].pop(project_identifier)
+            fp.seek(0)
+            json.dump(data, fp)
+            fp.truncate()
+        return True
+    
     def create_task_folder(path):
         """
         create_task_folder needs the task's information to generate a unique folder

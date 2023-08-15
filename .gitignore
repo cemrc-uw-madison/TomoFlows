@@ -149,3 +149,6 @@ TestData/
 
 # Exclude a generated SECRET_KEY file
 server/secret_key.py
+
+# data folder
+data/
