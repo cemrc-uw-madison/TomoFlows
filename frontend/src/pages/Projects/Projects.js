@@ -9,6 +9,7 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import ProjectCard from "../../components/ProjectCard/ProjectCard";
+import toast, { Toaster } from 'react-hot-toast';
 import "./Projects.css"
 
 /**
@@ -33,6 +34,7 @@ const Projects = (props) => {
 	
 	const fetchProjects = () => {
 		let token = Cookies.get('auth-token')
+		
 		if (token) {
 			setLoading(true);
 			axios.get('/api/projects', {
@@ -62,6 +64,39 @@ const Projects = (props) => {
 		}
 	}
 	
+	const projectCreateSuccess = () => {
+		let token = Cookies.get('auth-token')
+		
+		if (token) {
+			setLoading(true);
+			axios.get('/api/projects', {
+				headers: {
+					'Authorization': `Bearer ${token}`
+				}
+			})
+			.then(response => {
+				let data = [...response.data]
+				data.sort((a, b) => new Date(b["last_updated"]) - new Date(a["last_updated"]))
+				setProjects(data);
+				toast.success("Successfully Created");
+				setLoading(false);
+			})
+			.catch(error => {
+				setLoading(false);
+				if (error.response.status === 401 || error.response.status === 403) {
+					Cookies.remove('auth-token');
+					Cookies.remove('auth-user');
+					navigate("/login");
+				}
+				console.error(error);
+			})
+		} else {
+			Cookies.remove('auth-token');
+			Cookies.remove('auth-user');
+			navigate("/login");
+		}
+	}
+
 	const handleClose = () => {
 		setShow(false);
 		setName("");
@@ -87,10 +122,14 @@ const Projects = (props) => {
 			}
 		})
 		.then(response => {
-			setSuccess(`Project '${name}' created successfully!`)
 			setName("");
 			setDescription("");
 			setCreateLoad(false);
+			setShow(false);
+			setError("");
+			setSuccess("");
+			projectCreateSuccess();
+			
 		})
 		.catch(error => {
 			if (error.response.status == 400 || error.response.status == 401) {
@@ -104,12 +143,14 @@ const Projects = (props) => {
 			}
 			setName("");
 			setDescription("");
-			setCreateLoad(false)
+			setCreateLoad(false);
+			
 		});
 	}
 	
 	return (
 		<div className="Projects">
+			<Toaster/>
 			<Container>
 				<h2 className="heading"><b>Projects</b></h2>
 				<div className="cards">
