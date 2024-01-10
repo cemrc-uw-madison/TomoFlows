@@ -32,7 +32,7 @@ const Projects = (props) => {
 		fetchProjects();
 	}, [])
 	
-	const fetchProjects = () => {
+	const fetchProjects = (status="") => {
 		let token = Cookies.get('auth-token')
 		
 		if (token) {
@@ -46,6 +46,13 @@ const Projects = (props) => {
 				let data = [...response.data]
 				data.sort((a, b) => new Date(b["last_updated"]) - new Date(a["last_updated"]))
 				setProjects(data);
+				if (status) {
+					if (status == "success") {
+						toast.success("Successfully Created");
+					} else {
+						toast.error(status);
+					}
+				}
 				setLoading(false);
 			})
 			.catch(error => {
@@ -128,22 +135,27 @@ const Projects = (props) => {
 			setShow(false);
 			setError("");
 			setSuccess("");
-			projectCreateSuccess();
+			fetchProjects("success");
 			
 		})
 		.catch(error => {
+			let status;
 			if (error.response.status == 400 || error.response.status == 401) {
 				if ("name" in error.response.data) {
-					setError("A project with this name already exists.")
+					status = "A project with this name already exists.";
 				} else {
-					setError(error.response.data.detail);
+					status = error.response.data.detail;
 				}
 			} else {
-				setError("Something went wrong! Please try again later.")
+				status = "Something went wrong! Please try again later.";
 			}
 			setName("");
 			setDescription("");
 			setCreateLoad(false);
+			setShow(false);
+			setError("");
+			setSuccess("");
+			fetchProjects(status);
 			
 		});
 	}
