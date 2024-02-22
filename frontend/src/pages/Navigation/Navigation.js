@@ -112,7 +112,6 @@ const Navigation = (props) => {
 			}
 		})
 		.then(response => {
-			console.log(response)
 			setSuccess(`Task '${taskName}' created successfully!`)
 			setCode("");
 			setTaskName("");
@@ -121,7 +120,7 @@ const Navigation = (props) => {
 			setLoading(false);
 		})
 		.catch(error => {
-			console.log(error);
+			console.error(error);
 			if (error.response.status === 400) {
 				setError(error.response.data.detail);
 			} else if (error.response.status === 401) {

@@ -163,27 +163,29 @@ const Projects = (props) => {
 				</Modal.Body>
 				<Modal.Footer>
 					<Button variant="secondary" onClick={handleClose}>
-						Cancel
+						{success.length != 0 ? "Close" : "Cancel"}
 					</Button>
-					<Button
-						type='submit'
-						className="create-project-button"
-						variant="primary"
-						onClick={createProject}
-						disabled={name.length == 0}
-					>
-						{
-							createLoad ?
-							<Spinner
-								as="span"
-								animation="border"
-								size="sm"
-								role="status"
-								aria-hidden="true"
-							/> :
-							"Create"
-						}
-					</Button>
+					{success.length == 0 && 
+						<Button
+							type='submit'
+							className="create-project-button"
+							variant="primary"
+							onClick={createProject}
+							disabled={name.length == 0}
+						>
+							{
+								createLoad ?
+								<Spinner
+									as="span"
+									animation="border"
+									size="sm"
+									role="status"
+									aria-hidden="true"
+								/> :
+								"Create"
+							}
+						</Button>
+					}
 				</Modal.Footer>
 			</Modal>
 		</div>

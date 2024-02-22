@@ -17,15 +17,15 @@ WORKDIR $DjangoDir
 # install dependencies
 
 # imod
-RUN wget https://bio3d.colorado.edu/imod/AMD64-RHEL5/imod_4.11.24_RHEL7-64_CUDA10.1.sh
+RUN wget http://bio3d.colorado.edu/imod/AMD64-RHEL5/imod_4.11.24_RHEL7-64_CUDA10.1.sh
 RUN chmod +x imod_4.11.24_RHEL7-64_CUDA10.1.sh
 RUN echo 'deb http://ftp.debian.org/debian buster-backports main' | tee /etc/apt/sources.list.d/buster-backports.list
 RUN apt-get update
+RUN apt-get upgrade
 RUN apt-get -y install openssh-client
 RUN apt-get -y install libjpeg62
 RUN apt-get -y install libjpeg-dev
 RUN apt-get -y install default-jre
-RUN apt-get -y install openjdk-11-jdk
 RUN apt-get -y install libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxkbcommon-x11-0
 RUN sh imod_4.11.24_RHEL7-64_CUDA10.1.sh -debian -y
 RUN source /etc/bash.bashrc

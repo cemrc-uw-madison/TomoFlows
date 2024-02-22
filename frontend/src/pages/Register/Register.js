@@ -43,7 +43,6 @@ const Register = (props) => {
 			password2: password2
 		})
 		.then(response => {
-			console.log(response)
 			Cookies.set('auth-token', response.data.access_token)
 			Cookies.set('auth-user', JSON.stringify(response.data.user))
 			setEmail("");
@@ -55,7 +54,7 @@ const Register = (props) => {
 			navigate("/")
 		})
 		.catch(error => {
-			console.log(error);
+			console.error(error);
 			if (error.response.status == 400) {
 				if ("non_field_errors" in error.response.data) {
 					setError(error.response.data.non_field_errors[0]);

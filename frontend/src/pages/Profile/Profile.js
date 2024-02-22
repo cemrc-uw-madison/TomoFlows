@@ -34,7 +34,6 @@ const Profile = (props) => {
 				}
 			})
 			.then(response => {
-				console.log(response.data)
 				setUser(response.data);
 				setFirstName(response.data.first_name);
 				setLastName(response.data.last_name);

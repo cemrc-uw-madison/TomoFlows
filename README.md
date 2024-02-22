@@ -42,6 +42,7 @@ Third-party software to be installed and available in your PATH:
 
 1. Ensure to setup and activate virtualenv and install dependencies
 2. Run Django Migrations: `python3 manage.py makemigrations && python3 manage.py migrate`
+3. Populate database with tasks: `python3 manage.py loaddata tasks`
 3. Start Django Server: `python3 manage.py runserver`
 4. Setup Frontend in New Terminal: `cd frontend && npm install`
 5. Run Frontend in New Terminal: `npm run dev`

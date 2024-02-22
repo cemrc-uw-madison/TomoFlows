@@ -26,6 +26,7 @@ class TaskImport(Task):
     # Parameters should include import_data: path to a directory of data to import
     # Parameters should include import_directory_type: ['frames' or 'stack'] 
     parameters = {}
+    logs = []
 
     def __init__(self, task_folder):
         """
@@ -102,23 +103,41 @@ class TaskImport(Task):
 
     def run(self):
         """ Should run the import task """
-        if not 'import_data' in self.parameters.keys():
-            raise ValueError("Parameter 'import_data' is not provided")
-        if not 'import_directory_type' in self.parameters.keys():
-            raise ValueError("Parameter 'import_directory_type' is not provided")
+        self.logs = []
+        self.add_log("Running Import task...")
+        if not os.path.isdir(self.task_folder):
+            os.makedirs(self.task_folder)
+
+        try:
+            if not 'import_data' in self.parameters.keys():
+                raise ValueError("Parameter 'import_data' is not provided")
+            if not self.parameters['import_data']:
+                raise ValueError("Parameter 'import_data' is not provided")
+            if not 'import_directory_type' in self.parameters.keys():
+                raise ValueError("Parameter 'import_directory_type' is not provided")
+            if not self.parameters['import_directory_type']:
+                raise ValueError("Parameter 'import_directory_type' is not provided")
+        except ValueError as err:
+            self.add_log("Parameter check failed: " + str(err))
+            self.add_log("Import task run failed")
+            results_json_path = os.path.join(self.task_folder, self.result_json)
+            results = TaskOutputDescription(self.name(), self.description())
+            results.set_status(CONSTANTS.TASK_STATUS_FAILED)
+            results.add_errors({"type": "ValueError", "detail": str(err)})
+            results.logs = self.logs
+            results.save_to_json(results_json_path)
+            return
 
         # Create a TaskDescription with parameters.
         task_meta = TaskDescription(self.name(), self.description())
         # Add the Task parameters.
         task_meta.add_parameter('import_data', self.parameters['import_data'])
         task_meta.add_parameter('import_directory_type', self.parameters['import_directory_type'])
-        # Create Task folder if missing.
-        if not os.path.isdir(self.task_folder):
-            os.makedirs(self.task_folder)
         # Serialize the Task description metadata
         task_meta.save_to_json(os.path.join(self.task_folder, self.task_json))
 
         # Import the datafiles, building imageset.json and results.json
+        self.add_log("Importing the datafiles, building imageset.json and results.json")
         results = None
         if self.parameters['import_directory_type'] == 'frames':
             results = self.__import_from_frames(self.parameters['import_data'])
@@ -126,8 +145,10 @@ class TaskImport(Task):
             results = self.__import_from_stacks(self.parameters['import_data'])
 
         #  Serialize the `result.json` metadata file that points to `imageset.json`
+        self.add_log("Import task run completed successfully")
         results_json_path = os.path.join(self.task_folder, self.result_json)
         results.status = CONSTANTS.TASK_STATUS_SUCCESS 
+        results.logs = self.logs
         results.save_to_json(results_json_path)
 
     def name(self) -> str:
