@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { ArrowLeft, ArrowRight, BoxArrowUpRight, CheckCircle, Hourglass, PencilSquare, PlayFill, PlusCircle, Trash, XCircle } from "react-bootstrap-icons"
+import { ArrowLeft, ArrowRight, BoxArrowUpRight, CheckCircle, Folder, Hourglass, PencilSquare, PlayFill, PlusCircle, Trash, XCircle } from "react-bootstrap-icons"
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import Container from "react-bootstrap/Container";
@@ -12,6 +12,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import Alert from 'react-bootstrap/Alert';
 import InputGroup from 'react-bootstrap/InputGroup';
 import "./Project.css";
+import FolderPicker from "../../components/FolderPicker/FolderPicker";
 
 const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
 	<div
@@ -75,6 +76,7 @@ const Project = (props) => {
 	const [show, setShow] = useState(false);
 	const [showDelete, setShowDelete] = useState(false);
 	const [showDeleteTask, setShowDeleteTask] = useState(false);
+	const [showFolderPicker, setShowFolderPicker] = useState(false);
 	const [taskId, setTaskId] = useState(-1);
 	const [name, setName] = useState("");
 	const [description, setDescription] = useState("");
@@ -107,7 +109,6 @@ const Project = (props) => {
 					}
 				})
 				.then(response => {
-					console.log(response.data)
 					let taskList = JSON.parse(JSON.stringify(response.data));
 					for (let i = 0; i < taskList.length; i++) {
 						if (taskList[i].parameter_values.length === 0) {
@@ -235,12 +236,11 @@ const Project = (props) => {
 			}
 		})
 		.then(response => {
-			console.log(response)
 			setSuccess(`Project '${name}' updated successfully!`)
 			setEditLoad(false);
 		})
 		.catch(error => {
-			console.log(error);
+			console.error(error);
 			if (error.response.status == 400 || error.response.status == 401) {
 				setError(error.response.data.detail);
 			} else {
@@ -261,13 +261,12 @@ const Project = (props) => {
 			}
 		})
 		.then(response => {
-			console.log(response)
 			setShowDelete(false);
 			setDeleteLoad(false);
 			navigate("/");
 		})
 		.catch(error => {
-			console.log(error);
+			console.error(error);
 			setDeleteLoad(false);
 			if (error.response.status in [401, 403, 404]) {
 				setError(error.response.data.detail);
@@ -295,7 +294,7 @@ const Project = (props) => {
 			fetchProject(newId);
 		})
 		.catch(error => {
-			console.log(error);
+			console.errro(error);
 			if (error.response.status in [401, 403, 404]) {
 				setError(error.response.data.detail);
 			} else {
@@ -327,7 +326,7 @@ const Project = (props) => {
 				fetchTasksBackground()
 			})
 			.catch(error => {
-				console.log(error);
+				console.errro(error);
 				if (error.response.status in [401, 403, 404]) {
 					setError(error.response.data.detail);
 				} else {
@@ -336,7 +335,7 @@ const Project = (props) => {
 			});
 		})
 		.catch(error => {
-			console.log(error);
+			console.errro(error);
 			if (error.response.status in [401, 403, 404]) {
 				setError(error.response.data.detail);
 			} else {
@@ -360,7 +359,7 @@ const Project = (props) => {
 			setSuccess("Task deleted successfully!")
 		})
 		.catch(error => {
-			console.log(error);
+			console.errro(error);
 			setDeleteLoad(false);
 			if (error.response.status in [401, 403, 404]) {
 				setError(error.response.data.detail);
@@ -391,6 +390,17 @@ const Project = (props) => {
 		setError("");
 		setSuccess("");
 		setShowDeleteTask(false);
+	}
+	
+	const handleFolderPickerClose = () => {
+		setShowFolderPicker(false);
+	}
+	
+	const handleFolderPickerSelect = (path) => {
+		let newTasks = JSON.parse(JSON.stringify(tasks));
+		newTasks[selected].parameter_values[showFolderPicker] = path;
+		setTasks(newTasks);
+		setShowFolderPicker(false);
 	}
 	
 	return (
@@ -614,9 +624,9 @@ const Project = (props) => {
 															>
 																Clear
 															</Button>
-														</InputGroup>
-														:
+														</InputGroup> :
 														<Form.Control
+															size="sm"
 															type={item.type}
 															value=""
 															onChange={(e) => {
@@ -624,9 +634,24 @@ const Project = (props) => {
 																newTasks[selected].parameter_values[idx] = e.target.files[0];
 																setTasks(newTasks)
 															}}
-															size="sm"
 														/>
 													)
+												: item.type === "directory" ?
+												<InputGroup>
+													<Form.Control
+														value={tasks[selected].parameter_values[idx] ?? ""}
+														size="sm"
+														placeholder="select directory"
+														readOnly
+													/>
+													<Button
+														variant="outline-secondary"
+														size="sm"
+														onClick={() => {setShowFolderPicker(idx)}}
+													>
+														<Folder />
+													</Button>
+												</InputGroup>
 												: <Form.Control
 													type={item.type}
 													value={tasks[selected].parameter_values[idx] ?? ""}
@@ -717,7 +742,7 @@ const Project = (props) => {
 				</Modal.Body>
 				<Modal.Footer>
 					<Button variant="secondary" onClick={handleClose}>
-						Cancel
+						Close
 					</Button>
 					<Button
 						className="edit-project-button"
@@ -802,9 +827,9 @@ const Project = (props) => {
 				</Modal.Body>
 				<Modal.Footer>
 					<Button variant="secondary" onClick={handleDeleteTaskClose}>
-						Cancel
+						{success.length == 0 ? "Cancel": "Close"}
 					</Button>
-					<Button
+					{success.length == 0 && <Button
 						className="delete-project-button"
 						variant="danger"
 						onClick={deleteTask}
@@ -821,9 +846,14 @@ const Project = (props) => {
 							/> :
 							"Delete"
 						}
-					</Button>
+					</Button>}
 				</Modal.Footer>
 			</Modal>
+			<FolderPicker
+				show={showFolderPicker !== false}
+				onHide={handleFolderPickerClose}
+				onSelect={handleFolderPickerSelect}
+			/>
 		</div>
 	)
 }

@@ -4,6 +4,8 @@ This module is used for the interface of All kinds of Task class
 import os
 from abc import ABC, abstractmethod, abstractproperty
 from typing import List
+from datetime import datetime
+import pytz
 
 import scripts.program.scripts_constants as CONSTANTS
 from scripts.program.metadata.task_metadata import TaskDescription, TaskOutputDescription
@@ -22,6 +24,7 @@ class Task(ABC):
     imageset_filename = CONSTANTS.IMAGESET_JSON
     task_folder = ''
     parameters = {}
+    logs = []
 
     def get_result(self):
         """
@@ -46,6 +49,16 @@ class Task(ABC):
         :param value: the value to assign.
         """
         self.parameters[key] = value
+        
+    def add_log(self, detail):
+        """
+        Append string to the global log for particular run
+        :param detail: the string to log
+        """
+        self.logs.append({
+            "timestamp": str(datetime.now().replace(tzinfo=pytz.utc)),
+            "detail": detail
+        })
 
     @abstractmethod
     def name(self) -> str:

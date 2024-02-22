@@ -13,7 +13,7 @@ class Manager:
         # path represents BASE_DIR in django, the directory where manager.py is located
         
         self.path = path
-        self.data_path = os.path.join(path, 'data')
+        self.data_path = os.path.join(path, CONSTANTS.DATA_SUBFOLDER)
         self.setup_data()
 
     def get_root_path(self):

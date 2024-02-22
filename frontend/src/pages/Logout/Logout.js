@@ -31,7 +31,7 @@ const Logout = (props) => {
 			navigate("/");
 		})
 		.catch(error => {
-			console.log(error);
+			console.error(error);
 			Cookies.remove('auth-token');
 			Cookies.remove('auth-user');
 			navigate("/");

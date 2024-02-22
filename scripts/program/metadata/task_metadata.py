@@ -43,6 +43,7 @@ class TaskOutputDescription:
         self.task_description = task_description
         self.output_files = []
         self.logs = []
+        self.errors = []
         self.status = ""
 
     def add_output_file(self, file_name, file_type):
@@ -50,6 +51,9 @@ class TaskOutputDescription:
 
     def add_log_file(self, log_name):
         self.logs.append(log_name)
+        
+    def add_errors(self, error):
+        self.errors.append(error)
 
     def set_status(self, status):
         self.status = status
@@ -60,6 +64,7 @@ class TaskOutputDescription:
             "task_description": self.task_description,
             "output_files": self.output_files,
             "logs": self.logs,
+            "errors": self.errors,
             "status": self.status
         }
 
@@ -75,11 +80,13 @@ class TaskOutputDescription:
         task_description = data["task_description"]
         output_files = data["output_files"]
         logs = data["logs"]
+        errors = data["errors"]
         status = data["status"]
 
         task_output = cls(task_name, task_description)
         task_output.output_files = output_files
         task_output.logs = logs
+        task_output.errors = errors
         task_output.status = status
 
         return task_output

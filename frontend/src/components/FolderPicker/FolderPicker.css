@@ -1,0 +1,32 @@
+.FolderPicker .select-button {
+	background-color: #38023B !important;
+	border-color: #38023B !important;
+}
+
+.FolderPicker .select-button:hover {
+	background-color: #49034d !important;
+	border-color: #49034d !important;
+}
+
+.FolderPicker .select-button:disabled {
+	background-color: #3a193c !important;
+	border-color: #3a193c !important;
+}
+
+.FolderPicker .folder-item {
+	padding: 10px;
+	border-radius: 5px;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	transition: box-shadow 0.3s;
+}
+
+.FolderPicker .folder-item.dir:hover {
+	cursor: pointer;
+	box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.FolderPicker .modal-body .spinner-border {
+	color: #38023B !important; 
+}

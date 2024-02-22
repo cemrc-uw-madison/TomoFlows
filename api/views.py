@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import permissions
 from django.conf import settings
 from datetime import datetime
+from django.utils.timezone import now
 import os
 import json
 import threading
@@ -11,7 +12,8 @@ import pytz
 from api.models import User, Project, Task, ProjectTask, Run
 from api.serializers import UserSerializer, ProjectSerializer, TaskSerializer, ProjectTaskSerializer, RunSerializer
 from api.taskwrapper import task_handler
-from django.utils.timezone import now
+import scripts.program.scripts_constants as CONSTANTS
+
 
 VERIFICATION_CODE = "12345"
 
@@ -338,3 +340,27 @@ def UserDetail(request):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes((permissions.IsAuthenticated,))
+def GetDirectoryContents(request):
+    """
+    GET /api/get-directory-contents?path="xyz/abc"
+    """
+    
+    if request.method == 'GET':
+        path = request.query_params.get("path", "")
+        data_path = os.path.join(os.path.abspath(os.path.dirname(__name__)), CONSTANTS.DATA_SUBFOLDER)
+        full_path = os.path.join(data_path, path)        
+        if not full_path.startswith(data_path):
+            return Response({'detail': 'Invalid path'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            contents = [
+                { "item": item, "is_directory": os.path.isdir(os.path.join(full_path, item)) }
+                for item in os.listdir(full_path)
+            ]
+            data = {'path': path, 'full_path': full_path, 'contents': contents}
+            return Response(data, status=status.HTTP_200_OK)
+        except FileNotFoundError:
+            return Response({'detail': 'Path not found'}, status=status.HTTP_404_NOT_FOUND)

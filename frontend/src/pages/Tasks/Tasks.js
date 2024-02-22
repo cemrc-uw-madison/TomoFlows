@@ -89,18 +89,17 @@ const Tasks = (props) => {
 		.then(response => {
 			setProjectId(projectId);
 			setProjectTaskId(response.data.id)
-			console.log(response.data.id)
 			setAddLoading(false);
 			setSuccess("Task added to project successfully!")
 		})
 		.catch(error => {
-			setAddLoading(false);
-			console.log(error);
+			console.error(error);
 			if (error.response.status in [401, 403, 404]) {
 				setError(error.response.data.detail);
 			} else {
 				setError("Something went wrong! Please try again later.")
 			}
+			setAddLoading(false);
 		});
 	}
 	
