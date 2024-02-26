@@ -79,7 +79,7 @@ const Projects = (props) => {
 		axios.post('/api/projects', 
 		{
 			name: name,
-			description: description
+			description: description ? description : "Default Description"
 		},
 		{
 			headers: {
