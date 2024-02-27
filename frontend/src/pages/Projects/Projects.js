@@ -32,48 +32,17 @@ const Projects = (props) => {
 		fetchProjects();
 	}, [])
 	
-	const fetchProjects = (status="") => {
-		let token = Cookies.get('auth-token')
-		
-		if (token) {
-			setLoading(true);
-			axios.get('/api/projects', {
-				headers: {
-					'Authorization': `Bearer ${token}`
-				}
-			})
-			.then(response => {
-				let data = [...response.data]
-				data.sort((a, b) => new Date(b["last_updated"]) - new Date(a["last_updated"]))
-				setProjects(data);
-				if (status) {
-					if (status == "success") {
-						toast.success("Successfully Created");
-					} else {
-						toast.error(status);
-					}
-				}
-				setLoading(false);
-			})
-			.catch(error => {
-				setLoading(false);
-				if (error.response.status === 401 || error.response.status === 403) {
-					Cookies.remove('auth-token');
-					Cookies.remove('auth-user');
-					navigate("/login");
-				}
-				console.error(error);
-			})
-		} else {
-			Cookies.remove('auth-token');
-			Cookies.remove('auth-user');
-			navigate("/login");
+	useEffect(() => {
+		if (success) {
+			toast.success(success)
 		}
-	}
+		if (error) {
+			toast.error(error)
+		}
+	}, [success, error])
 	
-	const projectCreateSuccess = () => {
+	const fetchProjects = () => {
 		let token = Cookies.get('auth-token')
-		
 		if (token) {
 			setLoading(true);
 			axios.get('/api/projects', {
@@ -85,7 +54,6 @@ const Projects = (props) => {
 				let data = [...response.data]
 				data.sort((a, b) => new Date(b["last_updated"]) - new Date(a["last_updated"]))
 				setProjects(data);
-				toast.success("Successfully Created");
 				setLoading(false);
 			})
 			.catch(error => {
@@ -105,13 +73,13 @@ const Projects = (props) => {
 	}
 
 	const handleClose = () => {
-		setShow(false);
 		setName("");
 		setDescription("");
 		setCreateLoad(false);
 		setError("");
 		setSuccess("");
 		fetchProjects();
+		setShow(false);
 	}
 	
 	const createProject = () => {
@@ -121,7 +89,7 @@ const Projects = (props) => {
 		axios.post('/api/projects', 
 		{
 			name: name,
-			description: description ? description : "Default Description"
+			description: description ?? "Default Description"
 		},
 		{
 			headers: {
@@ -131,32 +99,28 @@ const Projects = (props) => {
 		.then(response => {
 			setName("");
 			setDescription("");
+			setError("");
+			setSuccess("Project created successfully");
+			fetchProjects();
 			setCreateLoad(false);
 			setShow(false);
-			setError("");
-			setSuccess("");
-			fetchProjects("success");
-			
 		})
 		.catch(error => {
-			let status;
 			if (error.response.status == 400 || error.response.status == 401) {
 				if ("name" in error.response.data) {
-					status = "A project with this name already exists.";
+					setError("A project with this name already exists.");
 				} else {
-					status = error.response.data.detail;
+					setError(error.response.data.detail);
 				}
 			} else {
-				status = "Something went wrong! Please try again later.";
+				setError("Something went wrong! Please try again later.");
 			}
 			setName("");
 			setDescription("");
+			setSuccess("");
+			fetchProjects();
 			setCreateLoad(false);
 			setShow(false);
-			setError("");
-			setSuccess("");
-			fetchProjects(status);
-			
 		});
 	}
 	
@@ -203,22 +167,12 @@ const Projects = (props) => {
 						placeholder="Project Description"
 						onKeyDown={(e) => e.key === 'Enter' && name.length !== 0 && createProject()}
 					/>
-					{error.length != 0 && 
-						<Alert variant="danger" onClose={() => setError("")} dismissible>
-							{error}
-						</Alert>
-					}
-					{success.length != 0 &&
-						<Alert variant="success" onClose={() => setSuccess("")} dismissible>
-							{success}
-						</Alert>
-					}
 				</Modal.Body>
 				<Modal.Footer>
 					<Button variant="secondary" onClick={handleClose}>
-						{success.length != 0 ? "Close" : "Cancel"}
+						Cancel
 					</Button>
-					{success.length == 0 && 
+					{!createLoad && 
 						<Button
 							type='submit'
 							className="create-project-button"
