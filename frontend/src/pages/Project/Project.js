@@ -11,6 +11,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Alert from 'react-bootstrap/Alert';
 import InputGroup from 'react-bootstrap/InputGroup';
+import toast from 'react-hot-toast';
 import "./Project.css";
 import FolderPicker from "../../components/FolderPicker/FolderPicker";
 
@@ -263,6 +264,7 @@ const Project = (props) => {
 		.then(response => {
 			setShowDelete(false);
 			setDeleteLoad(false);
+			toast.success("Project deleted successfully")
 			navigate("/");
 		})
 		.catch(error => {
@@ -291,10 +293,11 @@ const Project = (props) => {
 		})
 		.then(response => {
 			let newId = response.data.id
+			toast.success("Task added successfully")
 			fetchProject(newId);
 		})
 		.catch(error => {
-			console.errro(error);
+			console.error(error);
 			if (error.response.status in [401, 403, 404]) {
 				setError(error.response.data.detail);
 			} else {
@@ -324,9 +327,10 @@ const Project = (props) => {
 			})
 			.then(response => {
 				fetchTasksBackground()
+				toast.success("Task run started")
 			})
 			.catch(error => {
-				console.errro(error);
+				console.error(error);
 				if (error.response.status in [401, 403, 404]) {
 					setError(error.response.data.detail);
 				} else {
@@ -335,7 +339,7 @@ const Project = (props) => {
 			});
 		})
 		.catch(error => {
-			console.errro(error);
+			console.error(error);
 			if (error.response.status in [401, 403, 404]) {
 				setError(error.response.data.detail);
 			} else {
@@ -355,11 +359,17 @@ const Project = (props) => {
 			}
 		})
 		.then(response => {
+			toast.success("Task deleted successfully")
+			fetchProject();
+			setSelected(0);
+			setTaskId(-1);
+			setError("");
+			setSuccess("");
+			setShowDeleteTask(false);
 			setDeleteLoad(false);
-			setSuccess("Task deleted successfully!")
 		})
 		.catch(error => {
-			console.errro(error);
+			console.error(error);
 			setDeleteLoad(false);
 			if (error.response.status in [401, 403, 404]) {
 				setError(error.response.data.detail);
