@@ -7,9 +7,8 @@ import Spinner from 'react-bootstrap/Spinner';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import Alert from 'react-bootstrap/Alert';
+import toast from 'react-hot-toast';
 import ProjectCard from "../../components/ProjectCard/ProjectCard";
-import toast, { Toaster } from 'react-hot-toast';
 import "./Projects.css"
 
 /**
@@ -89,7 +88,7 @@ const Projects = (props) => {
 		axios.post('/api/projects', 
 		{
 			name: name,
-			description: description ?? "Default Description"
+			description: description ? description: "Default Description"
 		},
 		{
 			headers: {
@@ -104,6 +103,7 @@ const Projects = (props) => {
 			fetchProjects();
 			setCreateLoad(false);
 			setShow(false);
+			setTimeout(() => navigate(`/project/${response.data.id}`), 250);
 		})
 		.catch(error => {
 			if (error.response.status == 400 || error.response.status == 401) {
@@ -126,7 +126,6 @@ const Projects = (props) => {
 	
 	return (
 		<div className="Projects">
-			<Toaster/>
 			<Container>
 				<h2 className="heading"><b>Projects</b></h2>
 				<div className="cards">
