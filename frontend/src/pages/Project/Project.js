@@ -195,13 +195,14 @@ const Project = (props) => {
 		})
 		.then(response => {
 			let taskList = JSON.parse(JSON.stringify(response.data));
-			for (let i = 0; i < taskList.length; i++) {
-				if (taskList[i].parameter_values.length === 0) {
-					let parameter_fields = JSON.parse(taskList[i].task.parameter_fields)
-					taskList[i]["parameter_values"] = parameter_fields.map((field) => field["default"]);
+			let taskMap = taskList.reduce((acc, obj) => ({ ...acc, [obj.id]: obj }), {});
+			setTasks((oldTasks) => {
+				let newTasks = [...oldTasks]
+				for (let i = 0; i < newTasks.length; i++) {
+					newTasks[i].run = taskMap[newTasks[i].id].run
 				}
-			}
-			setTasks(taskList)
+				return newTasks
+			})
 			for (let i = 0; i < taskList.length; i++) {
 				if (taskList[i].run.status === "RUNNING") {
 					setTimeout(() => fetchTasksBackground(), 4000);
@@ -210,7 +211,8 @@ const Project = (props) => {
 			}
 		})
 		.catch(error => {
-			if (error.repsonse.status === 404) {
+			console.error(error);
+			if (error.response.status === 404) {
 				navigate("/");
 			}
 			else if (error.response.status === 401 || error.response.status === 403) {
@@ -218,7 +220,6 @@ const Project = (props) => {
 				Cookies.remove('auth-user');
 				navigate("/login");
 			}
-			console.error(error);
 		})
 	}
 	
@@ -499,8 +500,8 @@ const Project = (props) => {
 											className={"task-card " + (idx === selected ? "selected" : "")}
 											key={task.id}
 										>	
-											<div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "flex-end", gap: 5}}>
-												<h5>{task.task.name}</h5>
+											<div style={{display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "start"}}>
+												<h6 style={{width: 230, marginBottom: 0, whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>{task.task.name}</h6>
 												<small className="text-body-secondary id"><b>ID: {task.run.id}</b></small>
 											</div>
 											
@@ -536,7 +537,7 @@ const Project = (props) => {
 							<div className="heading">
 								<div>
 									<h5>Description</h5>
-									<small className="text-body-secondary">{tasks[selected].task.description}</small>
+									<small className="text-body-secondary">{tasks[selected].task.name}: {tasks[selected].task.description}</small>
 								</div>
 								<div className="button-div">
 									<Button
