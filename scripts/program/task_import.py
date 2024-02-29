@@ -110,13 +110,13 @@ class TaskImport(Task):
 
         try:
             if not 'import_data' in self.parameters.keys():
-                raise ValueError("Parameter 'import_data' is not provided")
+                raise ValueError("Parameter 'Import Data' is not provided")
             if not self.parameters['import_data']:
-                raise ValueError("Parameter 'import_data' is not provided")
+                raise ValueError("Parameter 'Import Data' is not provided")
             if not 'import_directory_type' in self.parameters.keys():
-                raise ValueError("Parameter 'import_directory_type' is not provided")
+                raise ValueError("Parameter 'Import Directory Type' is not provided")
             if not self.parameters['import_directory_type']:
-                raise ValueError("Parameter 'import_directory_type' is not provided")
+                raise ValueError("Parameter 'Import Directory Type' is not provided")
         except ValueError as err:
             self.add_log("Parameter check failed: " + str(err))
             self.add_log("Import task run failed")
@@ -145,7 +145,7 @@ class TaskImport(Task):
             results = self.__import_from_stacks(self.parameters['import_data'])
 
         #  Serialize the `result.json` metadata file that points to `imageset.json`
-        self.add_log("Import task run completed successfully")
+        self.add_log("Gain task run completed successfully")
         results_json_path = os.path.join(self.task_folder, self.result_json)
         results.status = CONSTANTS.TASK_STATUS_SUCCESS 
         results.logs = self.logs

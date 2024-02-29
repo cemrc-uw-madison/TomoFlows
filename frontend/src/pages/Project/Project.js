@@ -452,7 +452,7 @@ const Project = (props) => {
 							</div>
 							<div className="button-div">
 								<Button
-									disabled={selected === 0}
+									disabled={tasks.length === 0 || selected === 0}
 									variant="link"
 									size="sm"
 									onClick={() => {
@@ -465,7 +465,7 @@ const Project = (props) => {
 									<ChevronBarLeft className="next-button" />
 								</Button>
 								<Button
-									disabled={selected === 0}
+									disabled={tasks.length === 0 || selected === 0}
 									variant="link"
 									size="sm"
 									onClick={() => {
@@ -483,7 +483,7 @@ const Project = (props) => {
 									<ArrowLeft className="next-button" />
 								</Button>
 								<Button
-									disabled={selected === tasks.length - 1}
+									disabled={tasks.length === 0 || selected === tasks.length - 1}
 									variant="link"
 									size="sm"
 									onClick={() => {
@@ -501,7 +501,7 @@ const Project = (props) => {
 									<ArrowRight className="next-button" />
 								</Button>
 								<Button
-									disabled={selected === tasks.length - 1}
+									disabled={tasks.length === 0 || selected === tasks.length - 1}
 									variant="link"
 									size="sm"
 									onClick={() => {
