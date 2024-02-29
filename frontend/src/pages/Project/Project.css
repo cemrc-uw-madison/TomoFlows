@@ -102,6 +102,10 @@
 	color: #38023B;
 }
 
+.Project :disabled .next-button {
+	color: #38023b50
+}
+
 .Project .task-cards {
 	display: flex;
 	gap: 10px;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { ArrowLeft, ArrowRight, BoxArrowUpRight, CheckCircle, Folder, Hourglass, PencilSquare, PlayFill, PlusCircle, Trash, XCircle } from "react-bootstrap-icons"
+import { ArrowLeft, ArrowRight, BoxArrowUpRight, CheckCircle, ChevronBarLeft, ChevronBarRight, Folder, Hourglass, PencilSquare, PlayFill, PlusCircle, Trash, XCircle } from "react-bootstrap-icons"
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import Container from "react-bootstrap/Container";
@@ -451,44 +451,68 @@ const Project = (props) => {
 								<h5>Tasks</h5>
 							</div>
 							<div className="button-div">
-								{selected !== 0 && 
-									<Button
-										variant="link"
-										size="sm"
-										onClick={() => {
-											if (selected > 0)
-												setSelected(selected => selected - 1)
-											let selectedDiv = document.querySelector(".task-card.selected")
-											if (selectedDiv)
-												selectedDiv.scrollIntoView({
-													behavior: "smooth",
-													block: "center",
-													inline: "end"
-												})
-										}}
-									>	
-										<ArrowLeft className="next-button" />
-									</Button>
-								}
-								{selected !== tasks.length - 1 && 
-									<Button
-										variant="link"
-										size="sm"
-										onClick={() => {
-											if (selected < tasks.length - 1)
-												setSelected(selected => selected + 1)
-											let selectedDiv = document.querySelector(".task-card.selected")
-											if (selectedDiv)
-												selectedDiv.scrollIntoView({
-													behavior: "smooth",
-													block: "center",
-													inline: "start"
-												})
-										}}
-									>	
-										<ArrowRight className="next-button" />
-									</Button>
-								}
+								<Button
+									disabled={selected === 0}
+									variant="link"
+									size="sm"
+									onClick={() => {
+										if (selected > 0)
+											setSelected(0)
+										let taskCardsDiv = document.querySelector(".task-cards");
+										taskCardsDiv.scrollTo({left: 0, behavior: 'smooth'});
+									}}
+								>	
+									<ChevronBarLeft className="next-button" />
+								</Button>
+								<Button
+									disabled={selected === 0}
+									variant="link"
+									size="sm"
+									onClick={() => {
+										if (selected > 0)
+											setSelected(selected => selected - 1)
+										let selectedDiv = document.querySelector(".task-card.selected")
+										if (selectedDiv)
+											selectedDiv.scrollIntoView({
+												behavior: "smooth",
+												block: "center",
+												inline: "end"
+											})
+									}}
+								>	
+									<ArrowLeft className="next-button" />
+								</Button>
+								<Button
+									disabled={selected === tasks.length - 1}
+									variant="link"
+									size="sm"
+									onClick={() => {
+										if (selected < tasks.length - 1)
+											setSelected(selected => selected + 1)
+										let selectedDiv = document.querySelector(".task-card.selected")
+										if (selectedDiv)
+											selectedDiv.scrollIntoView({
+												behavior: "smooth",
+												block: "center",
+												inline: "start"
+											})
+									}}
+								>	
+									<ArrowRight className="next-button" />
+								</Button>
+								<Button
+									disabled={selected === tasks.length - 1}
+									variant="link"
+									size="sm"
+									onClick={() => {
+										if (selected < tasks.length - 1)
+											setSelected(tasks.length - 1)
+										let taskCardsDiv = document.querySelector(".task-cards");
+										taskCardsDiv.scrollTo({left: taskCardsDiv.scrollWidth, behavior: 'smooth'});
+									}}
+								>	
+									<ChevronBarRight className="next-button" />
+								</Button>
 							</div>
 						</div>
 						<Dropdown>
