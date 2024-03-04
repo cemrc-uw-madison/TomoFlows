@@ -68,6 +68,8 @@ const FolderPicker = ({ show, onHide, onSelect }) => {
 					<div style={{margin: "50px 0px", display: "flex", justifyContent: "center", alignItems: "center"}}>
 						<Spinner animation="border" variant="primary" style={{width: 80, height: 80}} />
 					</div>
+				: contents.length === 0 ?
+					<small style={{margin: 10}} className="text-body-secondary">No contents</small>
 				: <>
 					{currentPath !== "" &&
 						<div className="folder-item dir" key={-1} onClick={handleBackClick}>
