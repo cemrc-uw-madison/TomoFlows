@@ -39,4 +39,4 @@ class RunSerializer(serializers.ModelSerializer):
     project_task = ProjectTaskSerializer(required=False)
     class Meta:
         model = Run
-        fields = ['id', 'project_task', 'status', 'start_time', 'end_time', 'logs', 'errors']
+        fields = ['id', 'project_task', 'status', 'start_time', 'end_time', 'logs', 'errors', 'output_files']

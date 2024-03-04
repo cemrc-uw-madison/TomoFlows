@@ -90,6 +90,7 @@ def task_gain_handler(project_task, run):
     run.end_time = datetime.now().replace(tzinfo=pytz.utc)
     run.logs = json.dumps(result.logs)
     run.errors = json.dumps(result.errors)
+    run.output_files = json.dumps(result.output_files)
     run.save()
 
 def task_motioncor2_handler(project_task, run):
@@ -136,4 +137,5 @@ def task_import_handler(project_task, run):
     run.end_time = datetime.now().replace(tzinfo=pytz.utc)
     run.logs = json.dumps(result.logs)
     run.errors = json.dumps(result.errors)
+    run.output_files = json.dumps(result.output_files)
     run.save()

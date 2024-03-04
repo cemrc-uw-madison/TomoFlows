@@ -116,6 +116,10 @@ class TaskGain(Task):
         # 2. Shrink a gain reference to a different format
         stack_infile = outfile
         stack_outfile = os.path.join(self.task_folder, f"{infile.split('/')[-1].split('.')[0]}-shrink.mrc")
+        
+        args_remove_existing = ["rm", stack_outfile]
+        subprocess.run(f'{command_prefix}{" ".join(args_remove_existing)}"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True, cwd=self.task_folder)
+        
         command2 = 'newstack'
 
         args_newstack = [command2,

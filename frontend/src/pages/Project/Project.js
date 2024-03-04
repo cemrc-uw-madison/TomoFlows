@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { ArrowDownCircle, ArrowDownCircleFill, ArrowLeft, ArrowRight, BoxArrowUpRight, CheckCircle, ChevronBarLeft, ChevronBarRight, Folder, Hourglass, PencilSquare, PlayFill, PlusCircle, Trash, XCircle } from "react-bootstrap-icons"
+import { ArrowLeft, ArrowRight, BoxArrowUpRight, CheckCircle, ChevronBarLeft, ChevronBarRight, Folder, Hourglass, PencilSquare, PlayFill, PlusCircle, Trash, XCircle, FileEarmarkText } from "react-bootstrap-icons"
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import Container from "react-bootstrap/Container";
@@ -348,18 +348,18 @@ const Project = (props) => {
 			.catch(error => {
 				console.error(error);
 				if (error.response.status in [401, 403, 404]) {
-					setError(error.response.data.detail);
+					toast.error(error.response.data.detail);
 				} else {
-					setError("Something went wrong! Please try again later.")
+					toast.error("Something went wrong! Please try again later.")
 				}
 			});
 		})
 		.catch(error => {
 			console.error(error);
 			if (error.response.status in [401, 403, 404]) {
-				setError(error.response.data.detail);
+				toast.error(error.response.data.detail);
 			} else {
-				setError("Something went wrong! Please try again later.")
+				toast.error("Something went wrong! Please try again later.")
 			}
 		});
 	}
@@ -736,6 +736,7 @@ const Project = (props) => {
 													}
 												</div>
 											</div>
+											{tasks[selected].run.status === "FAILED" ? 
 											<div className="errors">
 												<small>Errors</small><br/>
 												<div style={{marginTop: 5, maxHeight: 400, overflowY: "scroll"}}>
@@ -751,6 +752,21 @@ const Project = (props) => {
 													}
 												</div>
 											</div>
+											: <div className="output-files">
+												<small>Output Files</small><br/>
+												<div style={{marginTop: 5, maxHeight: 400, overflowY: "scroll"}}>
+													{
+														tasks[selected].run.output_files.length === 0 ?
+														<small className="text-body-secondary">No Output files for this run</small> :
+														tasks[selected].run.output_files.map((output_file, idx) => 
+															<div className="output-file-badge" key={idx} onClick={() => navigator.clipboard.writeText(output_file.file_name)}>
+																<FileEarmarkText style={{marginRight: 5, marginTop: -1}} size={20} />
+																<div style={{marginRight: 1}}>{output_file.file_name.split("/").pop()}</div>
+															</div>
+														)
+													}
+												</div>
+											</div>}
 										</div>
 									}
 								</div>
