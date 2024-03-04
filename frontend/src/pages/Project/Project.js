@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { ArrowLeft, ArrowRight, BoxArrowUpRight, CheckCircle, ChevronBarLeft, ChevronBarRight, Folder, Hourglass, PencilSquare, PlayFill, PlusCircle, Trash, XCircle, FileEarmarkText } from "react-bootstrap-icons"
+import { ArrowLeft, ArrowRight, Files, CheckCircle, ChevronBarLeft, ChevronBarRight, Folder, Hourglass, PencilSquare, PlayFill, PlusCircle, Trash, XCircle, FileEarmarkText } from "react-bootstrap-icons"
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import Container from "react-bootstrap/Container";
@@ -590,15 +590,6 @@ const Project = (props) => {
 									<small className="text-body-secondary">{tasks[selected].task.name}: {tasks[selected].task.description}</small>
 								</div>
 								<div className="button-div">
-									<Button
-										className="know-more"
-										variant="outline-primary"
-										size="sm"
-										onClick={() => {}}
-									>	
-										<BoxArrowUpRight />
-										Know More
-									</Button>
 									{tasks[selected].run.status === "SUCCESS" && 
 										<Button
 											variant="outline-success"
@@ -759,7 +750,13 @@ const Project = (props) => {
 														tasks[selected].run.output_files.length === 0 ?
 														<small className="text-body-secondary">No Output files for this run</small> :
 														tasks[selected].run.output_files.map((output_file, idx) => 
-															<div className="output-file-badge" key={idx} onClick={() => navigator.clipboard.writeText(output_file.file_name)}>
+															<div className="output-file-badge" key={idx} onClick={() => {
+																if (output_file.file_name.includes("/home/tomoflows")) {
+																	navigator.clipboard.writeText(output_file.file_name.replace("/home/tomoflows", "/tmp/tomoflows"))
+																} else {
+																	navigator.clipboard.writeText(output_file.file_name)
+																}
+															}}>
 																<FileEarmarkText style={{marginRight: 5, marginTop: -1}} size={20} />
 																<div style={{marginRight: 1}}>{output_file.file_name.split("/").pop()}</div>
 															</div>
