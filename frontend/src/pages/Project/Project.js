@@ -751,8 +751,8 @@ const Project = (props) => {
 														<small className="text-body-secondary">No Output files for this run</small> :
 														tasks[selected].run.output_files.map((output_file, idx) => 
 															<div className="output-file-badge" key={idx} onClick={() => {
-																if (output_file.file_name.includes("/home/tomoflows")) {
-																	navigator.clipboard.writeText(output_file.file_name.replace("/home/tomoflows", "/tmp/tomoflows"))
+																if (output_file.file_name.includes("/home/tomoflows/data")) {
+																	navigator.clipboard.writeText(output_file.file_name.replace("/home/tomoflows/data", "/tmp/tomoflows"))
 																} else {
 																	navigator.clipboard.writeText(output_file.file_name)
 																}
