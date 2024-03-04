@@ -46,14 +46,3 @@ Third-party software to be installed and available in your PATH:
 3. Start Django Server: `python3 manage.py runserver`
 4. Setup Frontend in New Terminal: `cd frontend && npm install`
 5. Run Frontend in New Terminal: `npm run dev`
-
-
-/bin/bash -c dm2mrc /home/tomoflows/data/TestData/Gain/test1/input.dm4 /home/tomoflows/data/TestData/Gain/test1/input.mrc
-2024-02-29 02:22:37 
-2024-02-29 02:22:37 /bin/bash -c newstack -format mrc -shrink 2 -input /home/tomoflows/data/TestData/Gain/test1/input.mrc -output /home/tomoflows/data/TestData/Gain/test1/input-Shrink.mrc
-2024-02-29 02:22:37 
-2024-02-29 02:22:37 /bin/bash -c rm -f /home/tomoflows/data/TestData/Gain/test1/input.mrc
-
-/bin/bash -c "source ~/.bashrc; source /etc/bash.bashrc; dm2mrc /home/tomoflows/data/TestData/Gain/test1/input.dm4 /home/tomoflows/data/TestData/Gain/test1/input.mrc"
-
-/bin/bash -c "dm2mrc /home/tomoflows/data/TestData/Gain/test1/input.dm4 /home/tomoflows/data/TestData/Gain/test1/input.mrc"
