@@ -1,4 +1,3 @@
-import typing
 import subprocess
 import os
 import uuid
@@ -42,6 +41,9 @@ class TaskGain(Task):
         self.add_log("Running Gain task...")
         if not os.path.isdir(self.task_folder):
             os.makedirs(self.task_folder)
+        
+        results_json_path = os.path.join(self.task_folder, self.result_json)
+        results = TaskOutputDescription(self.name(), self.description())
     
         try:
             if not 'input_file' in self.parameters.keys():
@@ -49,12 +51,10 @@ class TaskGain(Task):
             if not self.parameters['input_file']:
                 raise ValueError("Parameter 'Input File' is not provided")
             if not check_image_format(self.parameters['input_file'], self.required_input_format):
-                raise ValueError("Input image format must be dm4!")
+                raise ValueError("Input image format must be dm4")
         except ValueError as err:
             self.add_log("Parameter check failed: " + str(err))
             self.add_log("Gain task run failed")
-            results_json_path = os.path.join(self.task_folder, self.result_json)
-            results = TaskOutputDescription(self.name(), self.description())
             results.set_status(CONSTANTS.TASK_STATUS_FAILED)
             results.add_errors({"type": "ValueError", "detail": str(err)})
             results.logs = self.logs
@@ -74,7 +74,8 @@ class TaskGain(Task):
 
         # Skeleton
         infile = self.parameters['input_file']
-        outfile = infile.split(".")[0] + ".mrc"
+        outfile = os.path.join(self.task_folder, infile.split("/")[-1].split(".")[0] + ".mrc")
+        command_prefix = '/bin/bash -c "source /usr/local/IMOD/IMOD-linux.sh && '
 
         # 1. Convert a format (DM4) to (MRC)
         command1 = 'dm2mrc'
@@ -85,11 +86,27 @@ class TaskGain(Task):
         # 1. Alternative: Convert a format (.gain/.tiff) to (MRC)
         # use this instead of extension is '.gain'
         command_tiff2mrc = 'tiff2mrc'
-        args_tiff2mrc = [command1,
+        args_tiff2mrc = [
+                command1,
                 infile,   # Input file could be passed as a parameter
                 outfile]  # Output file should be saved within the job directory <gain.mrc or other>
 
-        subprocess.call(args_dm2mrc)
+        run_result = subprocess.run(f'{command_prefix}{" ".join(args_dm2mrc)}"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True, cwd=self.task_folder)
+        output = run_result.stdout
+        error = run_result.stderr
+        for line in output.split("\n"):
+            if line and not line.isspace():
+                self.add_log(line)
+        if run_result.returncode == 0:
+            self.add_log("dm2mrc command executed successfully")
+        else:
+            self.add_log(f"dm2mrc command failed with return code {run_result.returncode}")
+            self.add_log("Gain task run failed")
+            results.set_status(CONSTANTS.TASK_STATUS_FAILED)
+            results.add_errors({"type": "ExecutionError", "detail": str(error)})
+            results.logs = self.logs
+            results.save_to_json(results_json_path)
+            return
 
         # [TODO]
         # We should have a parameter about expected output size (5k x 4k) or (4k x 4k)
@@ -98,7 +115,7 @@ class TaskGain(Task):
 
         # 2. Shrink a gain reference to a different format
         stack_infile = outfile
-        stack_outfile = f"{infile.split('.')[0]}-Shrink.mrc"
+        stack_outfile = os.path.join(self.task_folder, f"{infile.split('/')[-1].split('.')[0]}-shrink.mrc")
         command2 = 'newstack'
 
         args_newstack = [command2,
@@ -111,7 +128,22 @@ class TaskGain(Task):
                 '-output',
                 stack_outfile]
         
-        subprocess.call(args_newstack)
+        run_result = subprocess.run(f'{command_prefix}{" ".join(args_newstack)}"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True, cwd=self.task_folder)
+        output = run_result.stdout
+        error = run_result.stderr
+        for line in output.split("\n"):
+            if line and not line.isspace():
+                self.add_log(line)
+        if run_result.returncode == 0:
+            self.add_log("newstack command executed successfully")
+        else:
+            self.add_log(f"newstack command failed with return code {run_result.returncode}")
+            self.add_log("Gain task run failed")
+            results.set_status(CONSTANTS.TASK_STATUS_FAILED)
+            results.add_errors({"type": "ExecutionError", "detail": str(error)})
+            results.logs = self.logs
+            results.save_to_json(results_json_path)
+            return
 
         # Output is an MRC format, final image size should be 5760x4092 pixels.
 
@@ -119,12 +151,27 @@ class TaskGain(Task):
         args_remove = ["rm",
                 "-f",
                 outfile]
-        subprocess.call(args_remove)
+        run_result = subprocess.run(f'{command_prefix}{" ".join(args_remove)}"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True, cwd=self.task_folder)
+        output = run_result.stdout
+        error = run_result.stderr
+        for line in output.split("\n"):
+            if line and not line.isspace():
+                self.add_log(line)
+        if run_result.returncode == 0:
+            self.add_log("rm command executed successfully")
+        else:
+            self.add_log(f"rm command failed with return code {run_result.returncode}")
+            self.add_log("Gain task run failed")
+            results.set_status(CONSTANTS.TASK_STATUS_FAILED)
+            results.add_errors({"type": "ExecutionError", "detail": str(error)})
+            results.logs = self.logs
+            results.save_to_json(results_json_path)
+            return
 
-        # TODO: write also results here.
-        self.add_log("Import task run completed successfully")
+        self.add_log("Gain task run completed successfully")
         results_json_path = os.path.join(self.task_folder, self.result_json)
         results = TaskOutputDescription(self.name(), self.description())
+        results.add_output_file(stack_outfile, stack_outfile.split(".")[-1])
         results.set_status(CONSTANTS.TASK_STATUS_SUCCESS)
         results.logs = self.logs
         results.save_to_json(results_json_path)

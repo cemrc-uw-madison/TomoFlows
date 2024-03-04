@@ -82,7 +82,6 @@ def task_gain_handler(project_task, run):
     project_folder = os.path.join( project.folder_path, CONSTANTS.TASK_FOLDER_PREFIX + str(project_task.id) )
 
     task_gain = TaskGain(project_folder)
-    print(parameters)
     task_gain.parameters['input_file'] = parameters[0]
     task_gain.run()
     

@@ -145,7 +145,7 @@ class TaskImport(Task):
             results = self.__import_from_stacks(self.parameters['import_data'])
 
         #  Serialize the `result.json` metadata file that points to `imageset.json`
-        self.add_log("Gain task run completed successfully")
+        self.add_log("Import task run completed successfully")
         results_json_path = os.path.join(self.task_folder, self.result_json)
         results.status = CONSTANTS.TASK_STATUS_SUCCESS 
         results.logs = self.logs

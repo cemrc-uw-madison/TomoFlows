@@ -227,6 +227,7 @@
 	color: #dc3545;
 	transition: background-color 0.2s ease, color 0.2s ease;
 	font-size: 14px;
+	overflow-wrap: break-word;
 }
 
 .Project .task-details .last-run .error-badge:hover {
