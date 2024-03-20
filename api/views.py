@@ -190,6 +190,7 @@ def ProjectTaskList(request):
                 del data[i]["run"]["project_task"]
                 data[i]["run"]["logs"] = json.loads(data[i]["run"]["logs"])
                 data[i]["run"]["errors"] = json.loads(data[i]["run"]["errors"])
+                data[i]["run"]["output_files"] = json.loads(data[i]["run"]["output_files"])
             except Run.DoesNotExist:
                 data[i]["run"] = None
             
@@ -218,7 +219,7 @@ def ProjectTaskList(request):
 
             data = serializer.data
             data["parameter_values"] = json.loads(data["parameter_values"])
-            run = Run.objects.create(project_task_id=data["id"], status="CREATED", logs="[]", errors="[]")
+            run = Run.objects.create(project_task_id=data["id"], status="CREATED", logs="[]", errors="[]", output_files="[]")
             run.project_task.project.last_updated = datetime.now().replace(tzinfo=pytz.utc)
             run.project_task.project.save()
             run_serialized = RunSerializer(run)
@@ -249,6 +250,7 @@ def ProjectTaskDetail(request, id):
             del data["run"]["project_task"]
             data["run"]["logs"] = json.loads(data["run"]["logs"])
             data["run"]["errors"] = json.loads(data["run"]["errors"])
+            data["run"]["output_files"] = json.loads(data["run"]["output_files"])
         except Run.DoesNotExist:
             data["run"] = None
         return Response(data)
@@ -274,6 +276,7 @@ def ProjectTaskDetail(request, id):
                 del data["run"]["project_task"]
                 data["run"]["logs"] = json.loads(data["run"]["logs"])
                 data["run"]["errors"] = json.loads(data["run"]["errors"])
+                data["run"]["output_files"] = json.loads(data["run"]["output_files"])
             except Run.DoesNotExist:
                 data["run"] = None
             return Response(data)
@@ -313,6 +316,7 @@ def RunProjectTask(request, id):
         data["run"] = RunSerializer(run).data
         data["run"]["logs"] = json.loads(data["run"]["logs"])
         data["run"]["errors"] = json.loads(data["run"]["errors"])
+        data["run"]["output_files"] = json.loads(data["run"]["output_files"])
         del data["run"]["project_task"]
         return Response(data)
     

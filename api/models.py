@@ -38,3 +38,4 @@ class Run(models.Model):
     end_time = models.DateTimeField("End Time", null=True, blank=True)
     logs = models.TextField("Logs", null=True, blank=True)
     errors = models.TextField("Errors", null=True, blank=True)
+    output_files = models.TextField("Output Files", null=True, blank=True)

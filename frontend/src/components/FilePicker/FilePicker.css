@@ -1,0 +1,37 @@
+.FilePicker .select-button {
+	background-color: #38023B !important;
+	border-color: #38023B !important;
+}
+
+.FilePicker .select-button:hover {
+	background-color: #49034d !important;
+	border-color: #49034d !important;
+}
+
+.FilePicker .select-button:disabled {
+	background-color: #3a193c !important;
+	border-color: #3a193c !important;
+}
+
+.FilePicker .folder-item {
+	padding: 10px;
+	border-radius: 5px;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	transition: box-shadow 0.3s;
+}
+
+.FilePicker .folder-item:hover {
+	cursor: pointer;
+	box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.FilePicker .folder-item.selected {
+	background-color: #3a193c !important;
+	color: #fff
+}
+
+.FilePicker .modal-body .spinner-border {
+	color: #38023B !important; 
+}

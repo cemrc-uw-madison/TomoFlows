@@ -1,5 +1,6 @@
 .Project {
 	margin: 50px;
+	padding-bottom: 2px;
 }
 
 .Project .div {
@@ -99,6 +100,10 @@
 	margin-top: -18px !important;
 	margin-right: -7px !important;
 	color: #38023B;
+}
+
+.Project :disabled .next-button {
+	color: #38023b50
 }
 
 .Project .task-cards {
@@ -222,6 +227,7 @@
 	color: #dc3545;
 	transition: background-color 0.2s ease, color 0.2s ease;
 	font-size: 14px;
+	overflow-wrap: break-word;
 }
 
 .Project .task-details .last-run .error-badge:hover {
@@ -231,5 +237,30 @@
 
 .Project .task-details .last-run .error-badge small {
 	margin-top: -2px;
+	line-height: 17px;
+}
+
+.Project .task-details .last-run .output-file-badge {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	margin-top: 5px;
+	border: 1px solid #38023B;
+	border-radius: 8px;
+	padding: 6px 7px 6px 7px;
+	max-width: 400px;
+	color: #38023B;
+	transition: background-color 0.2s ease, color 0.2s ease;
+	font-size: 14px;
+	overflow-wrap: break-word;
+}
+
+.Project .task-details .last-run .output-file-badge:hover {
+	background-color: #38023B;
+	color: white;
+	cursor: pointer;
+}
+
+.Project .task-details .last-run .output-file-badge small {
 	line-height: 17px;
 }

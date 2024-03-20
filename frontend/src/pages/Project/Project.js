@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { ArrowLeft, ArrowRight, BoxArrowUpRight, CheckCircle, Folder, Hourglass, PencilSquare, PlayFill, PlusCircle, Trash, XCircle } from "react-bootstrap-icons"
+import { ArrowLeft, ArrowRight, Files, CheckCircle, ChevronBarLeft, ChevronBarRight, Folder, Hourglass, PencilSquare, PlayFill, PlusCircle, Trash, XCircle, FileEarmarkText } from "react-bootstrap-icons"
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import Container from "react-bootstrap/Container";
@@ -14,6 +14,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import toast from 'react-hot-toast';
 import "./Project.css";
 import FolderPicker from "../../components/FolderPicker/FolderPicker";
+import FilePicker from "../../components/FilePicker/FilePicker";
 
 const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
 	<div
@@ -65,6 +66,15 @@ const CustomMenu = React.forwardRef((
 	}
 );
 
+const formatDateTime = (date) => {
+	const optionsDate = { year: 'numeric', month: '2-digit', day: '2-digit' };
+	const dateString = date.toLocaleDateString('en-US', optionsDate);
+	const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+	const timeString = date.toLocaleTimeString('en-US', optionsTime);
+  	const timeZone = date.toLocaleTimeString('en-US', { timeZoneName: 'short' }).split(' ')[2];
+	return `${dateString.replaceAll('/', '-')} ${timeString} ${timeZone}`;
+  }
+
 const Project = (props) => {
 	const { id } = useParams();
 	const [project, setProject] = useState({});
@@ -78,6 +88,7 @@ const Project = (props) => {
 	const [showDelete, setShowDelete] = useState(false);
 	const [showDeleteTask, setShowDeleteTask] = useState(false);
 	const [showFolderPicker, setShowFolderPicker] = useState(false);
+	const [showFilePicker, setShowFilePicker] = useState(false);
 	const [taskId, setTaskId] = useState(-1);
 	const [name, setName] = useState("");
 	const [description, setDescription] = useState("");
@@ -142,7 +153,11 @@ const Project = (props) => {
 						setTimeout(() => {
 							let selectedDiv = document.querySelector(".task-card.selected")
 							if (selectedDiv)
-								selectedDiv.scrollIntoView({behavior: "smooth"})
+								selectedDiv.scrollIntoView({
+									behavior: "smooth",
+									block: "center",
+									inline: "end"
+								})
 						}, 1000)
 					})
 					.catch(error => {
@@ -195,13 +210,14 @@ const Project = (props) => {
 		})
 		.then(response => {
 			let taskList = JSON.parse(JSON.stringify(response.data));
-			for (let i = 0; i < taskList.length; i++) {
-				if (taskList[i].parameter_values.length === 0) {
-					let parameter_fields = JSON.parse(taskList[i].task.parameter_fields)
-					taskList[i]["parameter_values"] = parameter_fields.map((field) => field["default"]);
+			let taskMap = taskList.reduce((acc, obj) => ({ ...acc, [obj.id]: obj }), {});
+			setTasks((oldTasks) => {
+				let newTasks = [...oldTasks]
+				for (let i = 0; i < newTasks.length; i++) {
+					newTasks[i].run = taskMap[newTasks[i].id].run
 				}
-			}
-			setTasks(taskList)
+				return newTasks
+			})
 			for (let i = 0; i < taskList.length; i++) {
 				if (taskList[i].run.status === "RUNNING") {
 					setTimeout(() => fetchTasksBackground(), 4000);
@@ -210,7 +226,8 @@ const Project = (props) => {
 			}
 		})
 		.catch(error => {
-			if (error.repsonse.status === 404) {
+			console.error(error);
+			if (error.response.status === 404) {
 				navigate("/");
 			}
 			else if (error.response.status === 401 || error.response.status === 403) {
@@ -218,7 +235,6 @@ const Project = (props) => {
 				Cookies.remove('auth-user');
 				navigate("/login");
 			}
-			console.error(error);
 		})
 	}
 	
@@ -332,18 +348,18 @@ const Project = (props) => {
 			.catch(error => {
 				console.error(error);
 				if (error.response.status in [401, 403, 404]) {
-					setError(error.response.data.detail);
+					toast.error(error.response.data.detail);
 				} else {
-					setError("Something went wrong! Please try again later.")
+					toast.error("Something went wrong! Please try again later.")
 				}
 			});
 		})
 		.catch(error => {
 			console.error(error);
 			if (error.response.status in [401, 403, 404]) {
-				setError(error.response.data.detail);
+				toast.error(error.response.data.detail);
 			} else {
-				setError("Something went wrong! Please try again later.")
+				toast.error("Something went wrong! Please try again later.")
 			}
 		});
 	}
@@ -413,6 +429,17 @@ const Project = (props) => {
 		setShowFolderPicker(false);
 	}
 	
+	const handleFilePickerClose = () => {
+		setShowFilePicker(false);
+	}
+	
+	const handleFilePickerSelect = (path) => {
+		let newTasks = JSON.parse(JSON.stringify(tasks));
+		newTasks[selected].parameter_values[showFilePicker] = path;
+		setTasks(newTasks);
+		setShowFilePicker(false);
+	}
+	
 	return (
 		<div className="Project">
 			<Container>
@@ -450,44 +477,68 @@ const Project = (props) => {
 								<h5>Tasks</h5>
 							</div>
 							<div className="button-div">
-								{selected !== 0 && 
-									<Button
-										variant="link"
-										size="sm"
-										onClick={() => {
-											if (selected > 0)
-												setSelected(selected => selected - 1)
-											let selectedDiv = document.querySelector(".task-card.selected")
-											if (selectedDiv)
-												selectedDiv.scrollIntoView({
-													behavior: "smooth",
-													block: "center",
-													inline: "end"
-												})
-										}}
-									>	
-										<ArrowLeft className="next-button" />
-									</Button>
-								}
-								{selected !== tasks.length - 1 && 
-									<Button
-										variant="link"
-										size="sm"
-										onClick={() => {
-											if (selected < tasks.length - 1)
-												setSelected(selected => selected + 1)
-											let selectedDiv = document.querySelector(".task-card.selected")
-											if (selectedDiv)
-												selectedDiv.scrollIntoView({
-													behavior: "smooth",
-													block: "center",
-													inline: "start"
-												})
-										}}
-									>	
-										<ArrowRight className="next-button" />
-									</Button>
-								}
+								<Button
+									disabled={tasks.length === 0 || selected === 0}
+									variant="link"
+									size="sm"
+									onClick={() => {
+										if (selected > 0)
+											setSelected(0)
+										let taskCardsDiv = document.querySelector(".task-cards");
+										taskCardsDiv.scrollTo({left: 0, behavior: 'smooth'});
+									}}
+								>	
+									<ChevronBarLeft className="next-button" />
+								</Button>
+								<Button
+									disabled={tasks.length === 0 || selected === 0}
+									variant="link"
+									size="sm"
+									onClick={() => {
+										if (selected > 0)
+											setSelected(selected => selected - 1)
+										let selectedDiv = document.querySelector(".task-card.selected")
+										if (selectedDiv)
+											selectedDiv.scrollIntoView({
+												behavior: "smooth",
+												block: "center",
+												inline: "end"
+											})
+									}}
+								>	
+									<ArrowLeft className="next-button" />
+								</Button>
+								<Button
+									disabled={tasks.length === 0 || selected === tasks.length - 1}
+									variant="link"
+									size="sm"
+									onClick={() => {
+										if (selected < tasks.length - 1)
+											setSelected(selected => selected + 1)
+										let selectedDiv = document.querySelector(".task-card.selected")
+										if (selectedDiv)
+											selectedDiv.scrollIntoView({
+												behavior: "smooth",
+												block: "center",
+												inline: "start"
+											})
+									}}
+								>	
+									<ArrowRight className="next-button" />
+								</Button>
+								<Button
+									disabled={tasks.length === 0 || selected === tasks.length - 1}
+									variant="link"
+									size="sm"
+									onClick={() => {
+										if (selected < tasks.length - 1)
+											setSelected(tasks.length - 1)
+										let taskCardsDiv = document.querySelector(".task-cards");
+										taskCardsDiv.scrollTo({left: taskCardsDiv.scrollWidth, behavior: 'smooth'});
+									}}
+								>	
+									<ChevronBarRight className="next-button" />
+								</Button>
 							</div>
 						</div>
 						<Dropdown>
@@ -499,8 +550,8 @@ const Project = (props) => {
 											className={"task-card " + (idx === selected ? "selected" : "")}
 											key={task.id}
 										>	
-											<div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "flex-end", gap: 5}}>
-												<h5>{task.task.name}</h5>
+											<div style={{display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "start"}}>
+												<h6 style={{width: 230, marginBottom: 0, whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>{task.task.name}</h6>
 												<small className="text-body-secondary id"><b>ID: {task.run.id}</b></small>
 											</div>
 											
@@ -536,18 +587,9 @@ const Project = (props) => {
 							<div className="heading">
 								<div>
 									<h5>Description</h5>
-									<small className="text-body-secondary">{tasks[selected].task.description}</small>
+									<small className="text-body-secondary">{tasks[selected].task.name}: {tasks[selected].task.description}</small>
 								</div>
 								<div className="button-div">
-									<Button
-										className="know-more"
-										variant="outline-primary"
-										size="sm"
-										onClick={() => {}}
-									>	
-										<BoxArrowUpRight />
-										Know More
-									</Button>
 									{tasks[selected].run.status === "SUCCESS" && 
 										<Button
 											variant="outline-success"
@@ -614,38 +656,21 @@ const Project = (props) => {
 											<Form.Group key={idx}>
 												<Form.Label>{item.name}</Form.Label>
 												{item.type === "file" ?
-													(
-														tasks[selected].parameter_values[idx] instanceof File ?
-														<InputGroup>
-															<Form.Control
-																className="file-selected"
-																value={tasks[selected].parameter_values[idx].name}
-																size="sm"
-																disabled
-															/>
-															<Button
-																variant="outline-secondary"
-																size="sm"
-																onClick={() => {
-																	let newTasks = JSON.parse(JSON.stringify(tasks));
-																	newTasks[selected].parameter_values[idx] = null;
-																	setTasks(newTasks)
-																}}
-															>
-																Clear
-															</Button>
-														</InputGroup> :
+													<InputGroup>
 														<Form.Control
+															value={tasks[selected].parameter_values[idx] ?? ""}
 															size="sm"
-															type={item.type}
-															value=""
-															onChange={(e) => {
-																let newTasks = JSON.parse(JSON.stringify(tasks));
-																newTasks[selected].parameter_values[idx] = e.target.files[0];
-																setTasks(newTasks)
-															}}
+															placeholder="select file"
+															readOnly
 														/>
-													)
+														<Button
+															variant="outline-secondary"
+															size="sm"
+															onClick={() => {setShowFilePicker(idx)}}
+														>
+															<Folder />
+														</Button>
+													</InputGroup>
 												: item.type === "directory" ?
 												<InputGroup>
 													<Form.Control
@@ -686,33 +711,59 @@ const Project = (props) => {
 								</div> :
 								<div className="last-run">
 									<h5>Run</h5>
-									{tasks[selected].run.status === "CREATED" ? 
+									{tasks[selected].run.status === "CREATED" ?
 										<small>Task has not been run yet. Click on 'Run Task' to run the task</small> :
 										<div className="button-div" style={{gap: 20}}>
-											<div className="logs">
+											<div className="logs" style={{maxWidth: "70%"}}>
 												<small>Logs</small><br/>
-												{
-													tasks[selected].run.logs &&
-													tasks[selected].run.logs.map((log, idx) => 
-														<small className="text-body-secondary" key={idx}>
-															{log.timestamp}: {log.detail}<br/>
-														</small>
-													)
-												}
+												<div className="log-text" style={{marginTop: 5, maxHeight: 400, overflowY: "scroll", position: "relative"}}>
+													{
+														tasks[selected].run.logs &&
+														tasks[selected].run.logs.map((log, idx) => 
+															<small className="text-body-secondary" key={idx}>
+																{formatDateTime(new Date(log.timestamp))}: {log.detail}<br/>
+															</small>
+														)
+													}
+												</div>
 											</div>
+											{tasks[selected].run.status === "FAILED" ? 
 											<div className="errors">
 												<small>Errors</small><br/>
-												{
-													tasks[selected].run.errors.length === 0 ?
-													<small className="text-body-secondary">No Errors logged for this run</small> :
-													tasks[selected].run.errors.map((error, idx) => 
-														<div className="error-badge" key={idx}>
-															<b>{error.type}</b>
-															<small>{error.detail}</small>
-														</div>
-													)
-												}
+												<div style={{marginTop: 5, maxHeight: 400, overflowY: "scroll"}}>
+													{
+														tasks[selected].run.errors.length === 0 ?
+														<small className="text-body-secondary">No Errors logged for this run</small> :
+														tasks[selected].run.errors.map((error, idx) => 
+															<div className="error-badge" key={idx}>
+																<b>{error.type}</b>
+																<small>{error.detail}</small>
+															</div>
+														)
+													}
+												</div>
 											</div>
+											: <div className="output-files">
+												<small>Output Files</small><br/>
+												<div style={{marginTop: 5, maxHeight: 400, overflowY: "scroll"}}>
+													{
+														tasks[selected].run.output_files.length === 0 ?
+														<small className="text-body-secondary">No Output files for this run</small> :
+														tasks[selected].run.output_files.map((output_file, idx) => 
+															<div className="output-file-badge" key={idx} onClick={() => {
+																if (output_file.file_name.includes("/home/tomoflows/data")) {
+																	navigator.clipboard.writeText(output_file.file_name.replace("/home/tomoflows/data", "/tmp/tomoflows"))
+																} else {
+																	navigator.clipboard.writeText(output_file.file_name)
+																}
+															}}>
+																<FileEarmarkText style={{marginRight: 5, marginTop: -1}} size={20} />
+																<div style={{marginRight: 1}}>{output_file.file_name.split("/").pop()}</div>
+															</div>
+														)
+													}
+												</div>
+											</div>}
 										</div>
 									}
 								</div>
@@ -863,6 +914,11 @@ const Project = (props) => {
 				show={showFolderPicker !== false}
 				onHide={handleFolderPickerClose}
 				onSelect={handleFolderPickerSelect}
+			/>
+			<FilePicker
+				show={showFilePicker !== false}
+				onHide={handleFilePickerClose}
+				onSelect={handleFilePickerSelect}
 			/>
 		</div>
 	)

@@ -5,12 +5,13 @@ import Modal from 'react-bootstrap/Modal';
 import Button from "react-bootstrap/Button";
 import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
-import "./FolderPicker.css";
+import "./FilePicker.css";
 import { ChevronLeft, ChevronRight, FileEarmarkText, Folder,  } from "react-bootstrap-icons";
 
-const FolderPicker = ({ show, onHide, onSelect }) => {
+const FilePicker = ({ show, onHide, onSelect }) => {
 	const [currentPath, setCurrentPath] = useState('');
 	const [currentFullPath, setCurrentFullPath] = useState('');
+	const [selected, setSelected] = useState('');
   	const [contents, setContents] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
@@ -33,6 +34,7 @@ const FolderPicker = ({ show, onHide, onSelect }) => {
 			setContents(response.data["contents"])
 			setCurrentFullPath(response.data["full_path"])
 			setCurrentPath(response.data["path"])
+			setSelected("")
 			setLoading(false)
 		})
 		.catch(error => {
@@ -51,16 +53,21 @@ const FolderPicker = ({ show, onHide, onSelect }) => {
     	fetchDirectoryContents(newPath);
 	}
 	
+	const handleFileClick = (itemName) => {
+		const filePath = currentFullPath ? `${currentFullPath}/${itemName}` : itemName; 
+		setSelected(filePath)
+	}
+	
 	const handleBackClick = () => {
 		const newPath = currentPath.substring(0, currentPath.lastIndexOf('/'));
     	fetchDirectoryContents(newPath);
 	}
 	
 	return (
-		<Modal scrollable centered show={show} onHide={onHide} className="FolderPicker">
+		<Modal scrollable centered show={show} onHide={onHide} className="FilePicker">
 			<Modal.Header>
 				<Modal.Title>
-					Select Directory
+					Select File
 				</Modal.Title>
 			</Modal.Header>
 			<Modal.Body style={{padding: 5}}>
@@ -82,10 +89,10 @@ const FolderPicker = ({ show, onHide, onSelect }) => {
 						</div>
 					}
 					{contents.map((item, idx) => 
-						<div 
-							className={`folder-item${item.is_directory ? " dir": ""}`}
+						<div
+							className={`folder-item${item.is_directory ? " dir": ""}${selected.split("/").pop() === item.item ? " selected": ""}`}
 							key={idx}
-							onClick={() => item.is_directory ? handleDirectoryClick(item.item): null}
+							onClick={() => item.is_directory ? handleDirectoryClick(item.item): handleFileClick(item.item)}
 						>
 							<div style={{display: "flex", flexDirection: "row", alignItems: "center"}}>
 								{item.is_directory ? 
@@ -128,8 +135,8 @@ const FolderPicker = ({ show, onHide, onSelect }) => {
 						<Button
 							className="select-button"
 							variant="primary"
-							onClick={() => onSelect(currentFullPath)}
-							disabled={loading}
+							onClick={() => onSelect(selected)}
+							disabled={loading || selected === ""}
 						>
 							{
 								loading ?
@@ -150,4 +157,4 @@ const FolderPicker = ({ show, onHide, onSelect }) => {
 	)
 }
 
-export default FolderPicker;
+export default FilePicker;

@@ -3,7 +3,6 @@ import subprocess
 import os
 
 from scripts.program.mdoc import MDoc, FrameSet
-import scripts.program.processEER
 
 from scripts.program.metadata.image_metadata import ImageMetadata, ImageSet
 from scripts.program.metadata.task_metadata import TaskDescription, TaskOutputDescription

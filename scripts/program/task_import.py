@@ -110,13 +110,13 @@ class TaskImport(Task):
 
         try:
             if not 'import_data' in self.parameters.keys():
-                raise ValueError("Parameter 'import_data' is not provided")
+                raise ValueError("Parameter 'Import Data' is not provided")
             if not self.parameters['import_data']:
-                raise ValueError("Parameter 'import_data' is not provided")
+                raise ValueError("Parameter 'Import Data' is not provided")
             if not 'import_directory_type' in self.parameters.keys():
-                raise ValueError("Parameter 'import_directory_type' is not provided")
+                raise ValueError("Parameter 'Import Directory Type' is not provided")
             if not self.parameters['import_directory_type']:
-                raise ValueError("Parameter 'import_directory_type' is not provided")
+                raise ValueError("Parameter 'Import Directory Type' is not provided")
         except ValueError as err:
             self.add_log("Parameter check failed: " + str(err))
             self.add_log("Import task run failed")

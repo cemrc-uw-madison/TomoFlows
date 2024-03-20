@@ -78,27 +78,19 @@ def task_gain_handler(project_task, run):
     project = project_task.project
     # TODO: ideally parameters would provide name:value pairs as a dictionary? We only get the values.
     parameters = json.loads(project_task.parameter_values)
-    input_file = parameters[0]
-
-    logs = []
-    logs.append({
-        "timestamp": str(datetime.now().replace(tzinfo=pytz.utc)),
-        "detail": "Running Gain task...",
-    })
 
     project_folder = os.path.join( project.folder_path, CONSTANTS.TASK_FOLDER_PREFIX + str(project_task.id) )
 
-    task_gain = TaskGain(project_folder, input_file)
+    task_gain = TaskGain(project_folder)
+    task_gain.parameters['input_file'] = parameters[0]
     task_gain.run()
-
-    run.status = task_gain.get_result().status
+    
+    result = task_gain.get_result()
+    run.status = result.status
     run.end_time = datetime.now().replace(tzinfo=pytz.utc)
-    logs.append({
-        "timestamp": str(datetime.now().replace(tzinfo=pytz.utc)),
-        "detail": "Gain task run completed successfully"
-    })
-    run.logs = json.dumps(logs)
-    run.errors = json.dumps([])
+    run.logs = json.dumps(result.logs)
+    run.errors = json.dumps(result.errors)
+    run.output_files = json.dumps(result.output_files)
     run.save()
 
 def task_motioncor2_handler(project_task, run):
@@ -133,9 +125,7 @@ def task_import_handler(project_task, run):
     parameters = json.loads(project_task.parameter_values)
 
     project_folder = os.path.join( project.folder_path, CONSTANTS.TASK_FOLDER_PREFIX + str(project_task.id) )
-    print("Will create at: " + project_folder)
 
-    print(parameters)
     task_import = TaskImport(project_folder)
     # TODO: if we can get name:value dictionary from the JSON string, this could be simplified here?
     task_import.parameters['import_data'] = parameters[0]
@@ -147,4 +137,5 @@ def task_import_handler(project_task, run):
     run.end_time = datetime.now().replace(tzinfo=pytz.utc)
     run.logs = json.dumps(result.logs)
     run.errors = json.dumps(result.errors)
+    run.output_files = json.dumps(result.output_files)
     run.save()
