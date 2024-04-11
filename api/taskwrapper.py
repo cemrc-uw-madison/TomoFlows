@@ -76,9 +76,7 @@ def task_sample_handler(project_task, run):
         
 def task_gain_handler(project_task, run):
     project = project_task.project
-    # TODO: ideally parameters would provide name:value pairs as a dictionary? We only get the values.
     parameters = json.loads(project_task.parameter_values)
-
     project_folder = os.path.join( project.folder_path, CONSTANTS.TASK_FOLDER_PREFIX + str(project_task.id) )
 
     task_gain = TaskGain(project_folder)
@@ -95,41 +93,30 @@ def task_gain_handler(project_task, run):
 
 def task_motioncor2_handler(project_task, run):
     project = project_task.project
-    # TODO: ideally parameters would provide name:value pairs as a dictionary? We only get the values.
-    parameters = json.loads(project_task.parameter_values)
-
-    logs = []
-    logs.append({
-        "timestamp": str(datetime.now().replace(tzinfo=pytz.utc)),
-        "detail": "Running Motion Correction (MotionCor2) task...",
-    })
-    
-    project_folder = os.path.join( project.folder_path, CONSTANTS.TASK_FOLDER_PREFIX + str(project_task.id) )
+    parameter_values = json.loads(project_task.parameter_values)
+    project_folder = os.path.join(project.folder_path, CONSTANTS.TASK_FOLDER_PREFIX + str(project_task.id))
     task_motioncor2 = TaskMotionCor2(project_folder)
-    # TODO: add the parameters here
+    for idx, key in enumerate(TaskMotionCor2.parameter_keys):
+        task_motioncor2.parameters[key] = parameter_values[idx]
+
     task_motioncor2.run()
     
-    run.status = task_motioncor2.get_result().status
+    result = task_motioncor2.get_result()
+    run.status = result.status
     run.end_time = datetime.now().replace(tzinfo=pytz.utc)
-    logs.append({
-        "timestamp": str(datetime.now().replace(tzinfo=pytz.utc)),
-        "detail": "Motion Correction (MotionCor2) task run completed successfully"
-    })
-    run.logs = json.dumps(logs)
-    run.errors = json.dumps([])
+    run.logs = json.dumps(result.logs)
+    run.errors = json.dumps(result.errors)
+    run.output_files = json.dumps(result.output_files)
     run.save()
 
 def task_import_handler(project_task, run):
     project = project_task.project
-    # TODO: ideally parameters would provide name:value pairs as a dictionary? We only get the values.
-    parameters = json.loads(project_task.parameter_values)
-
-    project_folder = os.path.join( project.folder_path, CONSTANTS.TASK_FOLDER_PREFIX + str(project_task.id) )
-
+    parameter_values = json.loads(project_task.parameter_values)
+    project_folder = os.path.join(project.folder_path, CONSTANTS.TASK_FOLDER_PREFIX + str(project_task.id))
     task_import = TaskImport(project_folder)
-    # TODO: if we can get name:value dictionary from the JSON string, this could be simplified here?
-    task_import.parameters['import_data'] = parameters[0]
-    task_import.parameters['import_directory_type'] = parameters[1]
+    for idx, key in enumerate(TaskImport.parameter_keys):
+        task_import.parameters[key] = parameter_values[idx]
+
     task_import.run()
     
     result = task_import.get_result()

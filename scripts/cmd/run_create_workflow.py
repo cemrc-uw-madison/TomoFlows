@@ -13,8 +13,8 @@ def main():
 
     # Import
     task1_params = {
-        "import_data": '/mnt/scratch/mrlarson2/test',
-        "import_directory_type": "frames"
+        "data_directory": '/mnt/scratch/mrlarson2/test',
+        "directory_type": "frames"
     }
 
     # Motion Correction

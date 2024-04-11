@@ -20,8 +20,8 @@ def test_import_from_frames(tmp_path):
     task_folder = os.path.join(tmp_path, 'task_import_01')
     os.makedirs(task_folder)
     task = TaskImport(task_folder)
-    task.parameters['import_data'] = mock_frames_path
-    task.parameters['import_directory_type'] = 'frames'
+    task.parameters['data_directory'] = mock_frames_path
+    task.parameters['directory_type'] = 'frames'
     task.run()
 
     # 3. task import will serialize the imageset.json and result.json

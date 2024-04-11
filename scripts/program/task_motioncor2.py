@@ -17,15 +17,20 @@ class TaskMotionCor2(Task):
     """
     required_input_formats = ["mrc", "tif", "tiff", "eer" ]
     required_output_format = "mrc"
+    parameter_keys = ["imageset", "PixSize", "Patch", "Iter", "Tol", "Gpu", "Gain", "RotGain", "FlipGain", "Throw", "FtBin"]
 
     # Parameters should include gain filename.
     # Parameters should include a list of input files to motion correct.
+    parameters = {}
+    logs = []
 
     def __init__(self, task_folder):
         """
         :param task_folder: where to create the task folder
         """
         self.task_folder = task_folder
+        self.parameters = {}
+        self.logs = []
 
     def __addArguments(self, args):
         """ Append any motion correction required or optional arguments """
@@ -83,8 +88,9 @@ class TaskMotionCor2(Task):
         """ Given EER and mdoc describing file do motion correction """
 
         if (os.path.exists(out_mrc)):
+            self.add_log(str(out_mrc) + " exists: skipping motionCor")
             print(str(out_mrc) + ' exists: skipping motionCor')
-            return
+            return -1
         else:
             print(str(out_mrc) + ' will be created by motionCor...')
 
@@ -117,34 +123,93 @@ class TaskMotionCor2(Task):
             args.append(str(2))
         
         args = self.__addArguments(args)
-
-        print (' '.join(args) + '\n')
-        subprocess.call(args)
         # NOTE observed that EER processing results in a flip to be corrected.
+        command_prefix = '/bin/bash -c "source /usr/local/IMOD/IMOD-linux.sh && '
+        run_result = subprocess.run(f'{command_prefix}{" ".join(args)}"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True, cwd=self.task_folder)
+        output = run_result.stdout
+        error = run_result.stderr
+        for line in output.split("\n"):
+            if line and not line.isspace():
+                self.add_log(line)
+        if run_result.returncode == 0:
+            self.add_log("motioncor2 command executed successfully")
+            return 0
+        else:
+            self.add_log(f"motioncor2 command failed with return code {run_result.returncode}")
+            self.add_log("Motion Correction (MotionCor2) task run failed")
+            results = TaskOutputDescription(self.name(), self.description())
+            results.set_status(CONSTANTS.TASK_STATUS_FAILED)
+            results.add_errors({"type": "ExecutionError", "detail": str(error)})
+            results.logs = self.logs
+            results_json_path = os.path.join(self.task_folder, self.result_json)
+            results.save_to_json(results_json_path)
+            return -1
 
     def __motionCorrectTiff(self, in_tiff, out_mrc):
         """ Given TIFF or MRC inputs, do motion correction """
 
         if (os.path.exists(out_mrc)):
+            self.add_log(str(out_mrc) + " exists: skipping motionCor")
             print(str(out_mrc) + ' exists: skipping motionCor')
+            return -1
         else:
             print(str(out_mrc) + ' will be created by motionCor...')
 
         args = ['motioncor2', "-InTiff", in_tiff, "-OutMrc", out_mrc]
         args = self.__addArguments(args)
-        subprocess.call(args)
+        command_prefix = '/bin/bash -c "source /usr/local/IMOD/IMOD-linux.sh && '
+        run_result = subprocess.run(f'{command_prefix}{" ".join(args)}"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True, cwd=self.task_folder)
+        output = run_result.stdout
+        error = run_result.stderr
+        for line in output.split("\n"):
+            if line and not line.isspace():
+                self.add_log(line)
+        if run_result.returncode == 0:
+            self.add_log("motioncor2 command executed successfully")
+            return 0
+        else:
+            self.add_log(f"motioncor2 command failed with return code {run_result.returncode}")
+            self.add_log("Motion Correction (MotionCor2) task run failed")
+            results = TaskOutputDescription(self.name(), self.description())
+            results.set_status(CONSTANTS.TASK_STATUS_FAILED)
+            results.add_errors({"type": "ExecutionError", "detail": str(error)})
+            results.logs = self.logs
+            results_json_path = os.path.join(self.task_folder, self.result_json)
+            results.save_to_json(results_json_path)
+            return -1
 
     def __motionCorrectMRC(self, in_mrc, out_mrc):
         """ Given TIFF or MRC inputs, do motion correction """
 
         if (os.path.exists(out_mrc)):
-            print(str(out_mrc) + ' exists: skipping motionCor')
+            self.add_log(str(out_mrc) + " exists: skipping motionCor")
+            print(str(out_mrc) + " exists: skipping motionCor")
+            return -1
         else:
             print(str(out_mrc) + ' will be created by motionCor...')
 
         args = ['motioncor2', "-InMRC", in_mrc, "-OutMrc", out_mrc]
         args = self.__addArguments(args)
-        subprocess.call(args)
+        command_prefix = '/bin/bash -c "source /usr/local/IMOD/IMOD-linux.sh && '
+        run_result = subprocess.run(f'{command_prefix}{" ".join(args)}"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True, cwd=self.task_folder)
+        output = run_result.stdout
+        error = run_result.stderr
+        for line in output.split("\n"):
+            if line and not line.isspace():
+                self.add_log(line)
+        if run_result.returncode == 0:
+            self.add_log("motioncor2 command executed successfully")
+            return 0
+        else:
+            self.add_log(f"motioncor2 command failed with return code {run_result.returncode}")
+            self.add_log("Motion Correction (MotionCor2) task run failed")
+            results = TaskOutputDescription(self.name(), self.description())
+            results.set_status(CONSTANTS.TASK_STATUS_FAILED)
+            results.add_errors({"type": "ExecutionError", "detail": str(error)})
+            results.logs = self.logs
+            results_json_path = os.path.join(self.task_folder, self.result_json)
+            results.save_to_json(results_json_path)
+            return -1
 
     def run(self):
         """ This should motion correct a set of micrographs """
@@ -153,24 +218,45 @@ class TaskMotionCor2(Task):
         #  - gain file (if provided)
         #  - options related to motion correction parameters
 
+        self.logs = []
+        self.add_log("Running Motion Correction (MotionCor2)...")
+        if not os.path.isdir(self.task_folder):
+            os.makedirs(self.task_folder)
+            
+        try:
+            if not 'imageset' in self.parameters.keys():
+                raise ValueError("Parameter 'Micrographs' is not provided")
+            if not self.parameters['imageset']:
+                raise ValueError("Parameter 'Micrographs' is not provided")
+            if not 'PixSize' in self.parameters.keys():
+                raise ValueError("Parameter 'PixSize' is not provided")
+            if not self.parameters['PixSize']:
+                raise ValueError("Parameter 'PixSize' is not provided")
+            if not 'Patch' in self.parameters.keys():
+                raise ValueError("Parameter 'Patch' is not provided")
+            if not self.parameters['Patch']:
+                raise ValueError("Parameter 'Patch' is not provided")
+        except ValueError as err:
+            self.add_log("Parameter check failed: " + str(err))
+            self.add_log("Motion Correction (MotionCor2) task run failed")
+            results = TaskOutputDescription(self.name(), self.description())
+            results.set_status(CONSTANTS.TASK_STATUS_FAILED)
+            results.add_errors({"type": "ValueError", "detail": str(err)})
+            results.logs = self.logs
+            results_json_path = os.path.join(self.task_folder, self.result_json)
+            results.save_to_json(results_json_path)
+            return
+
         # Create a TaskDescription with parameters.
         task_meta = TaskDescription(self.name(), self.description())
         task_meta.add_parameters(self.parameters)
-        
-        # Create Task folder if missing.
-        if not os.path.isdir(self.task_folder):
-            os.makedirs(self.task_folder)
+
         # Serialize the Task description metatadata
         task_meta.save_to_json(os.path.join(self.task_folder, self.task_json))
 
         # Require an imageset containing *.mrc (stack) files
-        input_image_meta = None
-        if 'imageset' in self.parameters:
-            task_meta.add_parameter('imageset', self.parameters['imageset'])
-            imageset_filename = self.parameters['imageset']
-            input_image_meta = ImageMetadata.load_from_json(imageset_filename)
-        else: 
-            raise ValueError("Parameter 'imageset' is not provided")
+        imageset_filename = self.parameters['imageset']
+        input_image_meta = ImageMetadata.load_from_json(imageset_filename)
 
         results_image_meta = ImageMetadata()
 
@@ -195,11 +281,15 @@ class TaskMotionCor2(Task):
                 filename = os.path.basename(image)
                 if image.endswith('.tif'):
                     outfile = os.path.join(out_folder, filename[:-len('.tif')] + '.mc.mrc')
-                    self.__motionCorrectTiff(image, outfile)
+                    res = self.__motionCorrectTiff(image, outfile)
+                    if res < 0:
+                        return
                     image_list.append(outfile)
                 elif image.endswith('.mrc'):
                     outfile = os.path.join(out_folder, filename[:-len('.mrc')] + '.mc.mrc')
-                    self.__motionCorrectMRC(image, outfile)
+                    res = self.__motionCorrectMRC(image, outfile)
+                    if res < 0:
+                        return
                     image_list.append(outfile)
                 elif image.endswith('.eer'):
                     outfile = os.path.join(out_folder, filename[:-len('.eer')] + '.mc.mrc')
@@ -224,8 +314,9 @@ class TaskMotionCor2(Task):
                     else:
                        processEER.convertTifMrc(gain_inpath, gain_mrc)
                     EEROpts.gain = gain_mrc
-                    self.__motionCorrectEer(image, outfile, dosefile, EEROpts)
-                    
+                    res = self.__motionCorrectEer(image, outfile, dosefile, EEROpts)
+                    if res < 0:
+                        return
                     image_list.append(outfile)
                 else:
                     print('Unable to process image: ' + image)
@@ -241,12 +332,17 @@ class TaskMotionCor2(Task):
         #  - set of output.mrc files
         #  - log files
         #  - image metadata, describing the output mrc files.
+        self.add_log("Building imageset.json")
         image_json_path = os.path.join(self.task_folder, self.imageset_filename)
         results_image_meta.save_to_json(image_json_path)
 
         #  Serialize the `result.json` metadata file that points to `imageset.json`
+        self.add_log("Writing to results.json")
         results = TaskOutputDescription(self.name(), self.description())
         results.add_output_file(image_json_path, 'json')
+        self.add_log("Motion Correction (MotionCor2) task run completed successfully")
+        results.status = CONSTANTS.TASK_STATUS_SUCCESS
+        results.logs = self.logs
         results_json_path = os.path.join(self.task_folder, self.result_json)
         results.save_to_json(results_json_path)
 
