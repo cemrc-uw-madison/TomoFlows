@@ -14,7 +14,7 @@
         "fields": {
             "name": "Import",
             "description": "Import micrographs into a project",
-            "parameter_fields": "[{\"name\":\"Data Directory\",\"type\":\"directory\",\"default\":null}, {\"name\":\"Directory Type\",\"type\":\"string\",\"default\":\"frames\"}]"
+            "parameter_fields": "[{\"name\":\"Data Directory\",\"type\":\"directory\",\"default\":null}, {\"name\":\"Directory Type\",\"type\":\"select\",\"default\":\"frames\",\"choices\":[\"frames\",\"stack\"]}]"
         }
     },
     {

@@ -672,21 +672,36 @@ const Project = (props) => {
 														</Button>
 													</InputGroup>
 												: item.type === "directory" ?
+													<InputGroup>
+														<Form.Control
+															value={tasks[selected].parameter_values[idx] ?? ""}
+															size="sm"
+															placeholder="select directory"
+															readOnly
+														/>
+														<Button
+															variant="outline-secondary"
+															size="sm"
+															onClick={() => {setShowFolderPicker(idx)}}
+														>
+															<Folder />
+														</Button>
+													</InputGroup>
+												: item.type === "select" ?
 												<InputGroup>
-													<Form.Control
+													<Form.Select
+														size="sm"
 														value={tasks[selected].parameter_values[idx] ?? ""}
-														size="sm"
-														placeholder="select directory"
-														readOnly
-													/>
-													<Button
-														variant="outline-secondary"
-														size="sm"
-														onClick={() => {setShowFolderPicker(idx)}}
+														onChange={(e) => {
+															let newTasks = JSON.parse(JSON.stringify(tasks));
+															newTasks[selected].parameter_values[idx] = e.target.value == "" ? null: e.target.value;
+															setTasks(newTasks)
+														}}
 													>
-														<Folder />
-													</Button>
-												</InputGroup>
+														<option value="">Select</option>
+														{item.choices.map((val, idx) => <option value={val} key={idx}>{val}</option>)}
+													</Form.Select>
+													</InputGroup>
 												: <Form.Control
 													type={item.type}
 													value={tasks[selected].parameter_values[idx] ?? ""}

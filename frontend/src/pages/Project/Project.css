@@ -212,6 +212,10 @@
 	width: 350px;
 }
 
+.Project .task-details .parameters .input-fields select {
+	width: 350px;
+}
+
 .Project .task-details .parameters .input-fields input.file-selected {
 	width: 299px;
 }
