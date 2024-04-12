@@ -1,0 +1,11 @@
+.TaskDrop {
+	width: 350px;
+	height: 31px;
+	border-radius: 0.25rem;
+	border: #d1d6da dashed;
+	font-size: .875rem;
+	justify-content: center;
+	display: flex;
+	align-items: center;
+	color: #6c757d;
+}

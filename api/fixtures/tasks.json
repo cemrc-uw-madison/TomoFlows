@@ -23,7 +23,7 @@
         "fields": {
             "name": "Motion Correction (MotionCor2)",
             "description": "Motion Correction of micrographs via UCSF MotionCor2",
-            "parameter_fields": "[{\"name\":\"Micrographs\",\"type\":\"imageset\",\"default\":null},{\"name\":\"PixSize\",\"type\":\"integer\",\"default\":1.0},{\"name\":\"Patch\",\"type\":\"string\",\"default\":null},{\"name\":\"Iter\",\"type\":\"integer\",\"default\":10},{\"name\":\"Tol\",\"type\":\"integer\",\"default\":10},{\"name\":\"Gpu\",\"type\":\"string\",\"default\":null},{\"name\":\"Gain\",\"type\":\"string\",\"default\":null},{\"name\":\"RotGain\",\"type\":\"string\",\"default\":null},{\"name\":\"FlipGain\",\"type\":\"string\",\"default\":null},{\"name\":\"Throw\",\"type\":\"string\",\"default\":null},{\"name\":\"FtBin\",\"type\":\"string\",\"default\":null}]"
+            "parameter_fields": "[{\"name\":\"Micrographs\",\"type\":\"imageset\",\"default\":null},{\"name\":\"PixSize\",\"type\":\"number\",\"default\":1.0},{\"name\":\"Patch\",\"type\":\"string\",\"default\":null},{\"name\":\"Iter\",\"type\":\"number\",\"default\":10},{\"name\":\"Tol\",\"type\":\"number\",\"default\":10},{\"name\":\"Gpu\",\"type\":\"string\",\"default\":null},{\"name\":\"Gain\",\"type\":\"string\",\"default\":null},{\"name\":\"RotGain\",\"type\":\"string\",\"default\":null},{\"name\":\"FlipGain\",\"type\":\"string\",\"default\":null},{\"name\":\"Throw\",\"type\":\"string\",\"default\":null},{\"name\":\"FtBin\",\"type\":\"string\",\"default\":null}]"
         }
     },
     {

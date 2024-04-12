@@ -120,7 +120,6 @@ def TaskList(request):
                 serializer.validated_data['parameter_fields'] = json.dumps([])
             serializer.save()
             data = serializer.data
-            print(data)
             data["parameter_fields"] = json.loads(data["parameter_fields"])
             return Response(data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

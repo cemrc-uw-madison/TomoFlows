@@ -320,6 +320,7 @@ class TaskMotionCor2(Task):
                     image_list.append(outfile)
                 else:
                     print('Unable to process image: ' + image)
+                    self.add_log("Unable to process image: " + image)
 
             if len(image_list) > 0:
                 # add the motion-corrected images into metadata for the task.
