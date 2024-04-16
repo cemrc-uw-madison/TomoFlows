@@ -46,3 +46,9 @@ Third-party software to be installed and available in your PATH:
 3. Start Django Server: `python3 manage.py runserver`
 4. Setup Frontend in New Terminal: `cd frontend && npm install`
 5. Run Frontend in New Terminal: `npm run dev`
+
+
+### ERROR
+
+/usr/bin/ld: /home/tomoflows/MotionCor3/LibSrc/Lib/libmrcfile.a(CLoadExtHeader.o): relocation R_X86_64_32 against symbol `__gxx_personality_v0@@CXXABI_1.3' can not be used when making a PIE object; recompile with -fPIE
+/usr/bin/ld: failed to set dynamic section sizes: bad value

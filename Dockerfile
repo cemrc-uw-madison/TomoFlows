@@ -30,6 +30,23 @@ RUN apt-get -y install libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0
 RUN sh imod_4.11.24_RHEL7-64_CUDA10.1.sh -debian -y
 RUN source /etc/bash.bashrc
 
+# cuda
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/debian12/x86_64/cuda-keyring_1.1-1_all.deb
+RUN dpkg -i cuda-keyring_1.1-1_all.deb
+RUN apt-get -y install software-properties-common
+RUN add-apt-repository contrib -y
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get -y install cuda-toolkit-12-4
+RUN source /etc/bash.bashrc
+
+# motioncor3
+RUN git clone https://github.com/czimaginginstitute/MotionCor3.git
+RUN cd MotionCor3
+RUN make exe -f makefile CUDAHOME=/usr/local/cuda-12.4
+RUN export PATH="/usr/local/cuda-12.4/bin:$PATH"
+RUN source /etc/bash.bashrc
+
 # pip
 RUN pip install --upgrade pip
 COPY . $DjangoDir
