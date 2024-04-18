@@ -19,9 +19,9 @@ WORKDIR $DjangoDir
 # imod
 RUN wget http://bio3d.colorado.edu/imod/AMD64-RHEL5/imod_4.11.24_RHEL7-64_CUDA10.1.sh
 RUN chmod +x imod_4.11.24_RHEL7-64_CUDA10.1.sh
-RUN echo 'deb http://ftp.debian.org/debian buster-backports main' | tee /etc/apt/sources.list.d/buster-backports.list
+# RUN echo 'deb http://ftp.debian.org/debian buster-backports main' | tee /etc/apt/sources.list.d/buster-backports.list
 RUN apt-get update
-RUN apt-get upgrade
+RUN apt-get upgrade -y
 RUN apt-get -y install openssh-client
 RUN apt-get -y install libjpeg62
 RUN apt-get -y install libjpeg-dev
@@ -42,9 +42,20 @@ RUN source /etc/bash.bashrc
 
 # motioncor3
 RUN git clone https://github.com/czimaginginstitute/MotionCor3.git
-RUN cd MotionCor3
-RUN make exe -f makefile CUDAHOME=/usr/local/cuda-12.4
-RUN export PATH="/usr/local/cuda-12.4/bin:$PATH"
+WORKDIR $DjangoDir/MotionCor3/LibSrc/Mrcfile
+RUN make
+WORKDIR $DjangoDir/MotionCor3/LibSrc/Util
+RUN make
+WORKDIR $DjangoDir/MotionCor3
+RUN ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/libcuda.so.1
+RUN echo 'export LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs/:$LD_LIBRARY_PATH' >> /etc/bash.bashrc
+RUN echo 'export PATH="/usr/local/cuda-12.4/bin:$PATH"' >> /etc/bash.bashrc
+RUN source /etc/bash.bashrc
+RUN make exe -f makefile11 CUDAHOME=/usr/local/cuda-12.4
+RUN mv MotionCor3 ../MotionCor3Binary
+WORKDIR $DjangoDir
+RUN rm -rf MotionCor3/
+RUN mv MotionCor3Binary /usr/local/bin/motioncor3
 RUN source /etc/bash.bashrc
 
 # pip

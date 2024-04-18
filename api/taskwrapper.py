@@ -7,6 +7,7 @@ from datetime import datetime
 
 from scripts.program.task_gain import TaskGain
 from scripts.program.task_motioncor2 import TaskMotionCor2
+from scripts.program.task_motioncor3 import TaskMotionCor3
 from scripts.program.task_import import TaskImport
 from django.conf import settings
 
@@ -17,6 +18,8 @@ def task_handler(project_task, run):
         task_gain_handler(project_task, run)
     elif project_task.task.name == "Motion Correction (MotionCor2)":
         task_motioncor2_handler(project_task, run)
+    elif project_task.task.name == "Motion Correction (MotionCor3)":
+        task_motioncor3_handler(project_task, run)
     elif project_task.task.name == "Import":
         task_import_handler(project_task, run)
     else:
@@ -102,6 +105,24 @@ def task_motioncor2_handler(project_task, run):
     task_motioncor2.run()
     
     result = task_motioncor2.get_result()
+    run.status = result.status
+    run.end_time = datetime.now().replace(tzinfo=pytz.utc)
+    run.logs = json.dumps(result.logs)
+    run.errors = json.dumps(result.errors)
+    run.output_files = json.dumps(result.output_files)
+    run.save()
+
+def task_motioncor3_handler(project_task, run):
+    project = project_task.project
+    parameter_values = json.loads(project_task.parameter_values)
+    project_folder = os.path.join(project.folder_path, CONSTANTS.TASK_FOLDER_PREFIX + str(project_task.id))
+    task_motioncor3 = TaskMotionCor3(project_folder)
+    for idx, key in enumerate(TaskMotionCor3.parameter_keys):
+        task_motioncor3.parameters[key] = parameter_values[idx]
+
+    task_motioncor3.run()
+    
+    result = task_motioncor3.get_result()
     run.status = result.status
     run.end_time = datetime.now().replace(tzinfo=pytz.utc)
     run.logs = json.dumps(result.logs)
