@@ -124,7 +124,7 @@ class TaskMotionCor3(Task):
         
         args = self.__addArguments(args)
         # NOTE observed that EER processing results in a flip to be corrected.
-        command_prefix = '/bin/bash -c "source /etc/bash.bashrc && '
+        command_prefix = 'env LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs/:$LD_LIBRARY_PATH /bin/bash -c "'
         run_result = subprocess.run(f'{command_prefix}{" ".join(args)}"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True, cwd=self.task_folder)
         output = run_result.stdout
         error = run_result.stderr
@@ -157,7 +157,7 @@ class TaskMotionCor3(Task):
 
         args = ['motioncor3', "-InTiff", in_tiff, "-OutMrc", out_mrc]
         args = self.__addArguments(args)
-        command_prefix = '/bin/bash -c "source /etc/bash.bashrc && '
+        command_prefix = 'env LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs/:$LD_LIBRARY_PATH /bin/bash -c "'
         run_result = subprocess.run(f'{command_prefix}{" ".join(args)}"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True, cwd=self.task_folder)
         output = run_result.stdout
         error = run_result.stderr
@@ -190,7 +190,7 @@ class TaskMotionCor3(Task):
 
         args = ['motioncor3', "-InMRC", in_mrc, "-OutMrc", out_mrc]
         args = self.__addArguments(args)
-        command_prefix = '/bin/bash -c "source /etc/bash.bashrc && '
+        command_prefix = 'env LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs/:$LD_LIBRARY_PATH /bin/bash -c "'
         run_result = subprocess.run(f'{command_prefix}{" ".join(args)}"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True, cwd=self.task_folder)
         output = run_result.stdout
         error = run_result.stderr
