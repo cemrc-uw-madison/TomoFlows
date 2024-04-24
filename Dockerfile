@@ -58,6 +58,11 @@ RUN rm -rf MotionCor3/
 RUN mv MotionCor3Binary /usr/local/bin/motioncor3
 RUN source /etc/bash.bashrc
 
+# aretomo2
+RUN git clone https://github.com/czimaginginstitute/AreTomo2.git
+WORKDIR $DjangoDir/AreTomo2
+RUN make exe -f makefile11 CUDAHOME=/usr/local/cuda-12.4
+
 # pip
 RUN pip install --upgrade pip
 COPY . $DjangoDir
