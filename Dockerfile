@@ -1,7 +1,7 @@
 # base image  
 FROM nvidia/cuda:12.4.1-devel-rockylinux9
 RUN dnf update -y
-SHELL ["/bin/bash", "-c"] 
+SHELL ["/bin/bash", "-c"]
 
 # set environment variables and work directory
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -50,8 +50,6 @@ RUN make
 WORKDIR $DjangoDir/MotionCor3/LibSrc/Util
 RUN make
 WORKDIR $DjangoDir/MotionCor3
-RUN ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/libcuda.so.1
-RUN echo 'export LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs/:$LD_LIBRARY_PATH' >> /etc/bash.bashrc
 RUN echo 'export PATH="/usr/local/cuda-12.4/bin:$PATH"' >> /etc/bash.bashrc
 RUN source /etc/bash.bashrc
 RUN make exe -f makefile11 CUDAHOME=/usr/local/cuda-12.4
@@ -61,10 +59,15 @@ RUN rm -rf MotionCor3/
 RUN mv MotionCor3Binary /usr/local/bin/motioncor3
 RUN source /etc/bash.bashrc
 
-# Download and buil AreTomo2
+# Download and build AreTomo2
 RUN git clone https://github.com/czimaginginstitute/AreTomo2.git
 WORKDIR $DjangoDir/AreTomo2
 RUN make exe -f makefile11 CUDAHOME=/usr/local/cuda-12.4
+RUN mv AreTomo2 ../AreTomo2Binary
+WORKDIR $DjangoDir
+RUN rm -rf MotionCor3/
+RUN mv AreTomo2Binary /usr/local/bin/aretomo2
+RUN source /etc/bash.bashrc
 
 # pip
 RUN pip3 install --upgrade pip
