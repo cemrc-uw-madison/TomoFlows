@@ -1,5 +1,5 @@
 # base image  
-FROM nvidia/cuda:12.4.1-devel-rockylinux8
+FROM nvidia/cuda:12.4.1-devel-rockylinux9
 RUN dnf update -y
 SHELL ["/bin/bash", "-c"] 
 
@@ -21,10 +21,10 @@ RUN dnf -y install libjpeg-turbo-devel libtiff-devel libjpeg-devel fftw-devel
 RUN dnf -y install gcc gcc-c++ openmpi-devel mpich cmake git
 
 # Import NVIDIA CUDA repository keyring
-RUN curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo | tee /etc/yum.repos.d/cuda.repo
+RUN curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/cuda-rhel9.repo | tee /etc/yum.repos.d/cuda.repo
 
 # Install the CUDA keyring package
-RUN rpm --import https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/7fa2af80.pub
+RUN rpm --import https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/D42D0685.pub
 
 # Install the CUDA Toolkit and development files 
 RUN dnf install -y cuda
@@ -74,8 +74,8 @@ RUN pip3 install -r requirements.txt
 
 # start application
 WORKDIR $DjangoDir
-RUN python manage.py makemigrations
-RUN python manage.py migrate
-RUN python manage.py loaddata tasks
+RUN python3 manage.py makemigrations
+RUN python3 manage.py migrate
+RUN python3 manage.py loaddata tasks
 EXPOSE 8000
-CMD python manage.py runserver 0.0.0.0:8000
+CMD python3 manage.py runserver 0.0.0.0:8000
