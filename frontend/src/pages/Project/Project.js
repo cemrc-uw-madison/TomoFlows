@@ -95,6 +95,7 @@ const Project = (props) => {
 	const [error, setError] = useState("");
 	const [success, setSuccess] = useState("");
 	const [searchParams, setSearchParams] = useSearchParams();
+	const [selectedDirectory, setSelectedDirectory] = useState("");
 	const navigate = useNavigate();
 	
 	useEffect(() => {
@@ -439,6 +440,10 @@ const Project = (props) => {
 		setTasks(newTasks);
 		setShowFilePicker(false);
 	}
+
+	const handleChangeselectDirectory = (idx) => event => {
+		tasks[selected].parameter_values[idx] = event.target.value;
+	};
 	
 	return (
 		<div className="Project">
@@ -687,6 +692,13 @@ const Project = (props) => {
 														<Folder />
 													</Button>
 												</InputGroup>
+												: item.type === "directoryType" ?
+												<div className="custom-select">
+													<select value={tasks[selected].parameter_values[idx] ?? "frames"} onChange={handleChangeselectDirectory(idx)}>
+														<option value="frames">frames</option>
+														<option value="stack">stack</option>
+													</select>
+												</div>
 												: <Form.Control
 													type={item.type}
 													value={tasks[selected].parameter_values[idx] ?? ""}
