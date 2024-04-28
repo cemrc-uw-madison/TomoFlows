@@ -15,6 +15,7 @@ import toast from 'react-hot-toast';
 import "./Project.css";
 import FolderPicker from "../../components/FolderPicker/FolderPicker";
 import FilePicker from "../../components/FilePicker/FilePicker";
+import Select from 'react-select'
 
 const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
 	<div
@@ -65,6 +66,11 @@ const CustomMenu = React.forwardRef((
 	);
 	}
 );
+
+const options = [
+	{ value: 'frames', label: 'frames' },
+	{ value: 'stack', label: 'stack' }
+]
 
 const formatDateTime = (date) => {
 	const optionsDate = { year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -442,7 +448,7 @@ const Project = (props) => {
 	}
 
 	const handleChangeselectDirectory = (idx) => event => {
-		tasks[selected].parameter_values[idx] = event.target.value;
+		tasks[selected].parameter_values[idx] = event.value;
 	};
 	
 	return (
@@ -693,12 +699,12 @@ const Project = (props) => {
 													</Button>
 												</InputGroup>
 												: item.type === "directoryType" ?
-												<div className="custom-select">
-													<select value={tasks[selected].parameter_values[idx] ?? "frames"} onChange={handleChangeselectDirectory(idx)}>
-														<option value="frames">frames</option>
-														<option value="stack">stack</option>
-													</select>
-												</div>
+												<Select styles={{
+													control: (baseStyles, state) => ({
+													  ...baseStyles,
+													  height: '31px',
+													}),
+												  }} options={options} onChange={handleChangeselectDirectory(idx)} />
 												: <Form.Control
 													type={item.type}
 													value={tasks[selected].parameter_values[idx] ?? ""}

@@ -120,7 +120,6 @@ def TaskList(request):
                 serializer.validated_data['parameter_fields'] = json.dumps([])
             serializer.save()
             data = serializer.data
-            print(data)
             data["parameter_fields"] = json.loads(data["parameter_fields"])
             return Response(data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -356,7 +355,7 @@ def GetDirectoryContents(request):
     if request.method == 'GET':
         path = request.query_params.get("path", "")
         data_path = os.path.join(os.path.abspath(os.path.dirname(__name__)), CONSTANTS.DATA_SUBFOLDER)
-        full_path = os.path.join(data_path, path)        
+        full_path = os.path.join(data_path, path)   
         if not full_path.startswith(data_path):
             return Response({'detail': 'Invalid path'}, status=status.HTTP_400_BAD_REQUEST)
         try:
