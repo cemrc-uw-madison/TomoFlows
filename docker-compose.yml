@@ -1,12 +1,16 @@
-version: '3.3'
+version: '3.9'
 services:
     tomoflows:
         image: tomoflows-img
-        # build:
-        #     context: .
-        #     dockerfile: Dockerfile
         container_name: tomoflows
         ports:
             - '8000:8000'
         volumes:
             - '/tmp/tomoflows:/home/tomoflows/data'
+        deploy:
+          resources:
+            reservations:
+              devices:
+                - driver: nvidia
+                  count: 1
+                  capabilities: [gpu]
