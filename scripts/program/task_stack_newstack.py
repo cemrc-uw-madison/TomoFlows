@@ -32,6 +32,8 @@ class TaskGenerateStack(Task):
         :param task_folder: where to create the task folder
         """
         self.task_folder = task_folder
+        self.parameters = {}
+        self.logs = []
 
     def name(self) -> str:
         return "Assemble stacks (newstack)"
@@ -130,6 +132,8 @@ class TaskGenerateStack(Task):
         """ Execute newstack for each tilt-series """
         # Input:
         #  - set of input files
+        self.logs = []
+        self.add_log("Running Newstack...")
 
         # Create a TaskDescription with parameters.
         task_meta = TaskDescription(self.name(), self.description())
@@ -138,6 +142,7 @@ class TaskGenerateStack(Task):
         # Create Task folder if missing.
         if not os.path.isdir(self.task_folder):
             os.makedirs(self.task_folder)
+
         # Serialize the Task description metatadata
         task_meta.save_to_json(os.path.join(self.task_folder, self.task_json))
 
@@ -190,5 +195,8 @@ class TaskGenerateStack(Task):
         #  Serialize the `result.json` metadata file that points to `imageset.json`
         results = TaskOutputDescription(self.name(), self.description())
         results.add_output_file(image_json_path, 'json')
+        self.add_log("Newstack task run completed successfully")
+        results.status = CONSTANTS.TASK_STATUS_SUCCESS
+        results.logs = self.logs
         results_json_path = os.path.join(self.task_folder, self.result_json)
         results.save_to_json(results_json_path)

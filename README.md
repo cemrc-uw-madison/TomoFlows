@@ -16,6 +16,8 @@ Ideally, TomoFlows would be installed on a Linux server or workstation with avai
 ### Docker with GPU support
 These instructions are for CentOS Linux environments.
 
+Install NVIDIA Drivers > 550.54.15, with CUDA 12.4 support.
+
 See instructions here [CentOS Docker Documentation](https://docs.docker.com/engine/install/centos/).
 
 1. Add the official Docker repository

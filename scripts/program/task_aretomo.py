@@ -34,7 +34,7 @@ class TaskAreTomo(Task):
         self.task_folder = task_folder
 
     def __runAreTomo(self, infile, outfile, AngFile=None, voltage=300, pixelSize=1.4, TiltRangePos=None, TiltRangeNeg=None, VolZ=1500, OutBin=4, TiltAxisAngle=None):
-        AreTomo = 'AreTomo'
+        AreTomo = 'AreTomo2'
         inputType = '-InMrc'
         outType = '-OutMrc'
 
@@ -193,4 +193,4 @@ class TaskAreTomo(Task):
         return 'Tomogram Generation (AreTomo)'
     
     def description(self) -> str:
-        return 'Build a tomogram for each stack with UCSF AreTomo'
+        return 'Build a tomogram for each stack with UCSF AreTomo2'
