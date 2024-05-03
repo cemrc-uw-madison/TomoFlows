@@ -124,7 +124,7 @@ class TaskMotionCor2(Task):
         
         args = self.__addArguments(args)
         # NOTE observed that EER processing results in a flip to be corrected.
-        command_prefix = '/bin/bash -c "source /usr/local/IMOD/IMOD-linux.sh && '
+        command_prefix = '/bin/bash -c "source ${IMOD_DIR}/IMOD-linux.sh && '
         run_result = subprocess.run(f'{command_prefix}{" ".join(args)}"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True, cwd=self.task_folder)
         output = run_result.stdout
         error = run_result.stderr
@@ -157,7 +157,7 @@ class TaskMotionCor2(Task):
 
         args = ['motioncor2', "-InTiff", in_tiff, "-OutMrc", out_mrc]
         args = self.__addArguments(args)
-        command_prefix = '/bin/bash -c "source /usr/local/IMOD/IMOD-linux.sh && '
+        command_prefix = '/bin/bash -c "source ${IMOD_DIR}/IMOD-linux.sh && '
         run_result = subprocess.run(f'{command_prefix}{" ".join(args)}"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True, cwd=self.task_folder)
         output = run_result.stdout
         error = run_result.stderr
@@ -190,7 +190,7 @@ class TaskMotionCor2(Task):
 
         args = ['motioncor2', "-InMRC", in_mrc, "-OutMrc", out_mrc]
         args = self.__addArguments(args)
-        command_prefix = '/bin/bash -c "source /usr/local/IMOD/IMOD-linux.sh && '
+        command_prefix = '/bin/bash -c "source ${IMOD_DIR}/IMOD-linux.sh && '
         run_result = subprocess.run(f'{command_prefix}{" ".join(args)}"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True, cwd=self.task_folder)
         output = run_result.stdout
         error = run_result.stderr

@@ -86,6 +86,7 @@ class TaskGenerateStack(Task):
             return
         else:
             print(str(outputFile) + ' will be created by newstack...')
+            command_prefix = '/bin/bash -c "source ${IMOD_DIR}/IMOD-linux.sh && '
             command = 'newstack'
             args = [ command,
             #    '-UseMdocFiles',
@@ -99,7 +100,9 @@ class TaskGenerateStack(Task):
                 args.append('-rotate')
                 args.append(postRotation)
 
-            subprocess.call(args)
+            # subprocess.call(args)
+            run_result = subprocess.run(f'{command_prefix}{" ".join(args)}"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True, cwd=self.task_folder)
+            return run_result
 
     def __alterHeader(self, stackFile, tiltAxisAngle, binning):
         """ Add a header text line describing the tilt axis angle """

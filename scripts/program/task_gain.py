@@ -75,7 +75,7 @@ class TaskGain(Task):
         # Skeleton
         infile = self.parameters['input_file']
         outfile = os.path.join(self.task_folder, infile.split("/")[-1].split(".")[0] + ".mrc")
-        command_prefix = '/bin/bash -c "source /usr/local/IMOD/IMOD-linux.sh && '
+        command_prefix = '/bin/bash -c "source ${IMOD_DIR}/IMOD-linux.sh && '
 
         # 1. Convert a format (DM4) to (MRC)
         command1 = 'dm2mrc'

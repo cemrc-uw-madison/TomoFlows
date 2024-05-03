@@ -41,6 +41,7 @@ RUN dnf -y install openssh-clients
 RUN dnf -y install java-1.8.0-openjdk
 RUN dnf -y install libxcb-devel libX11-xcb libXScrnSaver libxkbcommon-x11
 RUN sh imod_4.11.24_RHEL7-64_CUDA10.1.sh -debian -y
+ENV IMOD_DIR=/usr/local/imod_4.11.24
 RUN echo 'export IMOD_DIR="/usr/local/imod_4.11.24/"' >> /etc/bash.bashrc
 RUN echo 'export PATH="${IMOD_DIR}/bin:$PATH"' >> /etc/bash.bashrc
 RUN source /etc/bashrc
