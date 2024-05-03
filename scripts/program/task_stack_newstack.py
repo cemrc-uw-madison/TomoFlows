@@ -26,6 +26,7 @@ class TaskGenerateStack(Task):
 
     required_input_format = "mrc"
     required_output_format = "mrc"
+    parameter_keys = ["imageset"]
 
     def __init__(self, task_folder):
         """
@@ -126,10 +127,27 @@ class TaskGenerateStack(Task):
             
             # 2. Create new stack
             if complete:
-                self.__createNewStack(txt, tilt, outputStack)
-                # 3. TODO: incorporate `alterheader` to save the tiltAxisAngle and binning in the header.
+                run_result =  self.__createNewStack(txt, tilt, outputStack)
+                output = run_result.stdout
+                error = run_result.stderr
+                for line in output.split("\n"):
+                    if line and not line.isspace():
+                        self.add_log(line)
+                if run_result.returncode == 0:
+                    self.add_log("newstack command executed successfully")
+                else:
+                    self.add_log(f"newstack command failed with return code {run_result.returncode}")
+                    self.add_log("Assemble stacks (newstack) task run failed")
+                    results = TaskOutputDescription(self.name(), self.description())
+                    results.set_status(CONSTANTS.TASK_STATUS_FAILED)
+                    results.add_errors({"type": "ExecutionError", "detail": str(error)})
+                    results.logs = self.logs
+                    results_json_path = os.path.join(self.task_folder, self.result_json)
+                    results.save_to_json(results_json_path)
+                    return -1
             else:
-                print('tilt incomplete, skipping assembly: ' + tiltDirectory)
+                self.add_log('tilt incomplete, skipping assembly: ' + tiltDirectory)
+        return 0
 
     def run(self):
         """ Execute newstack for each tilt-series """
