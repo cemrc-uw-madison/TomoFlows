@@ -10,8 +10,8 @@ def sample_metadata():
     metadata = WorkflowMetadata()
 
     task1_params = {
-        "import_data": 'example_folder_path/',
-        "import_directory_type": "frames"
+        "data_directory": 'example_folder_path/',
+        "directory_type": "frames"
     }
 
     task2_params = {

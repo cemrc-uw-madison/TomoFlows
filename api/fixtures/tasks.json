@@ -14,7 +14,7 @@
         "fields": {
             "name": "Import",
             "description": "Import micrographs into a project",
-            "parameter_fields": "[{\"name\":\"Import Data\",\"type\":\"directory\",\"default\":null}, {\"name\":\"Import Directory Type\",\"type\":\"string\",\"default\":\"frames\"}]"
+            "parameter_fields": "[{\"name\":\"Data Directory\",\"type\":\"directory\",\"default\":null}, {\"name\":\"Directory Type\",\"type\":\"select\",\"default\":\"frames\",\"choices\":[\"frames\",\"stack\"]}]"
         }
     },
     {
@@ -23,34 +23,43 @@
         "fields": {
             "name": "Motion Correction (MotionCor2)",
             "description": "Motion Correction of micrographs via UCSF MotionCor2",
-            "parameter_fields": "[{\"name\":\"Micrographs\",\"type\":\"task\",\"default\":null},{\"name\":\"PixSize\",\"type\":\"integer\",\"default\":1.0},{\"name\":\"Patch\",\"type\":\"string\",\"default\":null},{\"name\":\"Iter\",\"type\":\"integer\",\"default\":10},{\"name\":\"Tol\",\"type\":\"integer\",\"default\":10},{\"name\":\"Gpu\",\"type\":\"string\",\"default\":null},{\"name\":\"Gain\",\"type\":\"string\",\"default\":null},{\"name\":\"RotGain\",\"type\":\"string\",\"default\":null},{\"name\":\"FlipGain\",\"type\":\"string\",\"default\":null},{\"name\":\"Throw\",\"type\":\"string\",\"default\":null},{\"name\":\"FtBin\",\"type\":\"string\",\"default\":null}]"
+            "parameter_fields": "[{\"name\":\"Micrographs\",\"type\":\"imageset\",\"default\":null},{\"name\":\"PixSize\",\"type\":\"number\",\"default\":1.0},{\"name\":\"Patch\",\"type\":\"string\",\"default\":null},{\"name\":\"Iter\",\"type\":\"number\",\"default\":10},{\"name\":\"Tol\",\"type\":\"number\",\"default\":10},{\"name\":\"Gpu\",\"type\":\"string\",\"default\":null},{\"name\":\"Gain\",\"type\":\"string\",\"default\":null},{\"name\":\"RotGain\",\"type\":\"string\",\"default\":null},{\"name\":\"FlipGain\",\"type\":\"string\",\"default\":null},{\"name\":\"Throw\",\"type\":\"string\",\"default\":null},{\"name\":\"FtBin\",\"type\":\"string\",\"default\":null}]"
         }
     },
     {
         "model": "api.Task",
         "pk": 4,
         "fields": {
-            "name": "CTF Estimation (Gctf)",
-            "description": "Perform CTF estimation for each micrograph with Gctf",
-            "parameter_fields": "[{\"name\":\"Micrographs\",\"type\":\"task\",\"default\":null}]"
+            "name": "Motion Correction (MotionCor3)",
+            "description": "Motion Correction of micrographs via CZII MotionCor3",
+            "parameter_fields": "[{\"name\":\"Micrographs\",\"type\":\"imageset\",\"default\":null},{\"name\":\"PixSize\",\"type\":\"number\",\"default\":1.0},{\"name\":\"Patch\",\"type\":\"string\",\"default\":null},{\"name\":\"Iter\",\"type\":\"number\",\"default\":10},{\"name\":\"Tol\",\"type\":\"number\",\"default\":10},{\"name\":\"Gpu\",\"type\":\"string\",\"default\":null},{\"name\":\"Gain\",\"type\":\"string\",\"default\":null},{\"name\":\"RotGain\",\"type\":\"string\",\"default\":null},{\"name\":\"FlipGain\",\"type\":\"string\",\"default\":null},{\"name\":\"Throw\",\"type\":\"string\",\"default\":null},{\"name\":\"FtBin\",\"type\":\"string\",\"default\":null}]"
         }
     },
     {
         "model": "api.Task",
         "pk": 5,
         "fields": {
-            "name": "Assemble stacks (newstack)",
-            "description": "Create ordered image stacks for each tilt-series'",
-            "parameter_fields": "[{\"name\":\"Micrographs\",\"type\":\"task\",\"default\":null}]"
+            "name": "CTF Estimation (Gctf)",
+            "description": "Perform CTF estimation for each micrograph with Gctf",
+            "parameter_fields": "[{\"name\":\"Micrographs\",\"type\":\"imageset\",\"default\":null}]"
         }
     },
     {
         "model": "api.Task",
         "pk": 6,
         "fields": {
+            "name": "Assemble stacks (newstack)",
+            "description": "Create ordered image stacks for each tilt-series'",
+            "parameter_fields": "[{\"name\":\"Micrographs\",\"type\":\"imageset\",\"default\":null}]"
+        }
+    },
+    {
+        "model": "api.Task",
+        "pk": 7,
+        "fields": {
             "name": "Tomogram Generation (AreTomo)",
             "description": "Build a tomogram for each stack with UCSF AreTomo",
-            "parameter_fields": "[{\"name\":\"Stacks\",\"type\":\"task\",\"default\":null}]"
+            "parameter_fields": "[{\"name\":\"Stacks\",\"type\":\"imageset\",\"default\":null}]"
         }
     }
   ]

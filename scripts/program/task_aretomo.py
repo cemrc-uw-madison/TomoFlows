@@ -26,6 +26,7 @@ class TaskAreTomo(Task):
 
     required_input_format = "mrc"
     required_output_format = "mrc"
+    parameter_keys = ["imageset", 'kV', 'PixSize', 'VolZ', 'AngFile', 'TiltAxisAngle']
 
     def __init__(self, task_folder):
         """
@@ -34,7 +35,7 @@ class TaskAreTomo(Task):
         self.task_folder = task_folder
 
     def __runAreTomo(self, infile, outfile, AngFile=None, voltage=300, pixelSize=1.4, TiltRangePos=None, TiltRangeNeg=None, VolZ=1500, OutBin=4, TiltAxisAngle=None):
-        AreTomo = 'AreTomo'
+        AreTomo = 'AreTomo2'
         inputType = '-InMrc'
         outType = '-OutMrc'
 
@@ -76,8 +77,28 @@ class TaskAreTomo(Task):
                 args.append('-TiltAxis')
                 args.append(str(TiltAxisAngle))
                 args.append(str(1)) # refine input angle at each tilt
-        
-            subprocess.call(args)
+            
+            # args = self.__addArguments(args)
+            command_prefix = 'env LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs/:$LD_LIBRARY_PATH /bin/bash -c "'
+            
+            run_result = subprocess.run(f'{command_prefix}{" ".join(args)}"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True, cwd=self.task_folder)
+            output = run_result.stdout
+            error = run_result.stderr
+            for line in output.split("\n"):
+                if line and not line.isspace():
+                    self.add_log(line)
+            if run_result.returncode == 0:
+                self.add_log("newstack command executed successfully")
+            else:
+                self.add_log(f"newstack command failed with return code {run_result.returncode}")
+                self.add_log("Assemble stacks (newstack) task run failed")
+                results = TaskOutputDescription(self.name(), self.description())
+                results.set_status(CONSTANTS.TASK_STATUS_FAILED)
+                results.add_errors({"type": "ExecutionError", "detail": str(error)})
+                results.logs = self.logs
+                results_json_path = os.path.join(self.task_folder, self.result_json)
+                results.save_to_json(results_json_path)
+                return -1
 
     def __batch_aretomo(self, imagesets):
         """
@@ -193,4 +214,4 @@ class TaskAreTomo(Task):
         return 'Tomogram Generation (AreTomo)'
     
     def description(self) -> str:
-        return 'Build a tomogram for each stack with UCSF AreTomo'
+        return 'Build a tomogram for each stack with UCSF AreTomo2'

@@ -1,0 +1,46 @@
+.TaskPill {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	height: 55px;
+	padding: 14px 15px;
+	min-width: 300px !important;
+	border: 1px solid #DEE2E6;
+	border-radius: 14px;
+	box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.1);
+	transition: box-shadow 0.2s;
+}
+
+.TaskPill:hover {
+	cursor: pointer;
+	box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.2);
+}
+
+.TaskPill.selected {
+	background: rgba(56, 2, 59, 0.08);
+	border: 1px solid rgba(56, 2, 59, 0.08);
+}
+
+.TaskPill h5 {
+	margin-bottom: 0px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 190px;
+}
+
+.TaskPill .id {
+	font-size: 11px;
+}
+
+.TaskPill.add-task svg {
+	color: #38023B;
+}
+
+.TaskPill .spinner-border {
+	width: 30px !important;
+	height: 30px !important;
+	margin: 0px !important;
+	color: #38023B !important; 
+}

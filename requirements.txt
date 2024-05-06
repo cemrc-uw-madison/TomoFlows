@@ -1,10 +1,10 @@
-asgiref==3.6.0
-astroid==2.15.0
+asgiref==3.5.2
+astroid==2.14.2
 attrs==22.2.0
 certifi==2022.12.7
 cffi==1.15.1
 cfgv==3.3.1
-charset-normalizer==3.1.0
+charset-normalizer==3.0.1
 cryptography==41.0.3
 defusedxml==0.7.1
 dill==0.3.6

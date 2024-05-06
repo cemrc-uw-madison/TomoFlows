@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Files, CheckCircle, ChevronBarLeft, ChevronBarRight, Folder, Hourglass, PencilSquare, PlayFill, PlusCircle, Trash, XCircle, FileEarmarkText } from "react-bootstrap-icons"
+import { ArrowLeft, ArrowRight, CheckCircle, ChevronBarLeft, ChevronBarRight, Folder, Hourglass, PencilSquare, PlayFill, PlusCircle, Trash, XCircle, FileEarmarkText, XLg } from "react-bootstrap-icons"
+import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import Container from "react-bootstrap/Container";
@@ -15,6 +16,8 @@ import toast from 'react-hot-toast';
 import "./Project.css";
 import FolderPicker from "../../components/FolderPicker/FolderPicker";
 import FilePicker from "../../components/FilePicker/FilePicker";
+import TaskDrop from "../../components/TaskDrop/TaskDrop";
+import TaskPill from "../../components/TaskPill/TaskPill";
 
 const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
 	<div
@@ -23,7 +26,7 @@ const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
 			e.preventDefault();
 			onClick(e);
 		}}
-		className="task-card add-task"
+		className="TaskPill add-task"
 	>
 		<small>Add Task to Project</small>
 		<PlusCircle size={30} />
@@ -73,7 +76,7 @@ const formatDateTime = (date) => {
 	const timeString = date.toLocaleTimeString('en-US', optionsTime);
   	const timeZone = date.toLocaleTimeString('en-US', { timeZoneName: 'short' }).split(' ')[2];
 	return `${dateString.replaceAll('/', '-')} ${timeString} ${timeZone}`;
-  }
+}
 
 const Project = (props) => {
 	const { id } = useParams();
@@ -95,7 +98,16 @@ const Project = (props) => {
 	const [error, setError] = useState("");
 	const [success, setSuccess] = useState("");
 	const [searchParams, setSearchParams] = useSearchParams();
+	const [activeDrag, setActiveDrag] = useState(null);
 	const navigate = useNavigate();
+	
+	const sensors = useSensors(
+		useSensor(PointerSensor, {
+			activationConstraint: {
+				distance: 0.2,
+			},
+		})
+	)
 	
 	useEffect(() => {
 		fetchProject(parseInt(searchParams.get("selected")));
@@ -151,7 +163,7 @@ const Project = (props) => {
 						setAllTasks(response.data);
 						setLoading(false);
 						setTimeout(() => {
-							let selectedDiv = document.querySelector(".task-card.selected")
+							let selectedDiv = document.querySelector(".TaskPill.selected")
 							if (selectedDiv)
 								selectedDiv.scrollIntoView({
 									behavior: "smooth",
@@ -440,6 +452,28 @@ const Project = (props) => {
 		setShowFilePicker(false);
 	}
 	
+	const handleDragStart = (event) => {
+		setActiveDrag(event.active.data.current);
+	}
+	
+	const handleDragEnd = (event) => {
+		let parameter_idx = event.over.id.split("_").pop();
+		let task = event.active.data.current.task;
+		let output_files = task.run.output_files;
+		let found = false;
+		for (let file of output_files) {
+			if (file.file_name.split("/").pop() === "imageset.json") {
+				let newTasks = JSON.parse(JSON.stringify(tasks));
+				newTasks[selected].parameter_values[parameter_idx] = file.file_name;
+				setTasks(newTasks)
+				found = true;
+				break;
+			}
+		}
+		if (!found) toast.error("Task doesn't contain output image sets. Try another one!");
+		setActiveDrag(task);
+	}
+	
 	return (
 		<div className="Project">
 			<Container>
@@ -447,7 +481,7 @@ const Project = (props) => {
 				<div className="div">
 					<Spinner animation="border" variant="primary" />
 				</div> :
-				<>	
+				<DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd} autoScroll={false}>
 					<div className="heading">
 						<div>
 							<h2><b>{project.name}</b></h2>
@@ -484,7 +518,7 @@ const Project = (props) => {
 									onClick={() => {
 										if (selected > 0)
 											setSelected(0)
-										let taskCardsDiv = document.querySelector(".task-cards");
+										let taskCardsDiv = document.querySelector(".task-pills");
 										taskCardsDiv.scrollTo({left: 0, behavior: 'smooth'});
 									}}
 								>	
@@ -497,7 +531,7 @@ const Project = (props) => {
 									onClick={() => {
 										if (selected > 0)
 											setSelected(selected => selected - 1)
-										let selectedDiv = document.querySelector(".task-card.selected")
+										let selectedDiv = document.querySelector(".TaskPill.selected")
 										if (selectedDiv)
 											selectedDiv.scrollIntoView({
 												behavior: "smooth",
@@ -515,7 +549,7 @@ const Project = (props) => {
 									onClick={() => {
 										if (selected < tasks.length - 1)
 											setSelected(selected => selected + 1)
-										let selectedDiv = document.querySelector(".task-card.selected")
+										let selectedDiv = document.querySelector(".TaskPill.selected")
 										if (selectedDiv)
 											selectedDiv.scrollIntoView({
 												behavior: "smooth",
@@ -533,7 +567,7 @@ const Project = (props) => {
 									onClick={() => {
 										if (selected < tasks.length - 1)
 											setSelected(tasks.length - 1)
-										let taskCardsDiv = document.querySelector(".task-cards");
+										let taskCardsDiv = document.querySelector(".task-pills");
 										taskCardsDiv.scrollTo({left: taskCardsDiv.scrollWidth, behavior: 'smooth'});
 									}}
 								>	
@@ -542,36 +576,9 @@ const Project = (props) => {
 							</div>
 						</div>
 						<Dropdown>
-							<div className="task-cards">
-								{	
-									tasks.map((task, idx) => 
-										<div 
-											onClick={() => setSelected(idx)}
-											className={"task-card " + (idx === selected ? "selected" : "")}
-											key={task.id}
-										>	
-											<div style={{display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "start"}}>
-												<h6 style={{width: 230, marginBottom: 0, whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>{task.task.name}</h6>
-												<small className="text-body-secondary id"><b>ID: {task.run.id}</b></small>
-											</div>
-											
-											{task.run.status === "FAILED" ?
-												<XCircle size={30} color="red"/> :
-											task.run.status === "SUCCESS" ?
-												<CheckCircle size={30} color="green"/> :
-											task.run.status === "CREATED" ?
-												<Hourglass size={25} color="black"/> :
-												<Spinner
-													className="running"
-													as="span"
-													animation="border"
-													size="sm"
-													role="status"
-													aria-hidden="true"
-												/>
-											}
-										</div>
-									)
+							<div className="task-pills">
+								{tasks.map((task, idx) =>
+									<TaskPill key={task.id} idx={idx} task={task} onClick={() => setSelected(idx)} selected={selected}></TaskPill>)
 								}
 								<Dropdown.Toggle as={CustomToggle} />
 							</div>
@@ -583,6 +590,11 @@ const Project = (props) => {
 								)}
 							</Dropdown.Menu>
 						</Dropdown>
+						<DragOverlay dropAnimation={null}>
+							{activeDrag ? (
+								<TaskPill overlay key={activeDrag.task.id} idx={activeDrag.idx} task={activeDrag.task} onClick={() => setSelected(activeDrag.idx)} selected={selected}></TaskPill> 
+							): null}
+						</DragOverlay>
 						{tasks[selected] && <div className="task-details">
 							<div className="heading">
 								<div>
@@ -661,6 +673,7 @@ const Project = (props) => {
 															value={tasks[selected].parameter_values[idx] ?? ""}
 															size="sm"
 															placeholder="select file"
+															style={{width: 319}}
 															readOnly
 														/>
 														<Button
@@ -672,21 +685,59 @@ const Project = (props) => {
 														</Button>
 													</InputGroup>
 												: item.type === "directory" ?
-												<InputGroup>
-													<Form.Control
-														value={tasks[selected].parameter_values[idx] ?? ""}
-														size="sm"
-														placeholder="select directory"
-														readOnly
-													/>
-													<Button
-														variant="outline-secondary"
-														size="sm"
-														onClick={() => {setShowFolderPicker(idx)}}
-													>
-														<Folder />
-													</Button>
-												</InputGroup>
+													<InputGroup>
+														<Form.Control
+															value={tasks[selected].parameter_values[idx] ?? ""}
+															size="sm"
+															placeholder="select directory"
+															style={{width: 319}}
+															readOnly
+														/>
+														<Button
+															variant="outline-secondary"
+															size="sm"
+															onClick={() => {setShowFolderPicker(idx)}}
+														>
+															<Folder />
+														</Button>
+													</InputGroup>
+												: item.type === "select" ?
+													<InputGroup>
+														<Form.Select
+															size="sm"
+															value={tasks[selected].parameter_values[idx] ?? ""}
+															onChange={(e) => {
+																let newTasks = JSON.parse(JSON.stringify(tasks));
+																newTasks[selected].parameter_values[idx] = e.target.value == "" ? null: e.target.value;
+																setTasks(newTasks)
+															}}
+														>
+															<option value="">Select</option>
+															{item.choices.map((val, idx) => <option value={val} key={idx}>{val}</option>)}
+														</Form.Select>
+													</InputGroup>
+												: item.type === "imageset" ?
+													tasks[selected].parameter_values[idx] ? 
+													<InputGroup>
+														<Form.Control
+															value={tasks[selected].parameter_values[idx]}
+															size="sm"
+															readOnly
+															style={{width: 319}}
+														/>
+														<Button
+															variant="outline-secondary"
+															size="sm"
+															onClick={() => {
+																let newTasks = JSON.parse(JSON.stringify(tasks));
+																newTasks[selected].parameter_values[idx] = null;
+																setTasks(newTasks)
+															}}
+														>
+															<XLg />
+														</Button>
+													</InputGroup>
+													: <TaskDrop idx={idx}></TaskDrop>
 												: <Form.Control
 													type={item.type}
 													value={tasks[selected].parameter_values[idx] ?? ""}
@@ -770,7 +821,7 @@ const Project = (props) => {
 							}
 						</div>}
 					</div>
-				</>
+				</DndContext>
 			}
 			</Container>
 			<Modal centered show={show} onHide={handleClose}>

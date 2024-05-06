@@ -1,0 +1,11 @@
+services:
+  gpu-test:
+    image: nvidia/cuda:12.4.1-devel-rockylinux9 
+    command: nvidia-smi
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            count: 1
+            capabilities: [gpu]

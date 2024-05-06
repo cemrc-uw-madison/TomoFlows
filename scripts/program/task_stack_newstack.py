@@ -26,12 +26,15 @@ class TaskGenerateStack(Task):
 
     required_input_format = "mrc"
     required_output_format = "mrc"
+    parameter_keys = ["imageset"]
 
     def __init__(self, task_folder):
         """
         :param task_folder: where to create the task folder
         """
         self.task_folder = task_folder
+        self.parameters = {}
+        self.logs = []
 
     def name(self) -> str:
         return "Assemble stacks (newstack)"
@@ -84,6 +87,7 @@ class TaskGenerateStack(Task):
             return
         else:
             print(str(outputFile) + ' will be created by newstack...')
+            command_prefix = '/bin/bash -c "source ${IMOD_DIR}/IMOD-linux.sh && '
             command = 'newstack'
             args = [ command,
             #    '-UseMdocFiles',
@@ -97,7 +101,9 @@ class TaskGenerateStack(Task):
                 args.append('-rotate')
                 args.append(postRotation)
 
-            subprocess.call(args)
+            # subprocess.call(args)
+            run_result = subprocess.run(f'{command_prefix}{" ".join(args)}"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True, cwd=self.task_folder)
+            return run_result
 
     def __alterHeader(self, stackFile, tiltAxisAngle, binning):
         """ Add a header text line describing the tilt axis angle """
@@ -121,15 +127,34 @@ class TaskGenerateStack(Task):
             
             # 2. Create new stack
             if complete:
-                self.__createNewStack(txt, tilt, outputStack)
-                # 3. TODO: incorporate `alterheader` to save the tiltAxisAngle and binning in the header.
+                run_result =  self.__createNewStack(txt, tilt, outputStack)
+                output = run_result.stdout
+                error = run_result.stderr
+                for line in output.split("\n"):
+                    if line and not line.isspace():
+                        self.add_log(line)
+                if run_result.returncode == 0:
+                    self.add_log("newstack command executed successfully")
+                else:
+                    self.add_log(f"newstack command failed with return code {run_result.returncode}")
+                    self.add_log("Assemble stacks (newstack) task run failed")
+                    results = TaskOutputDescription(self.name(), self.description())
+                    results.set_status(CONSTANTS.TASK_STATUS_FAILED)
+                    results.add_errors({"type": "ExecutionError", "detail": str(error)})
+                    results.logs = self.logs
+                    results_json_path = os.path.join(self.task_folder, self.result_json)
+                    results.save_to_json(results_json_path)
+                    return -1
             else:
-                print('tilt incomplete, skipping assembly: ' + tiltDirectory)
+                self.add_log('tilt incomplete, skipping assembly: ' + tiltDirectory)
+        return 0
 
     def run(self):
         """ Execute newstack for each tilt-series """
         # Input:
         #  - set of input files
+        self.logs = []
+        self.add_log("Running Newstack...")
 
         # Create a TaskDescription with parameters.
         task_meta = TaskDescription(self.name(), self.description())
@@ -138,6 +163,7 @@ class TaskGenerateStack(Task):
         # Create Task folder if missing.
         if not os.path.isdir(self.task_folder):
             os.makedirs(self.task_folder)
+
         # Serialize the Task description metatadata
         task_meta.save_to_json(os.path.join(self.task_folder, self.task_json))
 
@@ -190,5 +216,8 @@ class TaskGenerateStack(Task):
         #  Serialize the `result.json` metadata file that points to `imageset.json`
         results = TaskOutputDescription(self.name(), self.description())
         results.add_output_file(image_json_path, 'json')
+        self.add_log("Newstack task run completed successfully")
+        results.status = CONSTANTS.TASK_STATUS_SUCCESS
+        results.logs = self.logs
         results_json_path = os.path.join(self.task_folder, self.result_json)
         results.save_to_json(results_json_path)

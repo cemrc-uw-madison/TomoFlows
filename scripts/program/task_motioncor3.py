@@ -11,7 +11,7 @@ from scripts.program.task import Task
 import scripts.program.scripts_constants as CONSTANTS
 import scripts.program.processEER as processEER
 
-class TaskMotionCor2(Task):
+class TaskMotionCor3(Task):
     """
     This task would motion correct micrograph movies (MRC, TIF, or EER as valid input formats)
     """
@@ -94,7 +94,7 @@ class TaskMotionCor2(Task):
         else:
             print(str(out_mrc) + ' will be created by motionCor...')
 
-        args = ['motioncor2', "-InEER", in_eer, "-OutMrc", out_mrc]
+        args = ['motioncor3', "-InEER", in_eer, "-OutMrc", out_mrc]
 
         # EER processing requires an FmIntFile, by default we should auto-generate this.
         if 'FmIntFile' in self.parameters:
@@ -124,7 +124,7 @@ class TaskMotionCor2(Task):
         
         args = self.__addArguments(args)
         # NOTE observed that EER processing results in a flip to be corrected.
-        command_prefix = '/bin/bash -c "source ${IMOD_DIR}/IMOD-linux.sh && '
+        command_prefix = 'env LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs/:$LD_LIBRARY_PATH /bin/bash -c "'
         run_result = subprocess.run(f'{command_prefix}{" ".join(args)}"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True, cwd=self.task_folder)
         output = run_result.stdout
         error = run_result.stderr
@@ -132,11 +132,11 @@ class TaskMotionCor2(Task):
             if line and not line.isspace():
                 self.add_log(line)
         if run_result.returncode == 0:
-            self.add_log("motioncor2 command executed successfully")
+            self.add_log("motioncor3 command executed successfully")
             return 0
         else:
-            self.add_log(f"motioncor2 command failed with return code {run_result.returncode}")
-            self.add_log("Motion Correction (MotionCor2) task run failed")
+            self.add_log(f"motioncor3 command failed with return code {run_result.returncode}")
+            self.add_log("Motion Correction (MotionCor3) task run failed")
             results = TaskOutputDescription(self.name(), self.description())
             results.set_status(CONSTANTS.TASK_STATUS_FAILED)
             results.add_errors({"type": "ExecutionError", "detail": str(error)})
@@ -155,9 +155,9 @@ class TaskMotionCor2(Task):
         else:
             print(str(out_mrc) + ' will be created by motionCor...')
 
-        args = ['motioncor2', "-InTiff", in_tiff, "-OutMrc", out_mrc]
+        args = ['motioncor3', "-InTiff", in_tiff, "-OutMrc", out_mrc]
         args = self.__addArguments(args)
-        command_prefix = '/bin/bash -c "source ${IMOD_DIR}/IMOD-linux.sh && '
+        command_prefix = 'env LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs/:$LD_LIBRARY_PATH /bin/bash -c "'
         run_result = subprocess.run(f'{command_prefix}{" ".join(args)}"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True, cwd=self.task_folder)
         output = run_result.stdout
         error = run_result.stderr
@@ -165,11 +165,11 @@ class TaskMotionCor2(Task):
             if line and not line.isspace():
                 self.add_log(line)
         if run_result.returncode == 0:
-            self.add_log("motioncor2 command executed successfully")
+            self.add_log("motioncor3 command executed successfully")
             return 0
         else:
-            self.add_log(f"motioncor2 command failed with return code {run_result.returncode}")
-            self.add_log("Motion Correction (MotionCor2) task run failed")
+            self.add_log(f"motioncor3 command failed with return code {run_result.returncode}")
+            self.add_log("Motion Correction (MotionCor3) task run failed")
             results = TaskOutputDescription(self.name(), self.description())
             results.set_status(CONSTANTS.TASK_STATUS_FAILED)
             results.add_errors({"type": "ExecutionError", "detail": str(error)})
@@ -188,9 +188,9 @@ class TaskMotionCor2(Task):
         else:
             print(str(out_mrc) + ' will be created by motionCor...')
 
-        args = ['motioncor2', "-InMRC", in_mrc, "-OutMrc", out_mrc]
+        args = ['motioncor3', "-InMRC", in_mrc, "-OutMrc", out_mrc]
         args = self.__addArguments(args)
-        command_prefix = '/bin/bash -c "source ${IMOD_DIR}/IMOD-linux.sh && '
+        command_prefix = 'env LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs/:$LD_LIBRARY_PATH /bin/bash -c "'
         run_result = subprocess.run(f'{command_prefix}{" ".join(args)}"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True, cwd=self.task_folder)
         output = run_result.stdout
         error = run_result.stderr
@@ -198,11 +198,11 @@ class TaskMotionCor2(Task):
             if line and not line.isspace():
                 self.add_log(line)
         if run_result.returncode == 0:
-            self.add_log("motioncor2 command executed successfully")
+            self.add_log("motioncor3 command executed successfully")
             return 0
         else:
-            self.add_log(f"motioncor2 command failed with return code {run_result.returncode}")
-            self.add_log("Motion Correction (MotionCor2) task run failed")
+            self.add_log(f"motioncor3 command failed with return code {run_result.returncode}")
+            self.add_log("Motion Correction (MotionCor3) task run failed")
             results = TaskOutputDescription(self.name(), self.description())
             results.set_status(CONSTANTS.TASK_STATUS_FAILED)
             results.add_errors({"type": "ExecutionError", "detail": str(error)})
@@ -219,7 +219,7 @@ class TaskMotionCor2(Task):
         #  - options related to motion correction parameters
 
         self.logs = []
-        self.add_log("Running Motion Correction (MotionCor2)...")
+        self.add_log("Running Motion Correction (MotionCor3)...")
         if not os.path.isdir(self.task_folder):
             os.makedirs(self.task_folder)
             
@@ -238,7 +238,7 @@ class TaskMotionCor2(Task):
                 raise ValueError("Parameter 'Patch' is not provided")
         except ValueError as err:
             self.add_log("Parameter check failed: " + str(err))
-            self.add_log("Motion Correction (MotionCor2) task run failed")
+            self.add_log("Motion Correction (MotionCor3) task run failed")
             results = TaskOutputDescription(self.name(), self.description())
             results.set_status(CONSTANTS.TASK_STATUS_FAILED)
             results.add_errors({"type": "ValueError", "detail": str(err)})
@@ -341,14 +341,14 @@ class TaskMotionCor2(Task):
         self.add_log("Writing to results.json")
         results = TaskOutputDescription(self.name(), self.description())
         results.add_output_file(image_json_path, 'json')
-        self.add_log("Motion Correction (MotionCor2) task run completed successfully")
+        self.add_log("Motion Correction (MotionCor3) task run completed successfully")
         results.status = CONSTANTS.TASK_STATUS_SUCCESS
         results.logs = self.logs
         results_json_path = os.path.join(self.task_folder, self.result_json)
         results.save_to_json(results_json_path)
 
     def name(self) -> str:
-        return "Motion Correction (MotionCor2)"
+        return "Motion Correction (MotionCor3)"
 
     def description(self) -> str:
-        return 'Motion Correction of micrographs via UCSF MotionCor2'
+        return 'Motion Correction of micrographs via CZII MotionCor3'

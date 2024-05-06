@@ -17,10 +17,10 @@ def convertTifMrc(in_tif, out_mrc):
     if (os.path.exists(out_mrc)):
         print(out_mrc + ' output mrc already exists, will not convert tif')
     else: 
+        command_prefix = '/bin/bash -c "source ${IMOD_DIR}/IMOD-linux.sh && '
         executable= 'tif2mrc'
-        args = [executable, 
-            in_tif, out_mrc]
-        subprocess.call(args)
+        args = [executable, in_tif, out_mrc]
+        subprocess.run(f'{command_prefix}{" ".join(args)}"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
 
 def readMdoc(mdoc_filename):
     # The 'mdoc' metadata provides information for the total dose and pixel size.
@@ -37,7 +37,7 @@ def readMdoc(mdoc_filename):
             if 'ExposureDose' in frameDesc.nameVal:
                 opts.exposureDose = frameDesc.nameVal['ExposureDose']
         return opts
-    
+
     return None
 
 def prepareIntFile(in_eer, total_dose, out_fmintfile):
@@ -51,10 +51,11 @@ def prepareIntFile(in_eer, total_dose, out_fmintfile):
     #  Need to find the line starting with and pull out an integer value from this line.
     match_str = ' Number of columns, rows, sections .....'  # after this are 3 integers, frames is the 3rd.
     frames = None
-    stdout = subprocess.check_output(['header', in_eer]).decode('utf-8')
+    command_prefix = '/bin/bash -c "source ${IMOD_DIR}/IMOD-linux.sh && '
+    run_result = subprocess.run(f'{command_prefix}{" ".join(["header", in_eer])}"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
+    stdout = run_result.stdout
     lines = stdout.splitlines()
     for test in lines:
-        print('->' + test)
         if test.startswith(match_str):
             values = test.split(match_str)[1]
             numbers = values.split()
