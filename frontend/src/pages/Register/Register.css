@@ -13,13 +13,22 @@
 	width: 350px;
 }
 
+.register-board {
+	display: flex;
+	flex-direction: row;
+	height: 100%;
+}
+.register-info {
+	flex-grow: 1;
+}
 .register-form {
-	width: 350px;
+	flex-grow: 2;
 	margin: 20px auto;
 	margin-top: 40px;
 }
 
 .register-form input {
+	width: 70%;
 	margin-bottom: 20px;
 	background-color: #38023B;
 	border-color: white;
@@ -36,7 +45,9 @@
 }
 
 .register-form button {
-	width: 100%;
+	width: 30%;
+	justify-self: start;
+	display: grid;
 }
 
 .register-form button .spinner-border {
