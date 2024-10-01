@@ -319,30 +319,6 @@ def RunProjectTask(request, id):
         del data["run"]["project_task"]
         return Response(data)
     
-@api_view(['GET', 'PUT'])
-@permission_classes((permissions.IsAuthenticated,))
-def UserDetail(request):
-    """
-    GET, PUT /api/user
-    """
-    try:
-        user = User.objects.get(pk=request.user.id)
-    except User.DoesNotExist:
-        return Response({"detail": "User not found with given id"}, status=status.HTTP_404_NOT_FOUND)
-    
-    if request.method == 'GET':
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
-    elif request.method == 'PUT':
-        data = dict(request.data)
-        if 'email' in data:
-            del data['email']
-        data['email'] = request.user.email
-        serializer = UserSerializer(user, data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])

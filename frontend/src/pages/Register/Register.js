@@ -8,6 +8,7 @@ import Form from 'react-bootstrap/Form';
 import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
 import "./Register.css"
+import toast from 'react-hot-toast';
 
 /**
  * Register component that allows the user to create an account with their
@@ -36,25 +37,34 @@ const Register = (props) => {
 	const register = () => {
 		setLoading(true);
 		setError("");
+		let defaultPassword = "yP60&Xzj78o"
 		axios.post('/api/auth/register/', {
 			first_name: firstname,
 			last_name: lastname,
 			email: email,
-			labName: labName,
-			institutionName: institutionName
+			password1: defaultPassword,
+			password2: defaultPassword
 		})
 		.then(response => {
-			Cookies.set('auth-token', response.data.access_token)
-			Cookies.set('auth-user', JSON.stringify(response.data.user))
-			setEmail("");
-			setFirstname("");
-			setLastname("");
-			setLabName("");
-			setInstitutionName("");
-			setLoading(false);
-			navigate("/")
-		})
-		.catch(error => {
+			// Cookies.set('auth-token', response.data.access_token);
+			// Cookies.set('auth-user', JSON.stringify(response.data.user));
+			setLoading(true);
+			axios.post('/api/request-account', {
+				email: email,
+				labName: labName,
+				institutionName, institutionName,
+			}
+			).then(response => {
+				setEmail("");
+				setFirstname("");
+				setLastname("");
+				setLabName("");
+				setInstitutionName("");
+				setLoading(false);
+				navigate("/login");
+				toast.success('An request has been sent to admin user');
+			})
+		}).catch(error => {
 			console.error(error);
 			if (error.response.status == 400) {
 				if ("non_field_errors" in error.response.data) {
@@ -64,7 +74,7 @@ const Register = (props) => {
 					setEmail("");
 				} else if ("labName" in error.response.data) {
 					setError(error.response.data.labName[0]);
-				} else if ("insituionName" in error.response.data) {
+				} else if ("insitutionName" in error.response.data) {
 					setError(error.response.data.institutionName[0]);
 				} else {
 					setError("Something went wrong! Please try again later.");
@@ -76,6 +86,7 @@ const Register = (props) => {
 			}
 			setLoading(false);
 		});
+		
 	}
 	
 	return (

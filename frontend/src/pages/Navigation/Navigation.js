@@ -35,9 +35,10 @@ const Navigation = (props) => {
 	const [key, setKey] = useState("r4x")				// outlet key state
 	const location = useLocation();						// location hook
 	const navigate = useNavigate();						// navigation hook
-	
+	const [isAdmin, setIsAdmin] = useState(false);
 	useEffect(() => {
-		let token = Cookies.get('auth-token')
+		let token = Cookies.get('auth-token');
+		let user = JSON.parse(Cookies.get("auth-user"));
 		if (token) {
 			axios.get('/api/protected', {
 				headers: {
@@ -55,6 +56,11 @@ const Navigation = (props) => {
 					navigate("/login");
 				}
 				console.error(error);
+			})
+			axios.get('/api/is-admin', {params: {email: user.email}},  {headers: {
+				'Authorization': `Bearer ${token}`
+			}}).then(response => {
+				setIsAdmin(response.data);
 			})
 		} else {
 			Cookies.remove('auth-token');
@@ -132,7 +138,6 @@ const Navigation = (props) => {
 			setLoading(false)
 		});
 	}
-	
 	return (
 		<div className="Navigation">
 			<Navbar collapseOnSelect expand="sm" variant="dark">
@@ -155,6 +160,7 @@ const Navigation = (props) => {
 						>	
 							<Dropdown.Item onClick={() => setShow(true)}>Create Task</Dropdown.Item>
 							<Dropdown.Item href="/profile">Profile</Dropdown.Item>
+							{isAdmin && <Dropdown.Item href="/create-account">Create Account</Dropdown.Item>}
 							<Dropdown.Item href="/logout">Logout</Dropdown.Item>
 						</DropdownButton>
 					</Navbar.Collapse>

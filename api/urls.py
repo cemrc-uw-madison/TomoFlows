@@ -2,7 +2,8 @@ from django.urls import path, include
 from allauth.account.views import confirm_email
 # from django.conf.urls import url
 from django.contrib import admin
-from .views import Ping, Protected, ProjectList, ProjectDetail, TaskList, TaskDetail, ProjectTaskList, ProjectTaskDetail, RunProjectTask, UserDetail, GetDirectoryContents
+from .views import Ping, Protected, ProjectList, ProjectDetail, TaskList, TaskDetail, ProjectTaskList, ProjectTaskDetail, RunProjectTask, GetDirectoryContents
+from .views_user import UserDetail, CreateAccount, RequestAccount, IsAdmin
 
 urlpatterns = [
     path('ping', Ping),
@@ -17,7 +18,10 @@ urlpatterns = [
     path('project-tasks/<int:id>', ProjectTaskDetail),
     path('run-project-task/<int:id>', RunProjectTask),
     path('user', UserDetail),
-    path('get-directory-contents', GetDirectoryContents)
+    path('get-directory-contents', GetDirectoryContents),
+    path('create-account', CreateAccount),
+    path('request-account', RequestAccount),
+    path('is-admin', IsAdmin)
     # url(r'^account/', include('allauth.urls')),
     # url(r'^confirm-email/(?P<key>.+)/$', confirm_email, name='account_confirm_email'),
 ]

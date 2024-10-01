@@ -25,8 +25,9 @@ const Login = (props) => {
 	
 	/* hook to navigate to home if already authenticated */
 	useEffect(() => {
-		let token = Cookies.get('auth-token')
-		if (token) {
+		let token = Cookies.get('auth-token');
+		let user = Cookies.get('auth-user');
+		if (token && user) {
 			navigate("/");
 		}
 	}, [])

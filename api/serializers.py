@@ -6,7 +6,7 @@ from api.models import User, Project, Task, ProjectTask, Run
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name']
+        fields = ['id', 'email', 'first_name', 'last_name', 'labName', 'institutionName']
 
 class RegistrationSerializer(RegisterSerializer):
     first_name = serializers.CharField(required=False)
