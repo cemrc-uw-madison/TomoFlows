@@ -41,3 +41,13 @@ class Run(models.Model):
     logs = models.TextField("Logs", null=True, blank=True)
     errors = models.TextField("Errors", null=True, blank=True)
     output_files = models.TextField("Output Files", null=True, blank=True)
+
+class OneTimePassword(models.Model):
+    user_email = models.EmailField("Email Address", unique=True)
+    temp_password = models.CharField(null=True, max_length=20)
+
+class ProjectUser(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    read_permission = models.BooleanField(default=False)
+    write_permission = models.BooleanField(default=False)

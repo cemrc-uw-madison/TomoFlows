@@ -27,7 +27,20 @@ const Register = (props) => {
 	const [error, setError] = useState("")				// error response state
 	const [loading, setLoading] = useState(false)		// request loading state
 	const navigate = useNavigate();						// navigation hook
+	function generatePass() {
+		let pass = '';
+		let str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
+			'abcdefghijklmnopqrstuvwxyz0123456789@#$';
 	
+		for (let i = 1; i <= 8; i++) {
+			let char = Math.floor(Math.random()
+				* str.length + 1);
+	
+			pass += str.charAt(char)
+		}
+	
+		return pass;
+	}
 	/**
 	 * Calls the API with given email and password to create the user and
 	 * return the JSON Web Token (JWT) for the user and store it as a cookie,
@@ -37,13 +50,13 @@ const Register = (props) => {
 	const register = () => {
 		setLoading(true);
 		setError("");
-		let defaultPassword = "yP60&Xzj78o"
+		let tempPassword = generatePass();
 		axios.post('/api/auth/register/', {
 			first_name: firstname,
 			last_name: lastname,
 			email: email,
-			password1: defaultPassword,
-			password2: defaultPassword
+			password1: tempPassword,
+			password2: tempPassword
 		})
 		.then(response => {
 			// Cookies.set('auth-token', response.data.access_token);
@@ -53,6 +66,7 @@ const Register = (props) => {
 				email: email,
 				labName: labName,
 				institutionName, institutionName,
+				password: tempPassword
 			}
 			).then(response => {
 				setEmail("");

@@ -9,7 +9,7 @@ import os
 import json
 import threading
 import pytz
-from api.models import User, Project, Task, ProjectTask, Run
+from api.models import User, Project, Task, ProjectTask, Run, OneTimePassword
 from api.serializers import UserSerializer, ProjectSerializer, TaskSerializer, ProjectTaskSerializer, RunSerializer
 from api.taskwrapper import task_handler
 import scripts.program.scripts_constants as CONSTANTS
@@ -72,7 +72,9 @@ def RequestAccount(request):
             if not email or not labName or not institutionName:
                 return Response({"message": "missing user info!"}, status=status.HTTP_400_BAD_REQUEST)
             try:
+                password = request.data.get("password")
                 createdUser = User.objects.get(email=email)
+                OneTimePassword.objects.create(user_email=email, temp_password=password)
             except User.DoesNotExist:
                 return Response({"message": "User not found with given email"}, status=status.HTTP_404_NOT_FOUND)
             if createdUser.is_active == False and createdUser.created == False:
@@ -103,7 +105,8 @@ def CreateAccount(request):
             pendingUser.is_active = True
             pendingUser.created = True
             pendingUser.save()
-            return Response({"message": "account got approved"})
+            oneTimePassword = OneTimePassword.objects.get(user_email=email)
+            return Response({"message": "account got approved", "password": oneTimePassword.temp_password})
     except Exception as err:
         return Response({"message": f"Unexpected {err=}, {type(err)=}"})
 

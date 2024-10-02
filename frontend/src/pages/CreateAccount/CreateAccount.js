@@ -2,8 +2,11 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import React from 'react'
 import { useState, useEffect } from 'react'
+import Container from 'react-bootstrap/esm/Container';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import "./CreateAccount.css";
+
 const CreateAccount = () => {
   const [pendingAccounts, setPendingAccounts] = useState([]);
   let token = Cookies.get("auth-token");
@@ -33,19 +36,24 @@ const CreateAccount = () => {
     })
   }
   return (
-    <div>
-      {pendingAccounts.length > 0
-      ? pendingAccounts.map((pendingAccount)=>{
-        return (
-            <div key={pendingAccount.email}>
-                {pendingAccount.email}
-                <button onClick={approve} value={pendingAccount.email}>approve</button>
+    <div className='Requests'>
+        <Container>
+            <h2>Manage account requests</h2>
+            <div className='accordion'>
+                {pendingAccounts.length > 0
+                ? pendingAccounts.map((pendingAccount)=>{
+                    return (
+                        <div className='accordion-item' key={pendingAccount.email}>
+                            {pendingAccount.email}
+                            <button onClick={approve} value={pendingAccount.email}>approve</button>
+                        </div>
+                    )
+                })
+                :<text>
+                        No pending request
+                </text>}
             </div>
-        )
-      })
-      : <text>
-        no pending request
-        </text>}
+        </Container>
     </div>
   )
 }
