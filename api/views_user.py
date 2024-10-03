@@ -74,7 +74,8 @@ def RequestAccount(request):
             try:
                 password = request.data.get("password")
                 createdUser = User.objects.get(email=email)
-                OneTimePassword.objects.create(user_email=email, temp_password=password)
+                tempPassword = OneTimePassword.objects.create(user=createdUser, temp_password=password)
+                tempPassword.save()
             except User.DoesNotExist:
                 return Response({"message": "User not found with given email"}, status=status.HTTP_404_NOT_FOUND)
             if createdUser.is_active == False and createdUser.created == False:
@@ -105,8 +106,10 @@ def CreateAccount(request):
             pendingUser.is_active = True
             pendingUser.created = True
             pendingUser.save()
-            oneTimePassword = OneTimePassword.objects.get(user_email=email)
-            return Response({"message": "account got approved", "password": oneTimePassword.temp_password})
+            oneTimePassword = OneTimePassword.objects.get(user=pendingUser)
+            password = oneTimePassword.temp_password
+            oneTimePassword.delete()
+            return Response({"message": "account got approved", "password": password})
     except Exception as err:
         return Response({"message": f"Unexpected {err=}, {type(err)=}"})
 

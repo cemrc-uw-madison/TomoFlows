@@ -43,7 +43,7 @@ class Run(models.Model):
     output_files = models.TextField("Output Files", null=True, blank=True)
 
 class OneTimePassword(models.Model):
-    user_email = models.EmailField("Email Address", unique=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     temp_password = models.CharField(null=True, max_length=20)
 
 class ProjectUser(models.Model):

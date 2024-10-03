@@ -4,9 +4,10 @@ from api.models import User, Project, Task, ProjectTask, Run
 
 
 class UserSerializer(serializers.ModelSerializer):
+    date_joined = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'labName', 'institutionName']
+        fields = ['id', 'email', 'first_name', 'last_name', 'labName', 'institutionName', 'date_joined']
 
 class RegistrationSerializer(RegisterSerializer):
     first_name = serializers.CharField(required=False)
