@@ -59,8 +59,6 @@ const Register = (props) => {
 			password2: tempPassword
 		})
 		.then(response => {
-			// Cookies.set('auth-token', response.data.access_token);
-			// Cookies.set('auth-user', JSON.stringify(response.data.user));
 			setLoading(true);
 			axios.post('/api/request-account', {
 				email: email,

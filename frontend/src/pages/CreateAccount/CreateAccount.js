@@ -9,12 +9,16 @@ import "./CreateAccount.css";
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
-import { AccordionActions } from '@mui/material';
-import {Button} from '@mui/material';
-import {List, ListItem, ListItemText} from '@mui/material';
-
+import { AccordionActions, Typography } from '@mui/material';
+import { Button } from '@mui/material';
+import { List, ListItem, ListItemText} from '@mui/material';
+import { Divider } from '@mui/material';
+import Modal from 'react-bootstrap/Modal';
+import { Box } from '@mui/material';
 const CreateAccount = () => {
   const [pendingAccounts, setPendingAccounts] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [password, setPassword] = useState("");
   let token = Cookies.get("auth-token");
   const navigate = useNavigate();
   useEffect(()=>{
@@ -26,7 +30,15 @@ const CreateAccount = () => {
     }).then(response=>{
         setPendingAccounts(response.data);
     })
+   }
+   if (localStorage.getItem("approveStatus")) {
+    toast.success("account got approved");
+    localStorage.removeItem("approveStatus");
    } 
+   if (localStorage.getItem("rejectStatus")) {
+    toast.success("account got rejected");
+    localStorage.removeItem("rejectStatus");
+   }
   }, [])
   const approve = (e) => {
     if (window.confirm("Do you want to approve this account?")) {
@@ -38,16 +50,30 @@ const CreateAccount = () => {
                 'Authorization': `Bearer ${token}`
             }
         }).then(response=>{
-            toast.success(response.data["message"] + `\nuser password is ${response.data["password"]}`);
-
-            // window.location.reload();
+            localStorage.setItem("approveStatus", "1");
+            setPassword(response.data["password"]);
+            setOpen(true);
         })
     }
   }
-  
+
+  const handleClose = () => {
+    window.location.reload();
+  }
+
   const reject= (e) => {
     if (window.confirm("Do you want to reject this account?")) {
-
+        let email = e.currentTarget.value;
+        axios.delete("/api/create-account", {
+            params: {email: email}
+        }, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }).then(response=>{
+            localStorage.setItem("rejectStatus", "1");
+            window.location.reload();
+        })
     }
   }
 
@@ -55,8 +81,13 @@ const CreateAccount = () => {
     <div className='requests'>
         <Container>
             
-            <h2>Manage account requests</h2>
+            <h2 id="request-header">Manage account requests</h2>
             <div className='accordion' id="request-accordion">
+               <Modal centered show={open} onHide={handleClose}>
+                <Modal.Body>
+                    <Typography>Password for this account is {password}</Typography>
+                </Modal.Body>
+               </Modal>
                 {pendingAccounts.length > 0
                 ? pendingAccounts.map((pendingAccount)=>{
                     return (
@@ -68,23 +99,25 @@ const CreateAccount = () => {
                             </AccordionSummary>
                             <AccordionDetails>
                                 <List>
+                                    <Divider sx={{opacity: 1}}/>
                                     <ListItem>First Name: {pendingAccount.first_name}</ListItem>
                                     <ListItem>Last Name: {pendingAccount.last_name}</ListItem>
                                     <ListItem>Email Address: {pendingAccount.email}</ListItem>
                                     <ListItem>Lab Name: {pendingAccount.labName}</ListItem>
                                     <ListItem>Institution Name: {pendingAccount.institutionName}</ListItem>
+                                    <Divider sx={{opacity: 1}}/>
                                 </List>
                                 <AccordionActions>
-                                    <Button variant="contained" color="error" onClick={reject}>Reject</Button>
-                                    <Button variant="contained" color="success" onClick={approve} value={pendingAccount.email} data-toggle="confirmation">Approve</Button>
+                                    <Button variant="contained" color="error" onClick={reject} value={pendingAccount.email}>Reject</Button>
+                                    <Button variant="contained" color="success" onClick={approve} value={pendingAccount.email}>Approve</Button>
                                 </AccordionActions>
                             </AccordionDetails>
                         </Accordion>
                     )
                 })
-                :<text>
-                        No pending request
-                </text>}
+                :<Typography>
+                        No pending requests
+                </Typography>}
             </div>
         </Container>
     </div>

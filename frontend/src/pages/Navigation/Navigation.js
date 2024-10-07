@@ -161,6 +161,7 @@ const Navigation = (props) => {
 							<Dropdown.Item onClick={() => setShow(true)}>Create Task</Dropdown.Item>
 							<Dropdown.Item href="/profile">Profile</Dropdown.Item>
 							{isAdmin && <Dropdown.Item href="/create-account">Create Account</Dropdown.Item>}
+							<Dropdown.Item href="/reset-password">Reset Password</Dropdown.Item>
 							<Dropdown.Item href="/logout">Logout</Dropdown.Item>
 						</DropdownButton>
 					</Navbar.Collapse>

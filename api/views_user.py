@@ -88,7 +88,7 @@ def RequestAccount(request):
     except Exception as err:
         return Response({"message": f"Unexpected {err=}, {type(err)=}"})
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'DELETE'])
 @permission_classes((permissions.IsAuthenticated, permissions.IsAdminUser, ))
 def CreateAccount(request):
     """
@@ -108,8 +108,14 @@ def CreateAccount(request):
             pendingUser.save()
             oneTimePassword = OneTimePassword.objects.get(user=pendingUser)
             password = oneTimePassword.temp_password
-            oneTimePassword.delete()
             return Response({"message": "account got approved", "password": password})
+        elif request.method == 'DELETE':
+            email = request.query_params["email"]
+            pendingUser = User.objects.get(email=email)
+            pendingUser.delete()
+            return Response({"message": "account got rejected"})
     except Exception as err:
         return Response({"message": f"Unexpected {err=}, {type(err)=}"})
+
+
 

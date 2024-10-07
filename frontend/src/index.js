@@ -16,6 +16,7 @@ import Project from "./pages/Project/Project";
 import Tasks from "./pages/Tasks/Tasks";
 import Profile from "./pages/Profile/Profile";
 import CreateAccount from "./pages/CreateAccount/CreateAccount";
+import ResetPassword from "./pages/ResetPassword/ResetPassword";
 
 /* React-Router-Dom Routing Configuration */
 const router = createBrowserRouter([
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
 			{
 				path: "create-account",
 				element: <CreateAccount/>
+			},
+			{
+				path: "reset-password",
+				element: <ResetPassword/>
 			}
 		]
 	},
