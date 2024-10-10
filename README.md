@@ -10,6 +10,16 @@ See [Design Documentation](scripts/Documentation/Design/index.md)
 
 Ideally, TomoFlows would be installed on a Linux server or workstation with available NVIDIA GPUs (NVIDIA GTX 1080 or newer generations of GPU supported by CUDA).
 
+## Running on Podman
+These instructions are for RHEL and Rocky Linux environments, and using the Podman container environment. Full functionality for the application requires a CUDA compatible NVIDIA GPU and GPU support in Podman. [NVIDIA Container Toolkit](https://docs.nvidia.com/ai-enterprise/deployment-guide-rhel-with-kvm/0.1.0/podman.html).
+
+Install these packages:
+
+`sudo dnf install -y podman`
+`sudo dnf install -y podman-compose`
+
+--- Below instructions to be deprecated and removed. Docker-CE is still allowed software, these adaptations may not be necessary ---
+
 ## Running on Docker
 1. Install Docker: See [Docker Documentation](https://docs.docker.com/get-docker/). Full functionality for this application requires a CUDA compatible NVIDIA GPU, and Docker to be configured with GPU support.
 

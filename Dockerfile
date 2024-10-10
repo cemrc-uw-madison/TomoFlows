@@ -1,7 +1,8 @@
 # base image  
 FROM nvidia/cuda:12.4.1-devel-rockylinux9
 RUN dnf update -y
-SHELL ["/bin/bash", "-c"]
+# SHELL is not supported for OCI image format
+# SHELL ["/bin/bash", "-c"]
 
 # set environment variables and work directory
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -14,6 +15,7 @@ RUN mkdir -p $DataDir
 WORKDIR $DjangoDir
 
 # Install common dependencies
+RUN dnf -y install file
 RUN dnf -y install wget
 RUN dnf -y install python3
 RUN dnf -y install python3-pip
@@ -27,7 +29,8 @@ RUN curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x8
 RUN rpm --import https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/D42D0685.pub
 
 # Install the CUDA Toolkit and development files 
-RUN dnf install -y cuda
+# Base image should already have CUDA 12.4.1 pre-installed.
+# RUN dnf install -y cuda
 
 # Install IMOD 
 RUN wget http://bio3d.colorado.edu/imod/AMD64-RHEL5/imod_4.11.24_RHEL7-64_CUDA10.1.sh
