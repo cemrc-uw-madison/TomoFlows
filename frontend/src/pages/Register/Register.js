@@ -23,24 +23,12 @@ const Register = (props) => {
 	const [lastname, setLastname] = useState("")		// lastname input state
 	const [labName, setLabName] = useState("")		// lab name input state
 	const [institutionName, setInstitutionName] = useState("")		// institution name state
-
+	const [password1, setPassword1] = useState("");
+	const [password2, setPassword2] = useState("");
 	const [error, setError] = useState("")				// error response state
 	const [loading, setLoading] = useState(false)		// request loading state
 	const navigate = useNavigate();						// navigation hook
-	function generatePass() {
-		let pass = '';
-		let str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
-			'abcdefghijklmnopqrstuvwxyz0123456789@#$';
 	
-		for (let i = 1; i <= 10; i++) {
-			let char = Math.floor(Math.random()
-				* str.length + 1);
-	
-			pass += str.charAt(char)
-		}
-	
-		return pass;
-	}
 	/**
 	 * Calls the API with given email and password to create the user and
 	 * return the JSON Web Token (JWT) for the user and store it as a cookie,
@@ -50,13 +38,12 @@ const Register = (props) => {
 	const register = () => {
 		setLoading(true);
 		setError("");
-		let tempPassword = generatePass();
 		axios.post('/api/auth/register/', {
 			first_name: firstname,
 			last_name: lastname,
 			email: email,
-			password1: tempPassword,
-			password2: tempPassword
+			password1: password1,
+			password2: password2
 		})
 		.then(response => {
 			setLoading(true);
@@ -64,7 +51,6 @@ const Register = (props) => {
 				email: email,
 				labName: labName,
 				institutionName, institutionName,
-				password: tempPassword
 			}
 			).then(response => {
 				setEmail("");
@@ -129,7 +115,9 @@ const Register = (props) => {
 						<Form.Control value={lastname} onChange={e => setLastname(e.target.value)} placeholder="Last name" />
 						<Form.Control value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" />
 						<Form.Control value={labName} onChange={e => setLabName(e.target.value)} placeholder="Lab Name" />
-						<Form.Control value={institutionName} onChange={e => setInstitutionName(e.target.value)} placeholder="Institution Name" onKeyDown={(e) => e.key === 'Enter' && register()}/>
+						<Form.Control value={institutionName} onChange={e => setInstitutionName(e.target.value)} placeholder="Institution Name" />
+						<Form.Control value={password1} onChange={e => setPassword1(e.target.value)} placeholder="Password"/>
+						<Form.Control value={password2} onChange={e => setPassword2(e.target.value)} placeholder="Confirm Password" onKeyDown={(e) => e.key === 'Enter' && register()}/>
 						<Button disabled={loading || firstname.length == 0 || lastname.length == 0 || email.length == 0 || labName.length == 0 || institutionName.length == 0} onClick={register} variant="light">
 							{loading ?
 							<Spinner
