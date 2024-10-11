@@ -58,6 +58,8 @@ const Register = (props) => {
 				setLastname("");
 				setLabName("");
 				setInstitutionName("");
+				setPassword1("");
+				setPassword2("");
 				setLoading(false);
 				navigate("/login");
 				toast.success('An request has been sent to admin user');
@@ -116,8 +118,8 @@ const Register = (props) => {
 						<Form.Control value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" />
 						<Form.Control value={labName} onChange={e => setLabName(e.target.value)} placeholder="Lab Name" />
 						<Form.Control value={institutionName} onChange={e => setInstitutionName(e.target.value)} placeholder="Institution Name" />
-						<Form.Control value={password1} onChange={e => setPassword1(e.target.value)} placeholder="Password"/>
-						<Form.Control value={password2} onChange={e => setPassword2(e.target.value)} placeholder="Confirm Password" onKeyDown={(e) => e.key === 'Enter' && register()}/>
+						<Form.Control value={password1} onChange={e => setPassword1(e.target.value)} placeholder="Password" type="password"/>
+						<Form.Control value={password2} onChange={e => setPassword2(e.target.value)} placeholder="Confirm Password" onKeyDown={(e) => e.key === 'Enter' && register()} type="password"/>
 						<Button disabled={loading || firstname.length == 0 || lastname.length == 0 || email.length == 0 || labName.length == 0 || institutionName.length == 0} onClick={register} variant="light">
 							{loading ?
 							<Spinner
