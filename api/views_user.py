@@ -112,5 +112,17 @@ def CreateAccount(request):
     except Exception as err:
         return Response({"message": f"Unexpected {err=}, {type(err)=}"})
 
-
-
+@api_view(['GET',])
+@permission_classes((permissions.IsAuthenticated,))
+def ActiveUserList(request):
+    """
+    GET /api/active-userlist
+    """
+    try:
+        if request.method == 'GET':
+            activeCond = Q(is_active=True) & Q(created=True)
+            activeUser = User.objects.filter(activeCond)
+            serializer = UserSerializer(activeUser, many=True)
+            return Response(serializer.data[::-1])
+    except Exception as err:
+        return Response({"message": f"Unexpected {err=}, {type(err)=}"})

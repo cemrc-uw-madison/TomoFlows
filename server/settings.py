@@ -163,6 +163,7 @@ REST_AUTH = {
     'USER_DETAILS_SERIALIZER': 'api.serializers.UserSerializer',
     'REGISTER_SERIALIZER': 'api.serializers.RegistrationSerializer',
     'OLD_PASSWORD_FIELD_ENABLED': True,
+    'LOGIN_SERIALIZER': 'api.serializers.CustomLoginSerializer',
 }
 
 

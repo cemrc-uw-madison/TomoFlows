@@ -3,7 +3,7 @@ from allauth.account.views import confirm_email
 # from django.conf.urls import url
 from django.contrib import admin
 from .views import Ping, Protected, ProjectList, ProjectDetail, TaskList, TaskDetail, ProjectTaskList, ProjectTaskDetail, RunProjectTask, GetDirectoryContents
-from .views_user import UserDetail, CreateAccount, RequestAccount, IsAdmin
+from .views_user import UserDetail, CreateAccount, RequestAccount, IsAdmin, ActiveUserList
 
 urlpatterns = [
     path('ping', Ping),
@@ -21,7 +21,8 @@ urlpatterns = [
     path('get-directory-contents', GetDirectoryContents),
     path('create-account', CreateAccount),
     path('request-account', RequestAccount),
-    path('is-admin', IsAdmin)
+    path('is-admin', IsAdmin),
+    path('active-userlist', ActiveUserList),
     # url(r'^account/', include('allauth.urls')),
     # url(r'^confirm-email/(?P<key>.+)/$', confirm_email, name='account_confirm_email'),
 ]

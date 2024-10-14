@@ -17,6 +17,7 @@ import Modal from 'react-bootstrap/Modal';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import { Box } from '@mui/material';
+import { Windows } from 'react-bootstrap-icons';
 
 const ManageAccount = () => {
   const [pendingAccounts, setPendingAccounts] = useState([]);
@@ -60,12 +61,9 @@ const ManageAccount = () => {
             }
         }).then(response=>{
             localStorage.setItem("approveStatus", "1");
+            window.location.reload();
         })
     }
-  }
-
-  const handleClose = () => {
-    window.location.reload();
   }
 
   const reject= (e) => {
