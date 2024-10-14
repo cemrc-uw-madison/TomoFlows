@@ -1,4 +1,8 @@
 ### Python template
+# macos
+.DS_Store
+# migration files
+api/migrations/*
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

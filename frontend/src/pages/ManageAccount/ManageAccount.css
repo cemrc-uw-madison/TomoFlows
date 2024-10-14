@@ -1,0 +1,12 @@
+#request-header {
+    margin-bottom: 20px;
+}
+
+#request-accordion {
+    margin-bottom: 20px;
+}
+.accordion-summary {
+    display: flex;
+    flex: 2;
+    flex-grow: 1;
+}

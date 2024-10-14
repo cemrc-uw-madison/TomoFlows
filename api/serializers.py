@@ -1,12 +1,31 @@
-from rest_framework import serializers
+from rest_framework import serializers, exceptions
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from api.models import User, Project, Task, ProjectTask, Run
-
+from dj_rest_auth.serializers import LoginSerializer
 
 class UserSerializer(serializers.ModelSerializer):
+    date_joined = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name']
+        fields = ['id', 'email', 'first_name', 'last_name', 'labName', 'institutionName', 'date_joined']
+
+class CustomLoginSerializer(LoginSerializer):
+    def _validate_created(self, email):
+        if email:
+            try:
+                user = User.objects.get(email=email)
+                if not user.created and not user.is_superuser:
+                    return None
+                else:
+                    return user
+            except:
+                raise exceptions.ValidationError("User does not exist")
+            
+    def validate(self, attrs):
+        user = self._validate_created(attrs.get("email"))
+        if not user:
+            raise exceptions.ValidationError("Request is pending, please contact the admin")
+        return super().validate(attrs)
 
 class RegistrationSerializer(RegisterSerializer):
     first_name = serializers.CharField(required=False)

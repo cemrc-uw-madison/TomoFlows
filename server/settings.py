@@ -98,7 +98,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'server.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
@@ -162,8 +161,11 @@ REST_AUTH = {
     'JWT_AUTH_COOKIE': 'tf-auth-token',
     'JWT_AUTH_REFRESH_COOKIE': 'tf-refresh-token',
     'USER_DETAILS_SERIALIZER': 'api.serializers.UserSerializer',
-    'REGISTER_SERIALIZER': 'api.serializers.RegistrationSerializer'
+    'REGISTER_SERIALIZER': 'api.serializers.RegistrationSerializer',
+    'OLD_PASSWORD_FIELD_ENABLED': True,
+    'LOGIN_SERIALIZER': 'api.serializers.CustomLoginSerializer',
 }
+
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=10),

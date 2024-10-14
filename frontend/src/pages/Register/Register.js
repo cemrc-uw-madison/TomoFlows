@@ -8,6 +8,7 @@ import Form from 'react-bootstrap/Form';
 import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
 import "./Register.css"
+import toast from 'react-hot-toast';
 
 /**
  * Register component that allows the user to create an account with their
@@ -20,8 +21,10 @@ const Register = (props) => {
 	const [email, setEmail] = useState("")				// email input state
 	const [firstname, setFirstname] = useState("")		// firstname input state
 	const [lastname, setLastname] = useState("")		// lastname input state
-	const [password1, setPassword1] = useState("")		// password input state
-	const [password2, setPassword2] = useState("")		// confirm password state
+	const [labName, setLabName] = useState("")		// lab name input state
+	const [institutionName, setInstitutionName] = useState("")		// institution name state
+	const [password1, setPassword1] = useState("");
+	const [password2, setPassword2] = useState("");
 	const [error, setError] = useState("")				// error response state
 	const [loading, setLoading] = useState(false)		// request loading state
 	const navigate = useNavigate();						// navigation hook
@@ -43,29 +46,40 @@ const Register = (props) => {
 			password2: password2
 		})
 		.then(response => {
-			Cookies.set('auth-token', response.data.access_token)
-			Cookies.set('auth-user', JSON.stringify(response.data.user))
-			setEmail("");
-			setFirstname("");
-			setLastname("");
-			setPassword1("");
-			setPassword2("");
-			setLoading(false);
-			navigate("/")
-		})
-		.catch(error => {
-			console.error(error);
+			setLoading(true);
+			axios.post('/api/request-account', {
+				email: email,
+				labName: labName,
+				institutionName, institutionName,
+			}
+			).then(response => {
+				setEmail("");
+				setFirstname("");
+				setLastname("");
+				setLabName("");
+				setInstitutionName("");
+				setPassword1("");
+				setPassword2("");
+				setLoading(false);
+				navigate("/login");
+				toast.success('An request has been sent to admin user');
+			})
+		}).catch(error => {
 			if (error.response.status == 400) {
 				if ("non_field_errors" in error.response.data) {
 					setError(error.response.data.non_field_errors[0]);
 				} else if ("email" in error.response.data) {
 					setError(error.response.data.email[0]);
 					setEmail("");
+				} else if ("labName" in error.response.data) {
+					setError(error.response.data.labName[0]);
+				} else if ("insitutionName" in error.response.data) {
+					setError(error.response.data.institutionName[0]);
 				} else if ("password1" in error.response.data) {
 					setError(error.response.data.password1[0]);
 				} else if ("password2" in error.response.data) {
 					setError(error.response.data.password2[0]);
-				} else {
+				} else else {
 					setError("Something went wrong! Please try again later.");
 				}
 			} else if (error.response.status == 401) {
@@ -73,10 +87,9 @@ const Register = (props) => {
 			} else {
 				setError("Something went wrong! Please try again later.")
 			}
-			setPassword1("");
-			setPassword2("");
 			setLoading(false);
 		});
+		
 	}
 	
 	return (
@@ -90,27 +103,40 @@ const Register = (props) => {
 				`}</style>
             </Helmet>
 			<h1><b>TomoFlows</b></h1>
-			<p className="lead">
-				Create an account
-			</p>
-			<div className="register-form">
-				<Form.Control value={firstname} onChange={e => setFirstname(e.target.value)} placeholder="Enter first name" />
-				<Form.Control value={lastname} onChange={e => setLastname(e.target.value)} placeholder="Enter last name" />
-				<Form.Control value={email} onChange={e => setEmail(e.target.value)} placeholder="Enter email" />
-				<Form.Control value={password1} onChange={e => setPassword1(e.target.value)} type="password" placeholder="Enter password" />
-				<Form.Control value={password2} onChange={e => setPassword2(e.target.value)} type="password" placeholder="Confirm password" onKeyDown={(e) => e.key === 'Enter' && register()}/>
-				<Button disabled={loading || email.length == 0 || password1.length == 0 || password2.length == 0} onClick={register} variant="light">
-					{loading ?
-					<Spinner
-						as="span"
-						animation="border"
-						size="sm"
-						role="status"
-						aria-hidden="true"
-					/> :
-					"Register"}
-				</Button>
+			
+			<div className="register-board">
+				<div className="register-info">
+					<section>
+						<h1 className="lead">
+							Request an account
+						</h1>
+						<p>
+							Get your TomoFlows account info placeholder 
+						</p>
+					</section>
+				</div>
+				<div className="register-form">
+						<Form.Control value={firstname} onChange={e => setFirstname(e.target.value)} placeholder="First name" />
+						<Form.Control value={lastname} onChange={e => setLastname(e.target.value)} placeholder="Last name" />
+						<Form.Control value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" />
+						<Form.Control value={labName} onChange={e => setLabName(e.target.value)} placeholder="Lab Name" />
+						<Form.Control value={institutionName} onChange={e => setInstitutionName(e.target.value)} placeholder="Institution Name" />
+						<Form.Control value={password1} onChange={e => setPassword1(e.target.value)} placeholder="Password" type="password"/>
+						<Form.Control value={password2} onChange={e => setPassword2(e.target.value)} placeholder="Confirm Password" onKeyDown={(e) => e.key === 'Enter' && register()} type="password"/>
+						<Button disabled={loading || firstname.length == 0 || lastname.length == 0 || email.length == 0 || labName.length == 0 || institutionName.length == 0} onClick={register} variant="light">
+							{loading ?
+							<Spinner
+								as="span"
+								animation="border"
+								size="sm"
+								role="status"
+								aria-hidden="true"
+							/> :
+							"Request"}
+						</Button>
+				</div>
 			</div>
+			
 			<p><small>Already have an account? <Link to={"/login"}>Log in</Link></small></p>
 			{error.length != 0 ? 
 				<Alert variant="danger" onClose={() => setError("")} dismissible>

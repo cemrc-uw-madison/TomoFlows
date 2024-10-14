@@ -9,10 +9,12 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
     objects = UserManager()
     email = models.EmailField("Email Address", unique=True)
-
+    labName = models.CharField(default="Unknown", max_length=50)
+    institutionName = models.CharField(default="Unknown", max_length=50)
+    created = models.BooleanField(default=False)
     def __str__(self):
         return self.email
-    
+
 class Project(models.Model):
     name = models.CharField("Name", max_length=25, unique=True)
     description = models.CharField("Description", max_length=100)
@@ -39,3 +41,9 @@ class Run(models.Model):
     logs = models.TextField("Logs", null=True, blank=True)
     errors = models.TextField("Errors", null=True, blank=True)
     output_files = models.TextField("Output Files", null=True, blank=True)
+
+class ProjectUser(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    read_permission = models.BooleanField(default=False)
+    write_permission = models.BooleanField(default=False)
