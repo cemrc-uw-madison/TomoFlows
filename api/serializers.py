@@ -14,7 +14,7 @@ class CustomLoginSerializer(LoginSerializer):
         if email:
             try:
                 user = User.objects.get(email=email)
-                if not user.created && not user.is_superuser:
+                if not user.created and not user.is_superuser:
                     return None
                 else:
                     return user
