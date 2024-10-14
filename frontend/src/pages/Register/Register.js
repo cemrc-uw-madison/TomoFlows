@@ -65,7 +65,6 @@ const Register = (props) => {
 				toast.success('An request has been sent to admin user');
 			})
 		}).catch(error => {
-			console.error(error);
 			if (error.response.status == 400) {
 				if ("non_field_errors" in error.response.data) {
 					setError(error.response.data.non_field_errors[0]);
@@ -76,7 +75,11 @@ const Register = (props) => {
 					setError(error.response.data.labName[0]);
 				} else if ("insitutionName" in error.response.data) {
 					setError(error.response.data.institutionName[0]);
-				} else {
+				} else if ("password1" in error.response.data) {
+					setError(error.response.data.password1[0]);
+				} else if ("password2" in error.response.data) {
+					setError(error.response.data.password2[0]);
+				} else else {
 					setError("Something went wrong! Please try again later.");
 				}
 			} else if (error.response.status == 401) {
