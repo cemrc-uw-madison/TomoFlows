@@ -1,8 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import {
-	createBrowserRouter,
-	RouterProvider,
+import { 
+	HashRouter, 
+	Routes, 
+	Route, 
 } from "react-router-dom";
 import { Toaster } from 'react-hot-toast';
 import "./index.css";
@@ -16,53 +17,20 @@ import Project from "./pages/Project/Project";
 import Tasks from "./pages/Tasks/Tasks";
 import Profile from "./pages/Profile/Profile";
 
-/* React-Router-Dom Routing Configuration */
-const router = createBrowserRouter([
-	{
-		path: "/",
-		element: <Navigation />,
-		errorElement: <Error />,
-		children: [
-			{
-			  path: "",
-			  element: <Projects />,
-			},
-			{
-				path: "/profile",
-				element: <Profile />,
-			},
-			{
-				path: "project/:id",
-				element: <Project />,
-			},
-			{
-				path: "tasks",
-				element: <Tasks />,
-			},
-		]
-	},
-	{
-		path: "/login",
-		element: <Login />,
-		errorElement: <Error />
-	},
-	{
-		path: "/logout",
-		element: <Logout />,
-		errorElement: <Error />
-	},
-	{
-		path: "/register",
-		element: <Register />,
-		errorElement: <Error />
-	},
-]);
-
-/* Inject RouterProvider component to the HTML */
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 root.render(
-	<React.StrictMode>
-		<Toaster/>
-		<RouterProvider router={router} />
-	</React.StrictMode>
+  <HashRouter>
+    <Routes>
+      <Route path="/" element={<Navigation />} errorElement={<Error />}>
+        <Route index element={<Projects />} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="project/:id" element={<Project />} />
+        <Route path="tasks" element={<Tasks />} />
+      </Route>
+      <Route path="login" element={<Login />} />
+      <Route path="logout" element={<Logout />} />
+      <Route path="register" element={<Register />} />
+    </Routes>
+  </HashRouter>
 );
