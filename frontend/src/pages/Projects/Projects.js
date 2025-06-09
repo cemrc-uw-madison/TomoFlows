@@ -44,7 +44,7 @@ const Projects = (props) => {
 		let token = Cookies.get('auth-token')
 		if (token) {
 			setLoading(true);
-			api.get('/api/projects', {
+			api.get('/projects', {
 				headers: {
 					'Authorization': `Bearer ${token}`
 				}

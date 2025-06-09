@@ -16,7 +16,7 @@ from datetime import timedelta
 import os
 from django.core.management.utils import get_random_secret_key
 
-CSRF_TRUSTED_ORIGINS = [ "https://ondemandcryo.biochem.wisc.edu" ]
+# CSRF_TRUSTED_ORIGINS = [ "https://ondemandcryo.biochem.wisc.edu" ]
 # USE_X_FORWARDED_HOST = True
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
@@ -26,8 +26,8 @@ CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# FORCE_SCRIPT_NAME = os.environ.get("DJANGO_SCRIPT_NAME", "")
-FUNNY_SCRIPT_NAME = os.environ.get("DJANGO_SCRIPT_NAME", "")
+# Useful if we need to remap to a relative address
+USER_RELATIVE_PATH = os.environ.get("DJANGO_SCRIPT_NAME", "")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -196,10 +196,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-# STATIC_URL = 'frontend/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'frontend/static')
-STATIC_URL = f'{FUNNY_SCRIPT_NAME}/frontend/static/'
-#STATIC_URL = f'/frontend/static/'
+STATIC_URL = f'{USER_RELATIVE_PATH}/frontend/static/'
 
 print('Static files at: ' + STATIC_ROOT)
 print('Static URLs at: ' + STATIC_URL)
