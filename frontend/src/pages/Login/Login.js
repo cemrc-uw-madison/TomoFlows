@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
-import axios from 'axios';
 import api from '../api.js';
 import Cookies from "js-cookie";
 import Button from 'react-bootstrap/Button';
@@ -40,7 +39,6 @@ const Login = (props) => {
 	const login = () => {
 		setLoading(true);
 		setError("");
-		/* axios.post('/api/auth/login/', { */
 		api.post('/auth/login', {
 			email: email,
 			password: password

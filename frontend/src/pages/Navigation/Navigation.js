@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { PlusLg, Trash } from "react-bootstrap-icons"
 import Cookies from 'js-cookie';
-import axios from 'axios';
+import api from '../api.js';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
@@ -39,7 +39,7 @@ const Navigation = (props) => {
 	useEffect(() => {
 		let token = Cookies.get('auth-token')
 		if (token) {
-			axios.get('/api/protected', {
+			api.get('/protected', {
 				headers: {
 					'Authorization': `Bearer ${token}`
 				}
@@ -101,7 +101,7 @@ const Navigation = (props) => {
 			}
 		}
 		setLoading(true);
-		axios.post('/api/tasks', {
+		api.post('/tasks', {
 			verification_code: code,
 			name: taskName,
 			description: description,

@@ -1,7 +1,7 @@
 import React, { useState, useEffect }from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import axios from 'axios';
+import api from '../api.js';
 import Cookies from 'js-cookie';
 import Container from 'react-bootstrap/Container';
 import Spinner from 'react-bootstrap/Spinner';
@@ -27,14 +27,14 @@ const Tasks = (props) => {
 		let token = Cookies.get('auth-token')
 		if (token) {
 			setLoading(true);
-			axios.get(`/api/tasks`, {
+			api.get(`/tasks`, {
 				headers: {
 					'Authorization': `Bearer ${token}`
 				}
 			})
 			.then(response => {
 				setTasks(response.data);
-				axios.get(`/api/projects`, {
+				api.get(`/projects`, {
 					headers: {
 						'Authorization': `Bearer ${token}`
 					}
@@ -72,7 +72,7 @@ const Tasks = (props) => {
 	const addTaskToProject = (taskId, projectId) => {
 		let token = Cookies.get('auth-token')
 		let toastId = toast.loading("Adding task to project...")
-		axios.post(`/api/project-tasks`,
+		api.post(`/project-tasks`,
 		{
 			project_id: projectId,
 			task_id: taskId

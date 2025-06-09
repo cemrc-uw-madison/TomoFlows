@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from 'js-cookie';
-import axios from 'axios';
+import api from '../api.js';
 import Container from 'react-bootstrap/Container';
 import Spinner from 'react-bootstrap/Spinner';
 import Modal from 'react-bootstrap/Modal';
@@ -44,7 +44,7 @@ const Projects = (props) => {
 		let token = Cookies.get('auth-token')
 		if (token) {
 			setLoading(true);
-			axios.get('/api/projects', {
+			api.get('/api/projects', {
 				headers: {
 					'Authorization': `Bearer ${token}`
 				}
@@ -85,7 +85,7 @@ const Projects = (props) => {
 		let token = Cookies.get('auth-token')
 		setCreateLoad(true);
 		setError("");
-		axios.post('/api/projects', 
+		api.post('/projects', 
 		{
 			name: name,
 			description: description ? description: "Default Description"

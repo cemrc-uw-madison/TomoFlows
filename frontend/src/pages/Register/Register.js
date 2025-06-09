@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
-import axios from 'axios';
+import api from '../api.js';
 import Cookies from "js-cookie";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -35,7 +35,7 @@ const Register = (props) => {
 	const register = () => {
 		setLoading(true);
 		setError("");
-		axios.post('/api/auth/register/', {
+		api.post('/auth/register/', {
 			first_name: firstname,
 			last_name: lastname,
 			email: email,

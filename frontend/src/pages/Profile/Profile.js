@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PencilSquare } from "react-bootstrap-icons";
-import axios from 'axios';
+import api from '../api.js';
 import Cookies from 'js-cookie';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
@@ -28,7 +28,7 @@ const Profile = (props) => {
 		let token = Cookies.get('auth-token')
 		if (token) {
 			setLoading(true);
-			axios.get('/api/user', {
+			api.get('/user', {
 				headers: {
 					'Authorization': `Bearer ${token}`
 				}
@@ -61,7 +61,7 @@ const Profile = (props) => {
 		let token = Cookies.get('auth-token')
 		setEditLoad(true);
 		setError("")
-		axios.put(`/api/user`,
+		api.put(`/user`,
 		{
 			first_name: firstName,
 			last_name: lastName,

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ArrowLeft, ArrowRight, CheckCircle, ChevronBarLeft, ChevronBarRight, Folder, Hourglass, PencilSquare, PlayFill, PlusCircle, Trash, XCircle, FileEarmarkText, XLg } from "react-bootstrap-icons"
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import axios from 'axios';
+import api from '../api.js';
 import Cookies from 'js-cookie';
 import Container from "react-bootstrap/Container";
 import Modal from 'react-bootstrap/Modal';
@@ -118,7 +118,7 @@ const Project = (props) => {
 		let token = Cookies.get('auth-token')
 		if (token) {
 			setLoading(true);
-			axios.get(`/api/projects/${id}`, {
+			api.get(`/projects/${id}`, {
 				headers: {
 					'Authorization': `Bearer ${token}`
 				}
@@ -127,7 +127,7 @@ const Project = (props) => {
 				setProject(response.data);
 				setName(response.data.name);
 				setDescription(response.data.description)
-				axios.get(`/api/project-tasks?project_id=${id}`, {
+				api.get(`/project-tasks?project_id=${id}`, {
 					headers: {
 						'Authorization': `Bearer ${token}`
 					}
@@ -154,7 +154,7 @@ const Project = (props) => {
 							break;
 						}
 					}
-					axios.get(`/api/tasks`, {
+					api.get(`/tasks`, {
 						headers: {
 							'Authorization': `Bearer ${token}`
 						}
@@ -215,7 +215,7 @@ const Project = (props) => {
 	
 	const fetchTasksBackground = () => {
 		let token = Cookies.get('auth-token')
-		axios.get(`/api/project-tasks?project_id=${id}`, {
+		api.get(`/project-tasks?project_id=${id}`, {
 			headers: {
 				'Authorization': `Bearer ${token}`
 			}
@@ -254,7 +254,7 @@ const Project = (props) => {
 		let token = Cookies.get('auth-token')
 		setEditLoad(true);
 		setError("");
-		axios.put(`/api/projects/${id}`, 
+		api.put(`/projects/${id}`, 
 		{
 			name: name,
 			description: description
@@ -283,7 +283,7 @@ const Project = (props) => {
 		let token = Cookies.get('auth-token')
 		setDeleteLoad(true);
 		setError("");
-		axios.delete(`/api/projects/${id}`,
+		api.delete(`/projects/${id}`,
 		{
 			headers: {
 				'Authorization': `Bearer ${token}`
@@ -309,7 +309,7 @@ const Project = (props) => {
 	const addTaskToProject = (taskId) => {
 		let token = Cookies.get('auth-token')
 		setError("");
-		axios.post(`/api/project-tasks`,
+		api.post(`/project-tasks`,
 		{
 			project_id: id,
 			task_id: taskId
@@ -337,7 +337,7 @@ const Project = (props) => {
 	const runTask = (projecttaskId, parameter_values) => {
 		let token = Cookies.get('auth-token')
 		setError("")
-		axios.put(`/api/project-tasks/${projecttaskId}`,
+		api.put(`/project-tasks/${projecttaskId}`,
 		{
 			parameter_values: JSON.stringify(parameter_values)
 		},
@@ -347,7 +347,7 @@ const Project = (props) => {
 			}
 		})
 		.then(response => {
-			axios.get(`/api/run-project-task/${projecttaskId}`,
+			api.get(`/run-project-task/${projecttaskId}`,
 			{
 				headers: {
 					'Authorization': `Bearer ${token}`
@@ -380,7 +380,7 @@ const Project = (props) => {
 		let token = Cookies.get('auth-token')
 		setDeleteLoad(true);
 		setError("");
-		axios.delete(`/api/project-tasks/${taskId}`,
+		api.delete(`/project-tasks/${taskId}`,
 		{
 			headers: {
 				'Authorization': `Bearer ${token}`

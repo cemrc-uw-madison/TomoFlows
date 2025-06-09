@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
-import axios from 'axios';
+import api from '../api.js';
 import Spinner from 'react-bootstrap/Spinner';
 import Cookies from 'js-cookie';
 import "./Logout.css"
@@ -24,7 +24,7 @@ const Logout = (props) => {
 	 * @returns null
 	 */
 	const logout = () => {
-		axios.post('/api/auth/logout/')
+		api.post('/auth/logout/')
 		.then(response => {
 			Cookies.remove('auth-token');
 			Cookies.remove('auth-user');
