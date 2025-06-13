@@ -15,6 +15,16 @@ import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
 import "./Navigation.css";
 
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+  }
+
+// Automatically determine base path from current location
+export const BASE_PREFIX = getCookie("BASE_PREFIX") || "/";
+
 /**
  * Navigation component that provides the user the ability to navigate between
  * the different parts of the application and provides an outlet to the current
@@ -52,14 +62,14 @@ const Navigation = (props) => {
 				if (error.response.status === 401 || error.response.status === 403) {
 					Cookies.remove('auth-token');
 					Cookies.remove('auth-user');
-					navigate("/login");
+					navigate("${BASE_PREFIX}/login");
 				}
 				console.error(error);
 			})
 		} else {
 			Cookies.remove('auth-token');
 			Cookies.remove('auth-user');
-			navigate("/login");
+			navigate("${BASE_PREFIX}/login");
 		}
 	}, [])
 	
@@ -101,7 +111,7 @@ const Navigation = (props) => {
 			}
 		}
 		setLoading(true);
-		api.post('/tasks', {
+		api.post('${BASE_PREFIX}/tasks', {
 			verification_code: code,
 			name: taskName,
 			description: description,
@@ -141,8 +151,8 @@ const Navigation = (props) => {
 					<Navbar.Toggle aria-controls="collapse-nav" />
         			<Navbar.Collapse id="collapse-nav">
 						<Nav className="me-auto">
-							<Nav.Link href="/" active={location.pathname == "/"}>Projects</Nav.Link>
-							<Nav.Link href="/tasks" active={location.pathname == "/tasks"}>Tasks</Nav.Link>
+							<Nav.Link href="${BASE_PREFIX}/" active={location.pathname == "/"}>Projects</Nav.Link>
+							<Nav.Link href="${BASE_PREFIX}/tasks" active={location.pathname == "/tasks"}>Tasks</Nav.Link>
 							{/* <Nav.Link href="" active={location.pathname == "/support"}>Support</Nav.Link> */}
 						</Nav>
 					</Navbar.Collapse>
@@ -154,8 +164,8 @@ const Navigation = (props) => {
 							size="sm"
 						>	
 							<Dropdown.Item onClick={() => setShow(true)}>Create Task</Dropdown.Item>
-							<Dropdown.Item href="/profile">Profile</Dropdown.Item>
-							<Dropdown.Item href="/logout">Logout</Dropdown.Item>
+							<Dropdown.Item href="${BASE_PREFIX}/profile">Profile</Dropdown.Item>
+							<Dropdown.Item href="${BASE_PREFIX}/logout">Logout</Dropdown.Item>
 						</DropdownButton>
 					</Navbar.Collapse>
 				</Container>

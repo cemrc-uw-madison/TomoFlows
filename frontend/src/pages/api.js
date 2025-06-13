@@ -16,13 +16,13 @@ function getCookie(name) {
 export const BASE_PREFIX = getCookie("BASE_PREFIX") || "/";
 // const prefix = window.location.pathname.split("/").slice(0, 4).join("/"); // "/node/<host>/<port>"
 
-//const api = axios.create({
-//  baseURL: `${BASE_PREFIX}/api/`,  // e.g., "/node/myhost/8000/api/"
-//});
-
 const api = axios.create({
-    baseURL: `/api/`,  // e.g., "/node/myhost/8000/api/"
+  baseURL: `${BASE_PREFIX}/api/`,  // e.g., "/node/myhost/8000/api/"
 });
+
+//const api = axios.create({
+//    baseURL: `/api/`,  // e.g., "/node/myhost/8000/api/"
+//});
 
 export default api;
 
