@@ -16,7 +16,7 @@ from datetime import timedelta
 import os
 from django.core.management.utils import get_random_secret_key
 
-# CSRF_TRUSTED_ORIGINS = [ "https://ondemandcryo.biochem.wisc.edu" ]
+CSRF_TRUSTED_ORIGINS = [ "https://ondemandcryo.biochem.wisc.edu" ]
 # USE_X_FORWARDED_HOST = True
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 

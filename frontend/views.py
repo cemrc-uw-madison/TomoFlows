@@ -4,7 +4,7 @@ from server.settings import USER_RELATIVE_PATH
 
 @ensure_csrf_cookie
 def index(request):
-    prefix = USER_RELATIVE_PATH
+    prefix = USER_RELATIVE_PATH.replace('"', '')
     response = render(request, 'frontend/index.html')
     response.set_cookie('BASE_PREFIX', prefix, path='/', samesite='Lax')
     return response
