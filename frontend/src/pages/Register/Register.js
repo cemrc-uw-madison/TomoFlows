@@ -79,7 +79,7 @@ const Register = (props) => {
 					setError(error.response.data.password1[0]);
 				} else if ("password2" in error.response.data) {
 					setError(error.response.data.password2[0]);
-				} else else {
+				} else {
 					setError("Something went wrong! Please try again later.");
 				}
 			} else if (error.response.status == 401) {
